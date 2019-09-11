@@ -1,16 +1,14 @@
-# Ping CRM
+# Warriors attendance
 
-A demo application to illustrate how Inertia.js works.
-
-![](https://raw.githubusercontent.com/inertiajs/pingcrm/master/screenshot.png)
+Attendance registration application for Kiskunlacháza Warriors.
 
 ## Installation
 
 Clone the repo locally:
 
 ```sh
-git clone https://github.com/inertiajs/pingcrm.git pingcrm
-cd pingcrm
+git clone https://github.com/ettemlevest/warriors-attendance.git warriors-attendance
+cd warriors-attendance
 ```
 
 Install PHP dependencies:
@@ -68,8 +66,8 @@ You're ready to go! Visit Ping CRM in your browser, and login with:
 
 ## Running tests
 
-To run the Ping CRM tests, run:
+To run the tests, run:
 
-```
+```sh
 phpunit
 ```
