@@ -1,6 +1,6 @@
 # Warriors attendance
 
-Attendance registration application for Kiskunlacháza Warriors.
+Attendance registration application for Kiskunlacháza Warriors based on [@reinink](https://twitter.com/reinink)'s [PingCRM](https://github.com/inertiajs/pingcrm) example application.
 
 ## Installation
 
