@@ -20,11 +20,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'owner' => 'boolean',
     ];
 
-    public function account()
-    {
-        return $this->belongsTo(Account::class);
-    }
-
     public function getNameAttribute()
     {
         return $this->first_name.' '.$this->last_name;
