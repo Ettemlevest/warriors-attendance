@@ -75,7 +75,7 @@ export default {
     title: {
       immediate: true,
       handler(title) {
-        document.title = title ? `${title} | Ping CRM` : 'Ping CRM'
+        document.title = title ? `${title} | Kiskunlacháza Warriors` : 'Kiskunlacháza Warriors'
       },
     },
   },
