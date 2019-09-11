@@ -5,13 +5,13 @@
       <input ref="file" type="file" :accept="accept" class="hidden" @change="change">
       <div v-if="!value" class="p-2">
         <button type="button" class="px-4 py-1 bg-grey-dark hover:bg-grey-darker rounded-sm text-xs font-medium text-white" @click="browse">
-          Browse
+          Tallózás
         </button>
       </div>
       <div v-else class="flex items-center justify-between p-2">
         <div class="flex-1 pr-1">{{ value.name }} <span class="text-grey-dark text-xs">({{ filesize(value.size) }})</span></div>
         <button type="button" class="px-4 py-1 bg-grey-dark hover:bg-grey-darker rounded-sm text-xs font-medium text-white" @click="remove">
-          Remove
+          Eltávolítás
         </button>
       </div>
     </div>

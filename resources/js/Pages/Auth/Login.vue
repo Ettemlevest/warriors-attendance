@@ -4,18 +4,18 @@
       <!-- <logo class="block mx-auto w-full max-w-xs fill-white" height="50" /> -->
       <form class="mt-8 bg-white rounded-lg shadow-lg overflow-hidden" @submit.prevent="submit">
         <div class="px-10 py-12">
-          <h1 class="text-center font-bold text-3xl">Welcome Back!</h1>
+          <h1 class="text-center font-bold text-3xl">Üdv újra!</h1>
           <div class="mx-auto mt-6 w-24 border-b-2" />
-          <text-input v-model="form.email" :errors="$page.errors.email" class="mt-10" label="Email" type="email" autofocus autocapitalize="off" />
-          <text-input v-model="form.password" class="mt-6" label="Password" type="password" />
+          <text-input v-model="form.email" :errors="$page.errors.email" class="mt-10" label="E-mail" type="email" autofocus autocapitalize="off" />
+          <text-input v-model="form.password" class="mt-6" label="Jelszó" type="password" />
           <!-- <label class="mt-6 select-none flex items-center" for="remember">
             <input id="remember" v-model="form.remember" class="mr-1" type="checkbox">
             <span class="text-sm">Remember Me</span>
           </label> -->
         </div>
         <div class="px-10 py-4 bg-grey-lightest border-t border-grey-lighter flex justify-between items-center">
-          <a class="hover:underline" tabindex="-1" href="#register">Register</a>
-          <loading-button :loading="sending" class="btn-indigo" type="submit">Login</loading-button>
+          <a class="hover:underline" tabindex="-1" href="#register">Regisztráció</a>
+          <loading-button :loading="sending" class="btn-indigo" type="submit">Belépés</loading-button>
         </div>
       </form>
     </div>
@@ -47,7 +47,7 @@ export default {
     }
   },
   mounted() {
-    document.title = 'Login | Kiskunlacháza Warriors'
+    document.title = 'Bejelentkezés | Kiskunlacháza Warriors'
   },
   methods: {
     submit() {
