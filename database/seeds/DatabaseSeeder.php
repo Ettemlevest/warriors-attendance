@@ -1,5 +1,6 @@
 <?php
 
+use App\Training;
 use App\User;
 use Illuminate\Database\Seeder;
 
@@ -15,5 +16,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         factory(User::class, 5)->create();
+
+        factory(Training::class, 10)->create();
     }
 }
