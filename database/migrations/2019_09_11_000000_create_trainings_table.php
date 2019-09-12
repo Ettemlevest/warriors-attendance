@@ -17,8 +17,8 @@ class CreateTrainingsTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('place');
-            $table->timestamp('start_at');
-            $table->timestamp('end_at');
+            $table->datetime('start_at');
+            $table->unsignedSmallInteger('length')->default(60);
             $table->unsignedSmallInteger('max_attendees');
             $table->timestamps();
         });
