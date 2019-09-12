@@ -21,7 +21,7 @@ class TrainingController extends Controller
                             'id' => $training->id,
                             'name' => $training->name,
                             'place' => $training->place,
-                            'start_at' => (string) $training->start_at,
+                            'start_at' => $training->start_at->format('Y-m-d H:i'),
                             'diff' => $training->start_at->diffForHumans(),
                             'length' => $training->length,
                             'attendees' => 0,
