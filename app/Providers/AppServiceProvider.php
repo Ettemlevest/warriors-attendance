@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Carbon\Carbon;
 use Inertia\Inertia;
 use League\Glide\Server;
 use Carbon\CarbonImmutable;
@@ -20,6 +21,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Date::use(CarbonImmutable::class);
+
+        Carbon::setLocale('hu');
     }
 
     public function register()
