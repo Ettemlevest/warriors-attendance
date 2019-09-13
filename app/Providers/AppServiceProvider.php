@@ -43,10 +43,11 @@ class AppServiceProvider extends ServiceProvider
                 return [
                     'user' => Auth::user() ? [
                         'id' => Auth::user()->id,
-                        'first_name' => Auth::user()->first_name,
-                        'last_name' => Auth::user()->last_name,
+                        'name' => Auth::user()->name,
+                        'nickname' => Auth::user()->nickname,
                         'email' => Auth::user()->email,
                         'role' => Auth::user()->role,
+                        'photo' => Auth::user()->photoUrl(['w' => 40, 'h' => 40, 'fit' => 'crop']),
                     ] : null,
                 ];
             },
