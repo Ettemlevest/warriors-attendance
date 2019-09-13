@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TrainingCreationRequest;
+use App\Http\Requests\TrainingDestroyRequest;
+use App\Http\Requests\TrainingUpdateRequest;
 use App\Training;
-use Carbon\Carbon;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -62,14 +63,14 @@ class TrainingController extends Controller
                 'id' => $training->id,
                 'name' => $training->name,
                 'place' => $training->place,
-                'start_at' => $training->start_at,
+                'start_at' => $training->start_at->format('Y-m-d H:i:s'),
                 'length' => $training->length,
                 'max_attendees' => $training->max_attendees,
             ],
         ]);
     }
 
-    public function update(Request $request, Training $training)
+    public function update(TrainingUpdateRequest $request, Training $training)
     {
         if (! Auth::user()->owner) {
             return Redirect::route('trainings');
@@ -80,10 +81,10 @@ class TrainingController extends Controller
         return Redirect::route('trainings.edit', $training)->with('success', 'Edzés sikeresen mentve.');
     }
 
-    public function destroy(Training $training)
+    public function destroy(TrainingDestroyRequest $request, Training $training)
     {
-        if (! Auth::user()->owner) {
-            return Redirect::route('trainings');
-        }
+        $training->delete();
+
+        return Redirect::route('trainings')->with('success', 'Edzés sikeresen törölve.');
     }
 }

@@ -4,9 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
 
-class TrainingCreationRequest extends FormRequest
+class TrainingDestroyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -30,11 +29,7 @@ class TrainingCreationRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'place' => ['required', 'string', 'max:255'],
-            'start_at' => ['required', 'date'],
-            'length' => ['required', 'integer'],
-            'max_attendees' => ['required', 'integer'],
+            //
         ];
     }
 }

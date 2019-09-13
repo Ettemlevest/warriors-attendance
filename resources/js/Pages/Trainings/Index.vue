@@ -2,7 +2,7 @@
   <layout title="Trainings">
     <h1 class="mb-8 font-bold text-3xl">Edzések</h1>
     <div class="mb-6 flex justify-between items-center">
-      <inertia-link class="btn-indigo" :href="route('trainings.create')">
+      <inertia-link v-if="$page.auth.user.owner" class="btn-indigo" :href="route('trainings.create')">
         <span>Létrehozás</span>
       </inertia-link>
     </div>
