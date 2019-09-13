@@ -13,8 +13,7 @@ class TrainingController extends Controller
     {
         return Inertia::render('Trainings/Index', [
             'filters' => Request::all('search', 'role', 'trashed'),
-            'trainings' => Training::orderBy('date', 'desc')
-                    ->orderBy('start_at', 'desc')
+            'trainings' => Training::orderBy('start_at', 'desc')
                     ->get()
                     ->transform(function ($training) {
                         return [
