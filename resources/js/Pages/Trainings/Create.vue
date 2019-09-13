@@ -10,8 +10,8 @@
         <text-input v-model="form.name" :errors="$page.errors.name" class="pr-6 pb-8 w-full lg:w-1/2" label="Edzés neve" autofocus />
           <text-input v-model="form.place" :errors="$page.errors.place" class="pr-6 pb-8 w-full lg:w-1/2" label="Helyszín" />
           <text-input v-model="form.start_at" :errors="$page.errors.start_at" class="pr-6 pb-8 w-full lg:w-1/2" label="Kezdés" />
-          <text-input v-model="form.length" :errors="$page.errors.length" class="pr-6 pb-8 w-full lg:w-1/2" label="Időtartam (perc)" />
-          <text-input v-model="form.max_attendees" :errors="$page.errors.max_attendees" class="pr-6 pb-8 w-full lg:w-1/2" label="Max. létszám" />
+          <text-input v-model="form.length" :errors="$page.errors.length" class="pr-6 pb-8 w-full lg:w-1/2" label="Időtartam (perc)" type="number" />
+          <text-input v-model="form.max_attendees" :errors="$page.errors.max_attendees" class="pr-6 pb-8 w-full lg:w-1/2" label="Max. létszám" type="number" />
         </div>
         <div class="px-8 py-4 bg-grey-lightest border-t border-grey-lighter flex justify-end items-center">
           <loading-button :loading="sending" class="btn-indigo" type="submit">Edzés mentése</loading-button>
