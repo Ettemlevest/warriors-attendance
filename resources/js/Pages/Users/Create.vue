@@ -1,5 +1,5 @@
 <template>
-  <layout title="Create User">
+  <layout title="Warrior hozzáadása">
     <h1 class="mb-8 font-bold text-3xl">
       <inertia-link class="text-indigo-light hover:text-indigo-dark" :href="route('users')">Warriorok</inertia-link>
       <span class="text-indigo-light font-medium">/</span> Létrehozás
@@ -8,7 +8,7 @@
     <div v-if="$page.auth.user.owner" class="bg-white rounded shadow overflow-hidden max-w-lg">
       <form @submit.prevent="submit">
         <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
-          <text-input v-model="form.name" :errors="$page.errors.name" class="pr-6 pb-8 w-full lg:w-1/2" label="Név" />
+          <text-input v-model="form.name" :errors="$page.errors.name" class="pr-6 pb-8 w-full lg:w-1/2" label="Név" autofocus />
           <text-input v-model="form.nickname" :errors="$page.errors.nickname" class="pr-6 pb-8 w-full lg:w-1/2" label="Becenév" />
           <text-input v-model="form.email" :errors="$page.errors.email" class="pr-6 pb-8 w-full lg:w-1/2" label="E-mail" />
           <text-input v-model="form.password" :errors="$page.errors.password" class="pr-6 pb-8 w-full lg:w-1/2" type="password" autocomplete="new-password" label="Jelszó" />
