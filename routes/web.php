@@ -33,9 +33,6 @@ Route::put('users/{user}/restore')->name('users.restore')->uses('UsersController
 // Images
 Route::get('/img/{path}', 'ImagesController@show')->where('path', '.*');
 
-// Reports
-Route::get('reports')->name('reports')->uses('ReportsController')->middleware('auth');
-
 // Trainings
 Route::get('trainings')->name('trainings')->uses('TrainingController@index')->middleware('auth');
 Route::get('trainings/create')->name('trainings.create')->uses('TrainingController@create')->middleware('auth');
