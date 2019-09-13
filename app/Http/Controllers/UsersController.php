@@ -13,11 +13,15 @@ class UsersController extends Controller
 {
     public function index()
     {
+        $query = User::orderByName()->filter(Request::only('search', 'role', 'trashed'));
+
+        if (! Auth::user()->owner) {
+            $query->where('id', Auth::user()->id);
+        }
+
         return Inertia::render('Users/Index', [
             'filters' => Request::all('search', 'role', 'trashed'),
-            'users' => User::orderByName()
-                ->filter(Request::only('search', 'role', 'trashed'))
-                ->get()
+            'users' => $query->get()
                 ->transform(function ($user) {
                     return [
                         'id' => $user->id,
@@ -34,11 +38,19 @@ class UsersController extends Controller
 
     public function create()
     {
+        if (! Auth::user()->owner) {
+            return Redirect::route('users');
+        }
+
         return Inertia::render('Users/Create');
     }
 
     public function store()
     {
+        if (! Auth::user()->owner) {
+            return Redirect::route('users');
+        }
+
         Request::validate([
             'name' => ['required', 'max:255'],
             'nickname' => ['required', 'max:255'],
@@ -62,6 +74,10 @@ class UsersController extends Controller
 
     public function edit(User $user)
     {
+        if (! Auth::user()->owner && $user->id <> Auth::user()->id) {
+            return Redirect::route('users');
+        }
+
         return Inertia::render('Users/Edit', [
             'user' => [
                 'id' => $user->id,
@@ -77,6 +93,10 @@ class UsersController extends Controller
 
     public function update(User $user)
     {
+        if (! Auth::user()->owner && $user->id <> Auth::user()->id) {
+            return Redirect::route('users');
+        }
+
         Request::validate([
             'name' => ['required', 'max:255'],
             'nickname' => ['required', 'max:255'],
@@ -101,6 +121,10 @@ class UsersController extends Controller
 
     public function destroy(User $user)
     {
+        if (! Auth::user()->owner) {
+            return Redirect::route('users');
+        }
+
         $user->delete();
 
         return Redirect::route('users.edit', $user)->with('success', 'Warrior sikeresen törölve.');
@@ -108,6 +132,10 @@ class UsersController extends Controller
 
     public function restore(User $user)
     {
+        if (! Auth::user()->owner) {
+            return Redirect::route('users');
+        }
+
         $user->restore();
 
         return Redirect::route('users.edit', $user)->with('success', 'Warrior sikeresen visszaállítva.');

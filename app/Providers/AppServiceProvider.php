@@ -46,7 +46,7 @@ class AppServiceProvider extends ServiceProvider
                         'name' => Auth::user()->name,
                         'nickname' => Auth::user()->nickname,
                         'email' => Auth::user()->email,
-                        'role' => Auth::user()->role,
+                        'owner' => Auth::user()->owner,
                         'photo' => Auth::user()->photoUrl(['w' => 40, 'h' => 40, 'fit' => 'crop']),
                     ] : null,
                 ];
@@ -54,6 +54,7 @@ class AppServiceProvider extends ServiceProvider
             'flash' => function () {
                 return [
                     'success' => Session::get('success'),
+                    'error' => Session::get('error'),
                 ];
             },
             'errors' => function () {

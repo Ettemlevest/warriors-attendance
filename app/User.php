@@ -20,6 +20,11 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'owner' => 'boolean',
     ];
 
+    public function getOwnerAttribute()
+    {
+        return $this->attributes['owner'] === '1';
+    }
+
     public function setPasswordAttribute($password)
     {
         $this->attributes['password'] = Hash::make($password);

@@ -16,9 +16,8 @@
           <option value="only">Csak töröltek</option>
         </select>
       </search-filter>
-      <inertia-link class="btn-indigo" :href="route('users.create')">
+      <inertia-link v-if="$page.auth.user.owner" class="btn-indigo" :href="route('users.create')">
         <span>Létrehozás</span>
-        <span class="hidden md:inline">Warrior</span>
       </inertia-link>
     </div>
     <div class="bg-white rounded shadow overflow-x-auto">

@@ -18,7 +18,7 @@
           <text-input v-model="form.nickname" :errors="$page.errors.nickname" class="pr-6 pb-8 w-full lg:w-1/2" label="Becenév" />
           <text-input v-model="form.email" :errors="$page.errors.email" class="pr-6 pb-8 w-full lg:w-1/2" label="E-mail" />
           <text-input v-model="form.password" :errors="$page.errors.password" class="pr-6 pb-8 w-full lg:w-1/2" type="password" autocomplete="new-password" label="Jelszó" />
-          <select-input v-model="form.owner" :errors="$page.errors.owner" class="pr-6 pb-8 w-full lg:w-1/2" label="Edző">
+          <select-input v-if="$page.auth.user.owner" v-model="form.owner" :errors="$page.errors.owner" class="pr-6 pb-8 w-full lg:w-1/2" label="Edző">
             <option :value="true">Igen</option>
             <option :value="false">Nem</option>
           </select-input>
