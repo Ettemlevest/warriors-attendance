@@ -14,7 +14,9 @@
           </label> -->
         </div>
         <div class="px-10 py-4 bg-grey-lightest border-t border-grey-lighter flex justify-between items-center">
-          <a class="hover:underline" tabindex="-1" href="#register">Regisztráció</a>
+          <inertia-link class="hover:underline" :href="route('register')">
+            Regisztráció
+          </inertia-link>
           <loading-button :loading="sending" class="btn-indigo" type="submit">Belépés</loading-button>
         </div>
       </form>

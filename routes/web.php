@@ -14,6 +14,8 @@
 // Auth
 Route::get('login')->name('login')->uses('Auth\LoginController@showLoginForm')->middleware('guest');
 Route::post('login')->name('login.attempt')->uses('Auth\LoginController@login')->middleware('guest');
+Route::get('register')->name('register')->uses('Auth\RegisterController@showRegistrationForm')->middleware('guest');
+Route::post('register')->name('register')->uses('Auth\RegisterController@register')->middleware('guest');
 Route::post('logout')->name('logout')->uses('Auth\LoginController@logout');
 
 // Dashboard
