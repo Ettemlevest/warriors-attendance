@@ -1,3 +1,3 @@
 <template>
-  <div class="text-white">Warriors</div>
+  <div class="text-white text-lg font-bold">Warriors</div>
 </template>

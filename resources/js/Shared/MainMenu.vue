@@ -7,9 +7,14 @@
       </inertia-link>
     </div>
     <div class="mb-4">
-      <inertia-link class="flex items-center group py-3" :href="route('reports')">
-        <icon name="printer" class="w-4 h-4 mr-2" :class="isUrl('reports') ? 'fill-white' : 'fill-indigo-light group-hover:fill-white'" />
-        <div :class="isUrl('reports') ? 'text-white' : 'text-indigo-lighter group-hover:text-white'">Riportok</div>
+      <inertia-link class="flex items-center group py-3" :href="route('trainings')">
+        <icon name="book" class="w-4 h-4 mr-2" :class="isUrl('trainings') ? 'fill-white' : 'fill-indigo-light group-hover:fill-white'" />
+        <div :class="isUrl('trainings') ? 'text-white' : 'text-indigo-lighter group-hover:text-white'">Edzések</div>
+      </inertia-link>
+    </div>
+    <div class="mb-4">
+      <inertia-link class="flex items-center group py-3 ml-6" :href="route('logout')" method="post">
+        <div class="text-indigo-lighter group-hover:text-white">Kilépés</div>
       </inertia-link>
     </div>
   </div>
