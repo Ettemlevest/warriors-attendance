@@ -22,9 +22,10 @@ class DashboardController extends Controller
                             'place' => $training->place,
                             'start_at' => $training->start_at->format('Y-m-d H:i'),
                             'diff' => $training->start_at->diffForHumans(),
-                            'length' => $training->length,
+                            'length' => (int) $training->length,
                             'attendees' => 0,
-                            'max_attendees' => $training->max_attendees,
+                            'registered' => false,
+                            'max_attendees' => (int) $training->max_attendees,
                         ];
                 }),
         ]);

@@ -39,6 +39,7 @@ Route::get('reports')->name('reports')->uses('ReportsController')->middleware('a
 // Trainings
 Route::get('trainings')->name('trainings')->uses('TrainingController@index')->middleware('auth');
 Route::get('trainings/create')->name('trainings.create')->uses('TrainingController@create')->middleware('auth');
+Route::get('trainings/{training}/view')->name('trainings.view')->uses('TrainingController@view')->middleware('auth');
 Route::post('trainings')->name('trainings.store')->uses('TrainingController@store')->middleware('auth');
 Route::get('trainings/{training}/edit')->name('trainings.edit')->uses('TrainingController@edit')->middleware('auth');
 Route::put('trainings/{training}')->name('trainings.update')->uses('TrainingController@update')->middleware('auth');
