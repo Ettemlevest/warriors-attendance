@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Training;
 use Carbon\Carbon;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
 class TrainingController extends Controller
@@ -35,23 +36,54 @@ class TrainingController extends Controller
         return Inertia::render('Trainings/Create');
     }
 
-    public function store()
+    public function store(Request $request)
     {
-        //
+        if (! Auth::user()->owner) {
+            return Redirect::route('trainings');
+        }
+
+        Training::create([
+            'name' => $request->name,
+            'place' => $request->place,
+            'start_at' => $request->start_at,
+            'length' => $request->length,
+            'max_attendees' => $request->max_attendees,
+        ]);
     }
 
     public function edit(Training $training)
     {
+        if (! Auth::user()->owner) {
+            return Redirect::route('trainings');
+        }
+
         return Inertia::render('Trainings/Edit', [
             'training' => [
                 'id' => $training->id,
                 'name' => $training->name,
                 'place' => $training->place,
-                'date' => $training->date,
                 'start_at' => $training->start_at,
-                'end_at' => $training->end_at,
+                'length' => $training->length,
                 'max_attendees' => $training->max_attendees,
             ],
         ]);
+    }
+
+    public function update(Request $request, Training $training)
+    {
+        if (! Auth::user()->owner) {
+            return Redirect::route('trainings');
+        }
+
+        $training->update($request->only(['name', 'place', 'start_at', 'length', 'max_attendees']));
+
+        return Redirect::route('trainings.edit', $training)->with('success', 'Edzés sikeresen mentve.');
+    }
+
+    public function destroy(Training $training)
+    {
+        if (! Auth::user()->owner) {
+            return Redirect::route('trainings');
+        }
     }
 }
