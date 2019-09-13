@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TrainingCreationRequest;
 use App\Training;
 use Carbon\Carbon;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 
 class TrainingController extends Controller
@@ -36,19 +38,17 @@ class TrainingController extends Controller
         return Inertia::render('Trainings/Create');
     }
 
-    public function store(Request $request)
+    public function store(TrainingCreationRequest $request)
     {
-        if (! Auth::user()->owner) {
-            return Redirect::route('trainings');
-        }
+        Training::create($request->only([
+            'name',
+            'place',
+            'start_at',
+            'length',
+            'max_attendees',
+        ]));
 
-        Training::create([
-            'name' => $request->name,
-            'place' => $request->place,
-            'start_at' => $request->start_at,
-            'length' => $request->length,
-            'max_attendees' => $request->max_attendees,
-        ]);
+        return Redirect::route('trainings')->with('success', 'Edzés sikeresen létrehozva.');
     }
 
     public function edit(Training $training)

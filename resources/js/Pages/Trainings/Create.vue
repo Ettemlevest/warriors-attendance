@@ -57,6 +57,7 @@ export default {
       data.append('nickname', this.form.nickname || '')
       data.append('place', this.form.place || '')
       data.append('start_at', this.form.start_at || '')
+      data.append('length', this.form.length || '')
       data.append('max_attendees', this.form.max_attendees || '')
 
       this.$inertia.post(this.route('trainings.store'), data)
