@@ -28,7 +28,7 @@ class TrainingController extends Controller
                             'start_at' => $training->start_at->format('Y-m-d H:i'),
                             'diff' => $training->start_at->diffForHumans(),
                             'length' => $training->length,
-                            'attendees' => $training->attendees,
+                            'attendees' => $training->attendees()->count(),
                             'max_attendees' => $training->max_attendees,
                         ];
                 }),
@@ -38,7 +38,17 @@ class TrainingController extends Controller
     public function view(Training $training)
     {
         return Inertia::render('Trainings/View', [
-            'training' => $training,
+            'training' => [
+                'id' => $training->id,
+                'name' => $training->name,
+                'place' => $training->place,
+                'start_at' => $training->start_at->format('Y-m-d H:i'),
+                'diff' => $training->start_at->diffForHumans(),
+                'length' => $training->length,
+                'attendees' => $training->attendees,
+                'registered' => $training->attendees->contains(Auth::user()->id),
+                'max_attendees' => $training->max_attendees,
+            ],
         ]);
     }
 
@@ -73,6 +83,7 @@ class TrainingController extends Controller
                 'place' => $training->place,
                 'start_at' => $training->start_at->format('Y-m-d H:i:s'),
                 'length' => $training->length,
+                'attendees' => $training->attendees,
                 'max_attendees' => $training->max_attendees,
             ],
         ]);

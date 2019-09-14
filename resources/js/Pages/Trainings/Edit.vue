@@ -22,6 +22,21 @@
         </div>
       </form>
     </div>
+    <div class="bg-white rounded shadow overflow-hidden max-w-lg mt-8">
+      <table class="w-full whitespace-no-wrap">
+        <tr class="text-left font-bold">
+          <th class="px-6 pt-6 pb-4">Jelentkezve</th>
+        </tr>
+        <tr v-for="attendee in training.attendees" :key="attendee.user_id" class="hover:bg-grey-lightest focus-within:bg-grey-lightest">
+          <td class="border-t px-6 py-4 flex items-center">
+            {{ attendee.name }}
+          </td>
+        </tr>
+        <tr v-if="training.attendees.length === 0">
+          <td class="border-t px-6 py-4 text-center" colspan="4">Nem jelentkeztek még az edzésre</td>
+        </tr>
+      </table>
+    </div>
   </layout>
 </template>
 

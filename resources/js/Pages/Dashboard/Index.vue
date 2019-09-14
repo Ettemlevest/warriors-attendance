@@ -57,6 +57,6 @@ export default {
     withdraw(training_id) {
       this.$inertia.delete(this.route('trainings.withdraw', training_id), null)
     }
-  }
+  },
 }
 </script>
