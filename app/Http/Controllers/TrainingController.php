@@ -79,10 +79,6 @@ class TrainingController extends Controller
 
     public function update(TrainingUpdateRequest $request, Training $training)
     {
-        if (! Auth::user()->owner) {
-            return Redirect::route('trainings');
-        }
-
         $training->update($request->only(['name', 'place', 'start_at', 'length', 'max_attendees']));
 
         return Redirect::route('trainings.edit', $training)->with('success', 'Edzés sikeresen mentve.');

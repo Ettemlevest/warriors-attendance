@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserCreationRequest;
+use App\Http\Requests\UserDestroyRequest;
+use App\Http\Requests\UserRestoreRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\User;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
@@ -45,29 +49,17 @@ class UsersController extends Controller
         return Inertia::render('Users/Create');
     }
 
-    public function store()
+    public function store(UserCreationRequest $request)
     {
-        if (! Auth::user()->owner) {
-            return Redirect::route('users');
-        }
-
-        Request::validate([
-            'name' => ['required', 'max:255'],
-            'nickname' => ['required', 'max:255'],
-            'email' => ['required', 'max:255', 'email', Rule::unique('users')],
-            'password' => ['nullable'],
-            'owner' => ['required', 'boolean'],
-            'photo' => ['nullable', 'image'],
-        ]);
-
-        User::create([
-            'name' => Request::get('name'),
-            'nickname' => Request::get('nickname'),
-            'email' => Request::get('email'),
-            'password' => Request::get('password'),
-            'owner' => Request::get('owner'),
-            'photo_path' => Request::file('photo') ? Request::file('photo')->store('users') : null,
-        ]);
+        User::create(array_merge($request->only([
+            'name',
+            'nickname',
+            'email',
+            'password',
+            'owner',
+        ]), [
+            'photo_path' => $request->file('photo') ? $request->file('photo')->store('users') : null,
+        ]));
 
         return Redirect::route('users')->with('success', 'Warrior sikeresen létrehozva.');
     }
@@ -91,51 +83,30 @@ class UsersController extends Controller
         ]);
     }
 
-    public function update(User $user)
+    public function update(UserUpdateRequest $request, User $user)
     {
-        if (! Auth::user()->owner && $user->id <> Auth::user()->id) {
-            return Redirect::route('users');
+        $user->update($request->only('name', 'nickname', 'email', 'owner'));
+
+        if ($request->file('photo')) {
+            $user->update(['photo_path' => $request->file('photo')->store('users')]);
         }
 
-        Request::validate([
-            'name' => ['required', 'max:255'],
-            'nickname' => ['required', 'max:255'],
-            'email' => ['required', 'max:50', 'email', Rule::unique('users')->ignore($user->id)],
-            'password' => ['nullable'],
-            'owner' => ['required', 'boolean'],
-            'photo' => ['nullable', 'image'],
-        ]);
-
-        $user->update(Request::only('name', 'nickname', 'email', 'owner'));
-
-        if (Request::file('photo')) {
-            $user->update(['photo_path' => Request::file('photo')->store('users')]);
-        }
-
-        if (Request::get('password')) {
-            $user->update(['password' => Request::get('password')]);
+        if ($request->get('password')) {
+            $user->update(['password' => $request->get('password')]);
         }
 
         return Redirect::route('users.edit', $user)->with('success', 'Warrior sikeresen frissítve.');
     }
 
-    public function destroy(User $user)
+    public function destroy(UserDestroyRequest $request, User $user)
     {
-        if (! Auth::user()->owner) {
-            return Redirect::route('users');
-        }
-
         $user->delete();
 
         return Redirect::route('users.edit', $user)->with('success', 'Warrior sikeresen törölve.');
     }
 
-    public function restore(User $user)
+    public function restore(UserRestoreRequest $request, User $user)
     {
-        if (! Auth::user()->owner) {
-            return Redirect::route('users');
-        }
-
         $user->restore();
 
         return Redirect::route('users.edit', $user)->with('success', 'Warrior sikeresen visszaállítva.');
