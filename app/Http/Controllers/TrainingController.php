@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TrainingAttendRequest;
 use App\Http\Requests\TrainingCreationRequest;
 use App\Http\Requests\TrainingDestroyRequest;
 use App\Http\Requests\TrainingUpdateRequest;
@@ -27,7 +28,7 @@ class TrainingController extends Controller
                             'start_at' => $training->start_at->format('Y-m-d H:i'),
                             'diff' => $training->start_at->diffForHumans(),
                             'length' => $training->length,
-                            'attendees' => 0,
+                            'attendees' => $training->attendees,
                             'max_attendees' => $training->max_attendees,
                         ];
                 }),
@@ -89,5 +90,23 @@ class TrainingController extends Controller
         $training->delete();
 
         return Redirect::route('trainings')->with('success', 'Edzés sikeresen törölve.');
+    }
+
+    public function attend(Training $training)
+    {
+        if (Auth::user()->trainings->contains($training->id)) {
+            return Redirect::back()->with('error', 'Már jelentkeztél az edzésre.');
+        }
+
+        Auth::user()->trainings()->attach($training->id);
+
+        return Redirect::back()->with('success', 'Sikeresen jelentkeztél az edzésre.');
+    }
+
+    public function withdraw(Training $training)
+    {
+        Auth::user()->trainings()->detach($training->id);
+
+        return Redirect::back()->with('success', 'Sikeresen visszavontad a jelentkezésed.');
     }
 }

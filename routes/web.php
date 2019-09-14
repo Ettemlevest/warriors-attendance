@@ -42,3 +42,5 @@ Route::get('trainings/{training}/edit')->name('trainings.edit')->uses('TrainingC
 Route::put('trainings/{training}')->name('trainings.update')->uses('TrainingController@update')->middleware('auth');
 Route::delete('trainings/{training}')->name('trainings.destroy')->uses('TrainingController@destroy')->middleware('auth');
 Route::put('trainings/{training}/restore')->name('trainings.restore')->uses('TrainingController@restore')->middleware('auth');
+Route::post('trainings/{training}/attend')->name('trainings.attend')->uses('TrainingController@attend')->middleware('auth');
+Route::delete('trainings/{training}/withdraw')->name('trainings.withdraw')->uses('TrainingController@withdraw')->middleware('auth');

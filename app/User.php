@@ -68,4 +68,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
             }
         });
     }
+
+    public function trainings()
+    {
+        return $this->belongsToMany(Training::class, 'trainings_attendance');
+    }
 }

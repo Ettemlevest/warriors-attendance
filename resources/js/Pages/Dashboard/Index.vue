@@ -22,14 +22,15 @@
           </div>
           <div class="mb-4 text-grey-darker items-center flex lg:flex-1 xl:flex-1">
             <icon name="users" class="flex w-5 h-5 fill-grey mr-2" />
-            <div class="text-lg italic">{{ training.attendees }} / {{ training.max_attendees }}</div>
+            <div class="text-lg italic">{{ training.attendees.length }} / {{ training.max_attendees }}</div>
           </div>
         </div>
-        <button v-if="!training.registered && training.attendees < training.max_attendees" class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded">
+        <div></div>
+        <button v-if="!training.registered && training.attendees.length < training.max_attendees" class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded" @click="attend(training.id)">
           Jelentkezem
         </button>
-        <div v-if="!training.registered && training.attendees >= training.max_attendees" class="bg-red text-white font-bold py-2 px-4 rounded">Megtelt, már nem lehet jelentkezni!</div>
-        <button v-if="training.registered" class="bg-red hover:bg-red-dark text-white font-bold py-2 px-4 rounded">
+        <div v-if="!training.registered && training.attendees.length >= training.max_attendees" class="bg-red text-white font-bold py-2 px-4 rounded">Megtelt, már nem lehet jelentkezni!</div>
+        <button v-if="training.registered" class="bg-red hover:bg-red-dark text-white font-bold py-2 px-4 rounded" @click="withdraw(training.id)">
           Lemondás
         </button>
       </div>
@@ -49,5 +50,13 @@ export default {
   props: {
     trainings: Array,
   },
+  methods: {
+    attend(training_id) {
+      this.$inertia.post(this.route('trainings.attend', training_id), null)
+    },
+    withdraw(training_id) {
+      this.$inertia.delete(this.route('trainings.withdraw', training_id), null)
+    }
+  }
 }
 </script>
