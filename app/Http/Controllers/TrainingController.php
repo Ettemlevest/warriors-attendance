@@ -34,6 +34,13 @@ class TrainingController extends Controller
         ]);
     }
 
+    public function view(Training $training)
+    {
+        return Inertia::render('Trainings/View', [
+            'training' => $training,
+        ]);
+    }
+
     public function create()
     {
         return Inertia::render('Trainings/Create');

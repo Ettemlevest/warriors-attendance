@@ -30,7 +30,6 @@ import Layout from '@/Shared/Layout'
 import LoadingButton from '@/Shared/LoadingButton'
 import SelectInput from '@/Shared/SelectInput'
 import TextInput from '@/Shared/TextInput'
-import TrashedMessage from '@/Shared/TrashedMessage'
 
 export default {
   components: {
@@ -38,7 +37,6 @@ export default {
     LoadingButton,
     SelectInput,
     TextInput,
-    TrashedMessage,
   },
   props: {
     training: Object,
