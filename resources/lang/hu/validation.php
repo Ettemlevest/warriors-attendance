@@ -146,10 +146,14 @@ return [
 
     'attributes' => [
         'name'     => 'név',
+        'nickname' => 'becenév',
         'password' => 'jelszó',
         'place' => 'helyszín',
         'length' => 'időtartam',
         'start_at' => 'kezdés',
-        'max_attendees' => 'maximális létszám'
+        'max_attendees' => 'maximális létszám',
+        'photo' => 'fénykép',
+        'owner' => 'edző',
+        'email' => 'e-mail',
     ],
 ];
