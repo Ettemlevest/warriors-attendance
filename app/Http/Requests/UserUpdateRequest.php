@@ -36,7 +36,7 @@ class UserUpdateRequest extends FormRequest
         return [
             'name' => ['required', 'max:255'],
             'nickname' => ['required', 'max:255'],
-            'email' => ['required', 'max:255', 'email', Rule::unique('users')],
+            'email' => ['required', 'max:255', 'email', 'unique:users,email,'.$this->route('user')->id],
             'password' => ['nullable'],
             'owner' => ['required', 'boolean'],
             'photo' => ['nullable', 'image'],
