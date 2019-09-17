@@ -76,6 +76,7 @@ phpunit
 
 ## TODOs
 
-* write tests
-* docblock comments
-* use API resources
+- write tests
+- docblock comments
+- use API resources
+- Laravel Socialite for Google, Facebook login
