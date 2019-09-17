@@ -2,7 +2,7 @@
 
 Attendance registration application for Kiskunlacháza Warriors based on [@reinink](https://twitter.com/reinink)'s [PingCRM](https://github.com/inertiajs/pingcrm) example application.
 
-![](https://raw.githubusercontent.com/Ettemlevest/warriors-attendance/master/screenshot.png)
+![](https://raw.githubusercontent.com/Ettemlevest/warriors-attendance/master/warriors-example-screenshot.png)
 
 ## Installation
 
