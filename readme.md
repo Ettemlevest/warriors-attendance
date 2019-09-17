@@ -2,6 +2,8 @@
 
 Attendance registration application for Kiskunlacháza Warriors based on [@reinink](https://twitter.com/reinink)'s [PingCRM](https://github.com/inertiajs/pingcrm) example application.
 
+![](https://raw.githubusercontent.com/Ettemlevest/warriors-attendance/master/screenshot.png)
+
 ## Installation
 
 Clone the repo locally:
@@ -71,3 +73,9 @@ To run the tests, run:
 ```sh
 phpunit
 ```
+
+## TODOs
+
+* write tests
+* docblock comments
+* use API resources
