@@ -28,7 +28,7 @@
           <th class="px-6 pt-6 pb-4">E-mail</th>
           <th class="px-6 pt-6 pb-4" colspan="2">Jogosultság</th>
         </tr>
-        <tr v-for="user in users" :key="user.id" class="hover:bg-grey-lightest focus-within:bg-grey-lightest">
+        <tr v-for="user in users.data" :key="user.id" class="hover:bg-grey-lightest focus-within:bg-grey-lightest">
           <td class="border-t">
             <inertia-link class="px-6 py-4 flex items-center focus:text-indigo" :href="route('users.edit', user.id)">
               <img v-if="user.photo" class="block w-8 h-8 rounded-full mr-2 -my-2" :src="user.photo">
@@ -57,11 +57,12 @@
             </inertia-link>
           </td>
         </tr>
-        <tr v-if="users.length === 0">
+        <tr v-if="users.data.length === 0">
           <td class="border-t px-6 py-4" colspan="4">Nincs megjeleníthető adat</td>
         </tr>
       </table>
     </div>
+    <pagination :links="users.links" />
   </layout>
 </template>
 
@@ -69,12 +70,14 @@
 import _ from 'lodash'
 import Icon from '@/Shared/Icon'
 import Layout from '@/Shared/Layout'
+import Pagination from '@/Shared/Pagination'
 import SearchFilter from '@/Shared/SearchFilter'
 
 export default {
   components: {
     Icon,
     Layout,
+    Pagination,
     SearchFilter,
   },
   props: {

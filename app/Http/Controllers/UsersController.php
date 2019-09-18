@@ -25,7 +25,7 @@ class UsersController extends Controller
 
         return Inertia::render('Users/Index', [
             'filters' => Request::all('search', 'role', 'trashed'),
-            'users' => $query->get()
+            'users' => $query->paginate()
                 ->transform(function ($user) {
                     return [
                         'id' => $user->id,
