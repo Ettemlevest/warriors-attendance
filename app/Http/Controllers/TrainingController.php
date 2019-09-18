@@ -20,7 +20,6 @@ class TrainingController extends Controller
             'filters' => Request::all('search', 'role', 'trashed'),
             'trainings' => Training::orderBy('start_at', 'desc')
                     ->paginate()
-                    // ->get()
                     ->transform(function ($training) {
                         return [
                             'id' => $training->id,
@@ -108,6 +107,10 @@ class TrainingController extends Controller
     {
         if (Auth::user()->trainings->contains($training->id)) {
             return Redirect::back()->with('error', 'Már jelentkeztél az edzésre.');
+        }
+
+        if ($training->attendees->count() >= $training->max_attendees) {
+            return Redirect::back()->with('error', 'Már megtelt az edzés, nem lehet rá jelentkezni.');
         }
 
         Auth::user()->trainings()->attach($training->id);
