@@ -9,7 +9,8 @@
         <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
         <text-input v-model="form.name" :errors="$page.errors.name" class="pr-6 pb-8 w-full lg:w-1/2" label="Edzés neve" autofocus />
           <text-input v-model="form.place" :errors="$page.errors.place" class="pr-6 pb-8 w-full lg:w-1/2" label="Helyszín" />
-          <text-input v-model="form.start_at" :errors="$page.errors.start_at" class="pr-6 pb-8 w-full lg:w-1/2" label="Kezdés" />
+          <text-input v-model="form.start_at_day" :errors="$page.errors.start_at_day" class="pr-6 pb-8 w-full lg:w-1/2" label="Kezdés (dátum)" type="date" timezone="Europe/Budapest" />
+          <text-input v-model="form.start_at_time" :errors="$page.errors.start_at_time" class="pr-6 pb-8 w-full lg:w-1/2" label="Kezdés (időpont)" type="time" timezone="Europe/Budapest" />
           <text-input v-model="form.length" :errors="$page.errors.length" class="pr-6 pb-8 w-full lg:w-1/2" label="Időtartam (perc)" type="number" />
           <text-input v-model="form.max_attendees" :errors="$page.errors.max_attendees" class="pr-6 pb-8 w-full lg:w-1/2" label="Max. létszám" type="number" />
         </div>
@@ -41,7 +42,8 @@ export default {
       form: {
         name: null,
         place: null,
-        start_at: null,
+        start_at_day: null,
+        start_at_time: null,
         length: null,
         attendees: null,
         max_attendees: null,
@@ -56,7 +58,8 @@ export default {
       data.append('name', this.form.name || '')
       data.append('nickname', this.form.nickname || '')
       data.append('place', this.form.place || '')
-      data.append('start_at', this.form.start_at || '')
+      data.append('start_at_day', this.form.start_at_day || '')
+      data.append('start_at_time', this.form.start_at_time || '')
       data.append('length', this.form.length || '')
       data.append('max_attendees', this.form.max_attendees || '')
 

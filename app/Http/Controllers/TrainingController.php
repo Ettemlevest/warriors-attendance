@@ -42,7 +42,8 @@ class TrainingController extends Controller
                 'id' => $training->id,
                 'name' => $training->name,
                 'place' => $training->place,
-                'start_at' => $training->start_at->format('Y-m-d H:i'),
+                'start_at_day' => $training->start_at->format('Y-m-d'),
+                'start_at_time' => $training->start_at->format('H:i'),
                 'diff' => $training->start_at->diffForHumans(),
                 'length' => $training->length,
                 'attendees' => $training->attendees,
@@ -59,13 +60,7 @@ class TrainingController extends Controller
 
     public function store(TrainingCreationRequest $request)
     {
-        Training::create($request->only([
-            'name',
-            'place',
-            'start_at',
-            'length',
-            'max_attendees',
-        ]));
+        Training::create($this->prepareDataForDB($request->all()));
 
         return Redirect::route('trainings')->with('success', 'Edzés sikeresen létrehozva.');
     }
@@ -81,7 +76,8 @@ class TrainingController extends Controller
                 'id' => $training->id,
                 'name' => $training->name,
                 'place' => $training->place,
-                'start_at' => $training->start_at->format('Y-m-d H:i:s'),
+                'start_at_day' => $training->start_at->format('Y-m-d'),
+                'start_at_time' => $training->start_at->format('H:i'),
                 'length' => $training->length,
                 'attendees' => $training->attendees,
                 'max_attendees' => $training->max_attendees,
@@ -91,7 +87,7 @@ class TrainingController extends Controller
 
     public function update(TrainingUpdateRequest $request, Training $training)
     {
-        $training->update($request->only(['name', 'place', 'start_at', 'length', 'max_attendees']));
+        $training->update($this->prepareDataForDB($request->all()));
 
         return Redirect::route('trainings.edit', $training)->with('success', 'Edzés sikeresen mentve.');
     }
@@ -123,5 +119,16 @@ class TrainingController extends Controller
         Auth::user()->trainings()->detach($training->id);
 
         return Redirect::back()->with('success', 'Sikeresen visszavontad a jelentkezésed.');
+    }
+
+    protected function prepareDataForDB(Array $inputs)
+    {
+        return [
+            'name' => $inputs['name'],
+            'place' => $inputs['place'],
+            'start_at' => $inputs['start_at_day'] .' '. $inputs['start_at_time'] .':00',
+            'length' => $inputs['length'],
+            'max_attendees' => $inputs['max_attendees'],
+        ];
     }
 }
