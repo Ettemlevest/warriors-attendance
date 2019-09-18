@@ -2,6 +2,14 @@
   <layout title="Trainings">
     <h1 class="mb-8 font-bold text-3xl">Edzések</h1>
     <div class="mb-6 flex justify-between items-center">
+      <search-filter v-model="form.search" class="w-full max-w-sm mr-4" @reset="reset">
+        <label class="block text-grey-darkest">Kezdés:</label>
+        <select v-model="form.start_at" class="mt-1 w-full form-select">
+          <option :value="null" />
+          <option :value="future">Jövőben</option>
+          <option :value="past">Múltban</option>
+        </select>
+      </search-filter>
       <inertia-link v-if="$page.auth.user.owner" class="btn-indigo" :href="route('trainings.create')">
         <span>Létrehozás</span>
       </inertia-link>
@@ -74,8 +82,7 @@ export default {
     return {
       form: {
         search: this.filters.search,
-        role: this.filters.role,
-        trashed: this.filters.trashed,
+        start_at: this.filters.start_at,
       },
     }
   },
