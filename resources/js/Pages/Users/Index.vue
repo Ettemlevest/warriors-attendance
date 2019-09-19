@@ -81,7 +81,7 @@ export default {
     SearchFilter,
   },
   props: {
-    users: Array,
+    users: Object,
     filters: Object,
   },
   data() {

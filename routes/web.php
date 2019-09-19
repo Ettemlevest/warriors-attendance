@@ -34,7 +34,7 @@ Route::put('users/{user}/restore')->name('users.restore')->uses('UsersController
 Route::get('/img/{path}', 'ImagesController@show')->where('path', '.*');
 
 // Trainings
-Route::get('trainings')->name('trainings')->uses('TrainingController@index')->middleware('auth');
+Route::get('trainings')->name('trainings')->uses('TrainingController@index')->middleware('remember', 'auth');
 Route::get('trainings/create')->name('trainings.create')->uses('TrainingController@create')->middleware('auth');
 Route::get('trainings/{training}/view')->name('trainings.view')->uses('TrainingController@view')->middleware('auth');
 Route::post('trainings')->name('trainings.store')->uses('TrainingController@store')->middleware('auth');

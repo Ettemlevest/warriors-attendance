@@ -6,8 +6,8 @@
         <label class="block text-grey-darkest">Kezdés:</label>
         <select v-model="form.start_at" class="mt-1 w-full form-select">
           <option :value="null" />
-          <option :value="future">Jövőben</option>
-          <option :value="past">Múltban</option>
+          <option value="future">Jövőben</option>
+          <option value="past">Múltban</option>
         </select>
       </search-filter>
       <inertia-link v-if="$page.auth.user.owner" class="btn-indigo" :href="route('trainings.create')">
@@ -75,7 +75,7 @@ export default {
     SearchFilter,
   },
   props: {
-    trainings: Array,
+    trainings: Object,
     filters: Object,
   },
   data() {
@@ -83,6 +83,7 @@ export default {
       form: {
         search: this.filters.search,
         start_at: this.filters.start_at,
+        role: this.filters.role,
       },
     }
   },

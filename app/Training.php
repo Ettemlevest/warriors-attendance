@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Carbon\Carbon;
+
 class Training extends Model
 {
     protected $dates = [
@@ -25,6 +27,12 @@ class Training extends Model
                 $query->where('name', 'like', '%'.$search.'%')
                     ->orWhere('place', 'like', '%'.$search.'%');
             });
+        })->when($filters['start_at'] ?? null, function ($query, $start_at) {
+            if ($start_at === 'future') {
+                $query->where('start_at', '>=', Carbon::now());
+            } elseif ($start_at === 'past') {
+                $query->where('start_at', '<=', Carbon::now());
+            }
         });
     }
 }
