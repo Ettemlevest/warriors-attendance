@@ -20,7 +20,7 @@
           </div>
           <div class="mb-4 text-grey-darker items-center flex lg:flex-1 xl:flex-1">
             <icon name="dashboard" class="flex w-5 h-5 fill-grey mr-2" />
-            <div class="text-lg italic">{{ training.start_at }}</div>
+            <div class="text-lg italic">{{ training.start_at_day+' '+training.start_at_time }}</div>
           </div>
           <div class="mb-4 text-grey-darker items-center flex lg:flex-1 xl:flex-1">
             <icon name="users" class="flex w-5 h-5 fill-grey mr-2" />
