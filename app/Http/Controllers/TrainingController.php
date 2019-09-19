@@ -20,6 +20,7 @@ class TrainingController extends Controller
             'filters' => Request::all('search', 'role', 'trashed'),
             'trainings' => Training::orderBy('start_at', 'desc')
                     ->filter(Request::only('search'))
+                    ->with('attendees')
                     ->paginate()
                     ->transform(function ($training) {
                         return [
@@ -29,7 +30,7 @@ class TrainingController extends Controller
                             'start_at' => $training->start_at->format('Y-m-d H:i'),
                             'diff' => $training->start_at->diffForHumans(),
                             'length' => $training->length,
-                            'attendees' => $training->attendees()->count(),
+                            'attendees' => $training->attendees->count(),
                             'max_attendees' => $training->max_attendees,
                         ];
                 }),
