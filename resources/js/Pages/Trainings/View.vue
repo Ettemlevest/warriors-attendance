@@ -43,6 +43,7 @@
         </tr>
         <tr v-for="attendee in training.attendees" :key="attendee.user_id" class="hover:bg-grey-lightest focus-within:bg-grey-lightest">
           <td class="border-t px-6 py-4 flex items-center">
+            <img v-if="attendee.photo" class="block w-8 h-8 rounded-full mr-2 -my-2" :src="attendee.photo">
             {{ attendee.name }}
           </td>
         </tr>

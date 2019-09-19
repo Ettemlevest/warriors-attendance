@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\TrainingAttendRequest;
 use App\Http\Requests\TrainingCreationRequest;
 use App\Http\Requests\TrainingDestroyRequest;
 use App\Http\Requests\TrainingUpdateRequest;
+use App\Http\Resources\UserResource;
 use App\Training;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -47,7 +47,7 @@ class TrainingController extends Controller
                 'start_at_time' => $training->start_at->format('H:i'),
                 'diff' => $training->start_at->diffForHumans(),
                 'length' => $training->length,
-                'attendees' => $training->attendees,
+                'attendees' => UserResource::collection($training->attendees),
                 'registered' => $training->attendees->contains(Auth::user()->id),
                 'max_attendees' => $training->max_attendees,
             ],
@@ -80,7 +80,7 @@ class TrainingController extends Controller
                 'start_at_day' => $training->start_at->format('Y-m-d'),
                 'start_at_time' => $training->start_at->format('H:i'),
                 'length' => $training->length,
-                'attendees' => $training->attendees,
+                'attendees' => UserResource::collection($training->attendees),
                 'max_attendees' => $training->max_attendees,
             ],
         ]);

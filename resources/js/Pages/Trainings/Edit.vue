@@ -24,13 +24,18 @@
       </form>
     </div>
     <div class="bg-white rounded shadow overflow-hidden max-w-lg mt-8">
-      <table class="w-full whitespace-no-wrap">
+      <table class="w-full">
         <tr class="text-left font-bold">
-          <th class="px-6 pt-6 pb-4">Jelentkezve</th>
+          <th class="px-6 pt-6 pb-4">Jelentkezve <span class="italic">({{ training.attendees.length }} fő)</span></th>
+          <th class="px-6 pt-6 pb-4">Időpont</th>
         </tr>
         <tr v-for="attendee in training.attendees" :key="attendee.user_id" class="hover:bg-grey-lightest focus-within:bg-grey-lightest">
           <td class="border-t px-6 py-4 flex items-center">
+            <img v-if="attendee.photo" class="block w-8 h-8 rounded-full mr-2 -my-2" :src="attendee.photo">
             {{ attendee.name }}
+          </td>
+          <td class="border-t">
+            {{ attendee.pivot.created_at }}
           </td>
         </tr>
         <tr v-if="training.attendees.length === 0">
