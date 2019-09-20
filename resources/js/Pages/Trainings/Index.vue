@@ -6,6 +6,8 @@
         <label class="block text-grey-darkest">Kezdés:</label>
         <select v-model="form.start_at" class="mt-1 w-full form-select">
           <option :value="null" />
+          <option value="next_seven_days">Következő 7 napban</option>
+          <option value="prev_seven_days">Előző 7 napban</option>
           <option value="future">Jövőben</option>
           <option value="past">Múltban</option>
         </select>

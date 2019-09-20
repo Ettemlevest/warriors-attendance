@@ -30,8 +30,32 @@ class Training extends Model
         })->when($filters['start_at'] ?? null, function ($query, $start_at) {
             if ($start_at === 'future') {
                 $query->where('start_at', '>=', Carbon::now());
-            } elseif ($start_at === 'past') {
+
+                return;
+            }
+
+            if ($start_at === 'past') {
                 $query->where('start_at', '<=', Carbon::now());
+
+                return;
+            }
+
+            if ($start_at === 'next_seven_days') {
+                $query->whereBetween('start_at', [
+                    Carbon::now(),
+                    Carbon::now()->addDays(7)
+                ]);
+
+                return ;
+            }
+
+            if ($start_at === 'prev_seven_days') {
+                $query->whereBetween('start_at', [
+                    Carbon::now()->addDays(-7),
+                    Carbon::now()
+                ]);
+
+                return;
             }
         });
     }
