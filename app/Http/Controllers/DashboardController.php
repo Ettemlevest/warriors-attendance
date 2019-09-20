@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Training;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -12,10 +13,11 @@ class DashboardController extends Controller
     public function __invoke()
     {
         return Inertia::render('Dashboard/Index', [
-            'trainings' => Training::whereDate('start_at', '>=', Carbon::today())
+            'trainings' => Training::where('start_at', '>=', Carbon::now())
                     ->orderBy('start_at', 'asc')
-                    ->get()
+                    ->with('attendees')
                     ->take(2)
+                    ->get()
                     ->transform(function ($training) {
                         return [
                             'id' => $training->id,
@@ -24,7 +26,7 @@ class DashboardController extends Controller
                             'start_at' => $training->start_at->format('Y-m-d H:i'),
                             'diff' => $training->start_at->diffForHumans(),
                             'length' => (int) $training->length,
-                            'attendees' => $training->attendees,
+                            'attendees' => UserResource::collection($training->attendees),
                             'registered' => $training->attendees->contains(Auth::user()->id),
                             'max_attendees' => (int) $training->max_attendees,
                         ];
