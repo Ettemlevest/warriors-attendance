@@ -15,7 +15,6 @@
       <form @submit.prevent="submit">
         <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
           <text-input v-model="form.name" :errors="$page.errors.name" class="pr-6 pb-8 w-full lg:w-1/2" label="Név" />
-          <text-input v-model="form.nickname" :errors="$page.errors.nickname" class="pr-6 pb-8 w-full lg:w-1/2" label="Becenév" />
           <text-input v-model="form.email" :errors="$page.errors.email" class="pr-6 pb-8 w-full lg:w-1/2" label="E-mail" />
           <text-input v-model="form.password" :errors="$page.errors.password" class="pr-6 pb-8 w-full lg:w-1/2" type="password" autocomplete="new-password" label="Jelszó" />
           <select-input v-if="$page.auth.user.owner" v-model="form.owner" :errors="$page.errors.owner" class="pr-6 pb-8 w-full lg:w-1/2" label="Edző">
@@ -23,6 +22,15 @@
             <option :value="false">Nem</option>
           </select-input>
           <file-input v-model="form.photo" :errors="$page.errors.photo" class="pr-6 pb-8 w-full lg:w-1/2" type="file" accept="image/*" label="Fénykép" />
+          <select-input v-model="form.size" :errors="$page.errors.size" class="pr-6 pb-8 w-full lg:w-1/2" label="Póló méret">
+            <option :value="null" />
+            <option value="S">S</option>
+            <option value="M">M</option>
+            <option value="L">L</option>
+            <option value="XL">XL</option>
+            <option value="XXL">XXL</option>
+          </select-input>
+          <text-input v-model="form.birth_date" :errors="$page.errors.birth_date" class="pr-6 pb-8 w-full lg:w-1/2" type="date" label="Szül. dátum" />
         </div>
         <div class="px-8 py-4 bg-grey-lightest border-t border-grey-lighter flex items-center">
           <button v-if="!user.deleted_at && $page.auth.user.id != this.user.id" class="text-red hover:underline" tabindex="-1" type="button" @click="destroy">Törlés</button>
@@ -59,11 +67,12 @@ export default {
       sending: false,
       form: {
         name: this.user.name,
-        nickname: this.user.nickname,
         email: this.user.email,
         password: this.user.password,
         owner: this.user.owner,
         photo: null,
+        size: this.user.size,
+        birth_date: this.user.birth_date,
       },
     }
   },
@@ -73,11 +82,12 @@ export default {
 
       var data = new FormData()
       data.append('name', this.form.name || '')
-      data.append('nickname', this.form.nickname || '')
       data.append('email', this.form.email || '')
       data.append('password', this.form.password || '')
       data.append('owner', this.form.owner ? '1' : '0')
       data.append('photo', this.form.photo || '')
+      data.append('size', this.form.size || '')
+      data.append('birth_date', this.form.birth_date || '')
       data.append('_method', 'put')
 
       this.$inertia.post(this.route('users.update', this.user.id), data)

@@ -31,11 +31,12 @@ class UserCreationRequest extends FormRequest
     {
         return [
             'name' => ['required', 'max:255'],
-            'nickname' => ['required', 'max:255'],
             'email' => ['required', 'max:255', 'email', Rule::unique('users')],
             'password' => ['nullable'],
             'owner' => ['required', 'boolean'],
             'photo' => ['nullable', 'image'],
+            'size' => ['nullable', 'string'],
+            'birth_date' => ['nullable', 'date_format:Y-m-d'],
         ];
     }
 }

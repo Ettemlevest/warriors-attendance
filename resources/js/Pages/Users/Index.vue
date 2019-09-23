@@ -24,7 +24,6 @@
       <table class="w-full whitespace-no-wrap">
         <tr class="text-left font-bold">
           <th class="px-6 pt-6 pb-4">Név</th>
-          <th class="px-6 pt-6 pb-4">Becenév</th>
           <th class="px-6 pt-6 pb-4">E-mail</th>
           <th class="px-6 pt-6 pb-4" colspan="2">Jogosultság</th>
         </tr>
@@ -34,11 +33,6 @@
               <img v-if="user.photo" class="block w-8 h-8 rounded-full mr-2 -my-2" :src="user.photo">
               {{ user.name }}
               <icon v-if="user.deleted_at" name="trash" class="flex-no-shrink w-3 h-3 fill-grey ml-2" />
-            </inertia-link>
-          </td>
-          <td class="border-t">
-            <inertia-link class="px-6 py-4 flex items-center focus:text-indigo" :href="route('users.edit', user.id)">
-              {{ user.nickname }}
             </inertia-link>
           </td>
           <td class="border-t">

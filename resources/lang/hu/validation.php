@@ -146,7 +146,6 @@ return [
 
     'attributes' => [
         'name'     => 'név',
-        'nickname' => 'becenév',
         'password' => 'jelszó',
         'place' => 'helyszín',
         'length' => 'időtartam',
@@ -156,5 +155,7 @@ return [
         'photo' => 'fénykép',
         'owner' => 'edző',
         'email' => 'e-mail',
+        'size' => 'póló méret',
+        'birth_day' => 'születési idő',
     ],
 ];

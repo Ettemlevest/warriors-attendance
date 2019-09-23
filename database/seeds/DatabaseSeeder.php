@@ -10,7 +10,6 @@ class DatabaseSeeder extends Seeder
     {
         factory(User::class)->create([
             'name' => 'John Doe',
-            'nickname' => 'Johnny',
             'email' => 'johndoe@example.com',
             'owner' => true,
         ]);

@@ -16,6 +16,10 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 {
     use SoftDeletes, Authenticatable, Authorizable;
 
+    protected $dates = [
+        'birth_date',
+    ];
+
     protected $casts = [
         'owner' => 'boolean',
     ];
@@ -55,7 +59,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         $query->when($filters['search'] ?? null, function ($query, $search) {
             $query->where(function ($query) use ($search) {
                 $query->where('name', 'like', '%'.$search.'%')
-                    ->orWhere('nickname', 'like', '%'.$search.'%')
                     ->orWhere('email', 'like', '%'.$search.'%');
             });
         })->when($filters['role'] ?? null, function ($query, $role) {
