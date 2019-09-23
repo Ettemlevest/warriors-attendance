@@ -29,6 +29,7 @@ class DashboardController extends Controller
                             'attendees' => UserResource::collection($training->attendees),
                             'registered' => $training->attendees->contains(Auth::user()->id),
                             'max_attendees' => (int) $training->max_attendees,
+                            'can_attend_more' => $training->can_attend_more,
                         ];
                 }),
         ]);

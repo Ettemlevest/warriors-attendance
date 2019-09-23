@@ -13,6 +13,7 @@
           <text-input v-model="form.start_at_time" :errors="$page.errors.start_at_time" class="pr-6 pb-8 w-full lg:w-1/2" label="Kezdés (időpont)" type="time" timezone="Europe/Budapest" />
           <text-input v-model="form.length" :errors="$page.errors.length" class="pr-6 pb-8 w-full lg:w-1/2" label="Időtartam (perc)" type="number" />
           <text-input v-model="form.max_attendees" :errors="$page.errors.max_attendees" class="pr-6 pb-8 w-full lg:w-1/2" label="Max. létszám" type="number" />
+          <checkbox-input v-model="form.can_attend_more" :errors="$page.errors.can_attend_more" class="pr-6 pb-8 w-full lg:w-1/2" label="Maximális létszám túlléphető" :checked="form.can_attend_more" />
         </div>
         <div class="px-8 py-4 bg-grey-lightest border-t border-grey-lighter flex justify-end items-center">
           <loading-button :loading="sending" class="btn-indigo" type="submit">Edzés mentése</loading-button>
@@ -27,6 +28,7 @@ import Layout from '@/Shared/Layout'
 import LoadingButton from '@/Shared/LoadingButton'
 import SelectInput from '@/Shared/SelectInput'
 import TextInput from '@/Shared/TextInput'
+import CheckboxInput from '@/Shared/CheckboxInput'
 
 export default {
   components: {
@@ -34,8 +36,9 @@ export default {
     LoadingButton,
     SelectInput,
     TextInput,
+    CheckboxInput,
   },
-  remember: 'form',
+  // remember: 'form',
   data() {
     return {
       sending: false,
@@ -44,9 +47,10 @@ export default {
         place: null,
         start_at_day: null,
         start_at_time: null,
-        length: null,
+        length: "60",
         attendees: null,
-        max_attendees: null,
+        max_attendees: "32",
+        can_attend_more: true,
       }
     }
   },
@@ -62,6 +66,7 @@ export default {
       data.append('start_at_time', this.form.start_at_time || '')
       data.append('length', this.form.length || '')
       data.append('max_attendees', this.form.max_attendees || '')
+      data.append('can_attend_more', this.form.can_attend_more || '')
 
       this.$inertia.post(this.route('trainings.store'), data)
         .then(() => this.sending = false)

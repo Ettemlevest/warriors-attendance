@@ -30,9 +30,12 @@
         <button v-if="!training.registered && training.attendees.length < training.max_attendees" class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded" @click="attend(training.id)">
           Jelentkezem
         </button>
-        <div v-if="!training.registered && training.attendees.length >= training.max_attendees" class="bg-red text-white font-bold py-2 px-4 rounded">Megtelt, már nem lehet jelentkezni!</div>
+        <div v-if="!training.registered && training.attendees.length >= training.max_attendees && !training.can_attend_more" class="bg-red text-white font-bold py-2 px-4 rounded">Megtelt, már nem lehet jelentkezni!</div>
         <button v-if="training.registered" class="bg-red hover:bg-red-dark text-white font-bold py-2 px-4 rounded" @click="withdraw(training.id)">
           Lemondás
+        </button>
+        <button v-if="!training.registered && training.attendees.length >= training.max_attendees && training.can_attend_more" class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded" @click="attend(training.id)">
+          Megtelt, mégis jelentkezem. Vállalom a 10 burpeet beugrásnak!
         </button>
       </div>
     </div>

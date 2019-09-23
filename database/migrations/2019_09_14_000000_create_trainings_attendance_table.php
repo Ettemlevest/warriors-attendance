@@ -19,6 +19,7 @@ class CreateTrainingsAttendanceTable extends Migration
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->primary(['training_id', 'user_id']);
+            $table->boolean('extra')->default(false);
             $table->timestamps();
         });
     }

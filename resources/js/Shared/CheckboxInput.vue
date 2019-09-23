@@ -1,7 +1,7 @@
 <template>
   <div>
     <label>
-      <input type="checkbox" :id="id" v-bind="$attrs" :class="{ error: errors.length }" :value="value" @input="$emit('input', $event.target.value)" />
+      <input type="checkbox" :id="id" v-bind="$attrs" :class="{ error: errors.length }" :value="value" @change="change" />
       {{ label }}
     </label>
     <div v-if="errors.length" class="form-error">{{ errors[0] }}</div>
@@ -30,14 +30,9 @@ export default {
     },
   },
   methods: {
-    focus() {
-      this.$refs.input.focus()
-    },
-    select() {
-      this.$refs.input.select()
-    },
-    setSelectionRange(start, end) {
-      this.$refs.input.setSelectionRange(start, end)
+    change() {
+      this.checked = !this.checked
+      this.$emit('input', this.checked)
     },
   },
 }

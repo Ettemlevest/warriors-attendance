@@ -13,11 +13,14 @@ class Training extends Model
     protected $casts = [
         'length' => 'integer',
         'max_attendees' => 'integer',
+        'can_attend_more' => 'boolean',
     ];
 
     public function attendees()
     {
-        return $this->belongsToMany(User::class, 'trainings_attendance')->withTimestamps();
+        return $this->belongsToMany(User::class, 'trainings_attendance')
+            ->withPivot('extra')
+            ->withTimestamps();
     }
 
     public function scopeFilter($query, array $filters)

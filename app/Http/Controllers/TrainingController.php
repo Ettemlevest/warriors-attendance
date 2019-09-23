@@ -32,6 +32,7 @@ class TrainingController extends Controller
                             'length' => $training->length,
                             'attendees' => $training->attendees->count(),
                             'max_attendees' => $training->max_attendees,
+                            'can_attend_more' => (boolean)$training->can_attend_more,
                         ];
                 }),
         ]);
@@ -51,6 +52,7 @@ class TrainingController extends Controller
                 'attendees' => UserResource::collection($training->attendees),
                 'registered' => $training->attendees->contains(Auth::user()->id),
                 'max_attendees' => $training->max_attendees,
+                'can_attend_more' => (boolean)$training->can_attend_more,
             ],
         ]);
     }
@@ -83,6 +85,7 @@ class TrainingController extends Controller
                 'length' => $training->length,
                 'attendees' => UserResource::collection($training->attendees),
                 'max_attendees' => $training->max_attendees,
+                'can_attend_more' => (boolean)$training->can_attend_more,
             ],
         ]);
     }
@@ -103,17 +106,29 @@ class TrainingController extends Controller
 
     public function attend(Training $training)
     {
+        $message = 'Sikeresen jelentkeztél az edzésre.';
+        $extra = false;
+
         if (Auth::user()->trainings->contains($training->id)) {
             return Redirect::back()->with('error', 'Már jelentkeztél az edzésre.');
         }
 
-        if ($training->attendees->count() >= $training->max_attendees) {
+        if (
+            $training->attendees->count() >= $training->max_attendees
+            &&
+            ! $training->can_attend_more
+        ) {
             return Redirect::back()->with('error', 'Már megtelt az edzés, nem lehet rá jelentkezni.');
         }
 
-        Auth::user()->trainings()->attach($training->id);
+        if ($training->can_attend_more && $training->attendees->count() >= $training->max_attendees) {
+            $extra = true;
+            $message .= ' Vállaltam a 10 burpeet beugrónak!';
+        }
 
-        return Redirect::back()->with('success', 'Sikeresen jelentkeztél az edzésre.');
+        Auth::user()->trainings()->attach($training->id, ['extra' => $extra]);
+
+        return Redirect::back()->with('success', $message);
     }
 
     public function withdraw(Training $training)
@@ -131,6 +146,7 @@ class TrainingController extends Controller
             'start_at' => $inputs['start_at_day'] .' '. $inputs['start_at_time'] .':00',
             'length' => $inputs['length'],
             'max_attendees' => $inputs['max_attendees'],
+            'can_attend_more' => $inputs['can_attend_more'] == 'true' ? 1 : 0,
         ];
     }
 }
