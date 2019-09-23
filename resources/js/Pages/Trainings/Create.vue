@@ -56,7 +56,6 @@ export default {
 
       var data = new FormData()
       data.append('name', this.form.name || '')
-      data.append('nickname', this.form.nickname || '')
       data.append('place', this.form.place || '')
       data.append('start_at_day', this.form.start_at_day || '')
       data.append('start_at_time', this.form.start_at_time || '')

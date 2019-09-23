@@ -8,7 +8,6 @@ use App\Http\Requests\UserRestoreRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\User;
 use Inertia\Inertia;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -30,7 +29,6 @@ class UsersController extends Controller
                     return [
                         'id' => $user->id,
                         'name' => $user->name,
-                        'nickname' => $user->nickname,
                         'email' => $user->email,
                         'owner' => $user->owner,
                         'photo' => $user->photoUrl(['w' => 40, 'h' => 40, 'fit' => 'crop']),
@@ -53,7 +51,6 @@ class UsersController extends Controller
     {
         User::create(array_merge($request->only([
             'name',
-            'nickname',
             'email',
             'password',
             'owner',
@@ -74,7 +71,6 @@ class UsersController extends Controller
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
-                'nickname' => $user->nickname,
                 'email' => $user->email,
                 'owner' => $user->owner,
                 'photo' => $user->photoUrl(['w' => 60, 'h' => 60, 'fit' => 'crop']),
@@ -85,7 +81,7 @@ class UsersController extends Controller
 
     public function update(UserUpdateRequest $request, User $user)
     {
-        $user->update($request->only('name', 'nickname', 'email', 'owner'));
+        $user->update($request->only('name', 'email', 'owner'));
 
         if ($request->file('photo')) {
             $user->update(['photo_path' => $request->file('photo')->store('users')]);

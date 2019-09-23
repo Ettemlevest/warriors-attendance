@@ -44,7 +44,6 @@ class AppServiceProvider extends ServiceProvider
                     'user' => Auth::user() ? [
                         'id' => Auth::user()->id,
                         'name' => Auth::user()->name,
-                        'nickname' => Auth::user()->nickname,
                         'email' => Auth::user()->email,
                         'owner' => Auth::user()->owner,
                         'photo' => Auth::user()->photoUrl(['w' => 40, 'h' => 40, 'fit' => 'crop']),

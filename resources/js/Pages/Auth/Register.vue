@@ -6,7 +6,6 @@
           <h1 class="text-center font-bold text-3xl">Regisztráció</h1>
           <div class="mx-auto mt-6 w-24 border-b-2" />
           <text-input v-model="form.name" :errors="$page.errors.name" class="mt-10" label="Név" type="text" autofocus />
-          <text-input v-model="form.nickname" :errors="$page.errors.nickname" class="mt-6" label="Becenév" type="text" />
           <text-input v-model="form.email" :errors="$page.errors.email" class="mt-6" label="E-mail" type="text" />
           <text-input v-model="form.password" :errors="$page.errors.password" class="mt-6" label="Jelszó" type="password" />
           <text-input v-model="form.password_confirmation" class="mt-6" label="Jelszó megerősítés" type="password" />
@@ -37,7 +36,6 @@ export default {
       sending: false,
       form: {
         name: null,
-        nickname: null,
         email: null,
         password: null,
         password_confirmation: null,
@@ -52,7 +50,6 @@ export default {
       this.sending = true
       this.$inertia.post(this.route('register'), {
         name: this.form.name,
-        nickname: this.form.nickname,
         email: this.form.email,
         password: this.form.password,
         password_confirmation: this.form.password_confirmation,

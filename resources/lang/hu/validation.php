@@ -146,7 +146,6 @@ return [
 
     'attributes' => [
         'name'     => 'név',
-        'nickname' => 'becenév',
         'password' => 'jelszó',
         'place' => 'helyszín',
         'length' => 'időtartam',

@@ -21,7 +21,7 @@
               <div class="flex items-center cursor-pointer select-none group">
                 <div class="text-grey-darkest group-hover:text-indigo-dark focus:text-indigo-dark mr-1 whitespace-no-wrap flex items-center">
                   <img v-if="$page.auth.user.photo" class="block w-8 h-8 rounded-full mr-2 -my-2" :src="$page.auth.user.photo">
-                  <span>{{ $page.auth.user.nickname }}</span>
+                  <span>{{ $page.auth.user.name }}</span>
                 </div>
                 <icon class="w-5 h-5 group-hover:fill-indigo-dark fill-grey-darkest focus:fill-indigo-dark" name="cheveron-down" />
               </div>

@@ -15,7 +15,6 @@
       <form @submit.prevent="submit">
         <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
           <text-input v-model="form.name" :errors="$page.errors.name" class="pr-6 pb-8 w-full lg:w-1/2" label="Név" />
-          <text-input v-model="form.nickname" :errors="$page.errors.nickname" class="pr-6 pb-8 w-full lg:w-1/2" label="Becenév" />
           <text-input v-model="form.email" :errors="$page.errors.email" class="pr-6 pb-8 w-full lg:w-1/2" label="E-mail" />
           <text-input v-model="form.password" :errors="$page.errors.password" class="pr-6 pb-8 w-full lg:w-1/2" type="password" autocomplete="new-password" label="Jelszó" />
           <select-input v-if="$page.auth.user.owner" v-model="form.owner" :errors="$page.errors.owner" class="pr-6 pb-8 w-full lg:w-1/2" label="Edző">
@@ -59,7 +58,6 @@ export default {
       sending: false,
       form: {
         name: this.user.name,
-        nickname: this.user.nickname,
         email: this.user.email,
         password: this.user.password,
         owner: this.user.owner,
@@ -73,7 +71,6 @@ export default {
 
       var data = new FormData()
       data.append('name', this.form.name || '')
-      data.append('nickname', this.form.nickname || '')
       data.append('email', this.form.email || '')
       data.append('password', this.form.password || '')
       data.append('owner', this.form.owner ? '1' : '0')
