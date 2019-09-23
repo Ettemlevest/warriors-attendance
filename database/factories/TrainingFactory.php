@@ -18,5 +18,6 @@ $factory->define(App\Training::class, function (Faker $faker) use ($examples) {
         'start_at' => $date.' '.$faker->randomElement($examples['times']),
         'length' => $faker->randomElement($examples['length']),
         'max_attendees' => $faker->numberBetween(10, 32),
+        'can_attend_more' => $faker->boolean(),
     ];
 });

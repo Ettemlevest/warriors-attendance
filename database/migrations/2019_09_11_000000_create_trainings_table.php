@@ -20,6 +20,7 @@ class CreateTrainingsTable extends Migration
             $table->datetime('start_at');
             $table->unsignedSmallInteger('length')->default(60);
             $table->unsignedSmallInteger('max_attendees');
+            $table->boolean('can_attend_more')->default(false);
             $table->timestamps();
         });
     }
