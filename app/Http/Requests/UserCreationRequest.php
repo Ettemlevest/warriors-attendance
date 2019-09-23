@@ -35,6 +35,8 @@ class UserCreationRequest extends FormRequest
             'password' => ['nullable'],
             'owner' => ['required', 'boolean'],
             'photo' => ['nullable', 'image'],
+            'size' => ['nullable', 'string'],
+            'birth_date' => ['nullable', 'date_format:Y-m-d'],
         ];
     }
 }

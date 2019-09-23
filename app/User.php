@@ -16,6 +16,10 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 {
     use SoftDeletes, Authenticatable, Authorizable;
 
+    protected $dates = [
+        'birth_date',
+    ];
+
     protected $casts = [
         'owner' => 'boolean',
     ];

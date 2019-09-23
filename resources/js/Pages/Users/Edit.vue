@@ -22,6 +22,15 @@
             <option :value="false">Nem</option>
           </select-input>
           <file-input v-model="form.photo" :errors="$page.errors.photo" class="pr-6 pb-8 w-full lg:w-1/2" type="file" accept="image/*" label="Fénykép" />
+          <select-input v-model="form.size" :errors="$page.errors.size" class="pr-6 pb-8 w-full lg:w-1/2" label="Póló méret">
+            <option :value="null" />
+            <option value="S">S</option>
+            <option value="M">M</option>
+            <option value="L">L</option>
+            <option value="XL">XL</option>
+            <option value="XXL">XXL</option>
+          </select-input>
+          <text-input v-model="form.birth_date" :errors="$page.errors.birth_date" class="pr-6 pb-8 w-full lg:w-1/2" type="date" label="Szül. dátum" />
         </div>
         <div class="px-8 py-4 bg-grey-lightest border-t border-grey-lighter flex items-center">
           <button v-if="!user.deleted_at && $page.auth.user.id != this.user.id" class="text-red hover:underline" tabindex="-1" type="button" @click="destroy">Törlés</button>
@@ -62,6 +71,8 @@ export default {
         password: this.user.password,
         owner: this.user.owner,
         photo: null,
+        size: this.user.size,
+        birth_date: this.user.birth_date,
       },
     }
   },
@@ -75,6 +86,8 @@ export default {
       data.append('password', this.form.password || '')
       data.append('owner', this.form.owner ? '1' : '0')
       data.append('photo', this.form.photo || '')
+      data.append('size', this.form.size || '')
+      data.append('birth_date', this.form.birth_date || '')
       data.append('_method', 'put')
 
       this.$inertia.post(this.route('users.update', this.user.id), data)

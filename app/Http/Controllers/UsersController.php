@@ -32,6 +32,8 @@ class UsersController extends Controller
                         'email' => $user->email,
                         'owner' => $user->owner,
                         'photo' => $user->photoUrl(['w' => 40, 'h' => 40, 'fit' => 'crop']),
+                        'size' => $user->size,
+                        'birth_date' => $user->birth_date ? $user->birth_date->format('Y-m-d') : null,
                         'deleted_at' => $user->deleted_at,
                     ];
                 }),
@@ -54,6 +56,8 @@ class UsersController extends Controller
             'email',
             'password',
             'owner',
+            'size',
+            'birth_date',
         ]), [
             'photo_path' => $request->file('photo') ? $request->file('photo')->store('users') : null,
         ]));
@@ -74,6 +78,8 @@ class UsersController extends Controller
                 'email' => $user->email,
                 'owner' => $user->owner,
                 'photo' => $user->photoUrl(['w' => 60, 'h' => 60, 'fit' => 'crop']),
+                'size' => $user->size,
+                'birth_date' => $user->birth_date ? $user->birth_date->format('Y-m-d') : null,
                 'deleted_at' => $user->deleted_at,
             ],
         ]);
@@ -81,7 +87,7 @@ class UsersController extends Controller
 
     public function update(UserUpdateRequest $request, User $user)
     {
-        $user->update($request->only('name', 'email', 'owner'));
+        $user->update($request->only('name', 'email', 'owner', 'size', 'birth_date'));
 
         if ($request->file('photo')) {
             $user->update(['photo_path' => $request->file('photo')->store('users')]);
