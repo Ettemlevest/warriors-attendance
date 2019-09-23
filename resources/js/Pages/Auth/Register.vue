@@ -11,7 +11,9 @@
           <text-input v-model="form.password_confirmation" class="mt-6" label="Jelszó megerősítés" type="password" />
         </div>
         <div class="px-10 py-4 bg-grey-lightest border-t border-grey-lighter flex justify-between items-center">
-          <inertia-link class="hover:underline" :href="route('login')">Bejelentkezés</inertia-link>
+          <inertia-link class="hover:underline hover:text-indigo focus-within:underline focus-within:text-indigo" :href="route('login')">
+            Bejelentkezés
+          </inertia-link>
           <loading-button :loading="sending" class="btn-indigo" type="submit">Regisztráció</loading-button>
         </div>
       </form>
