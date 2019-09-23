@@ -155,5 +155,7 @@ return [
         'photo' => 'fénykép',
         'owner' => 'edző',
         'email' => 'e-mail',
+        'size' => 'póló méret',
+        'birth_day' => 'születési idő',
     ],
 ];
