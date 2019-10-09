@@ -31,13 +31,12 @@
           <th class="px-6 pt-6 pb-4">Időpont</th>
         </tr>
         <tr v-for="attendee in training.attendees" :key="attendee.user_id" class="hover:bg-grey-lightest focus-within:bg-grey-lightest">
-          <td class="border-t px-6 py-4 flex items-center">
+          <td :class="{ 'italic': attendee.pivot.extra === '1', 'text-red-dark': attendee.pivot.extra === '1' }" class="border-t px-6 py-4 flex items-center">
             <img v-if="attendee.photo" class="block w-8 h-8 rounded-full mr-2 -my-2" :src="attendee.photo">
             {{ attendee.name }}
             <icon v-if="attendee.pivot.extra === '1'" name="users" class="flex-no-shrink w-3 h-3 fill-grey ml-4" />
-            <!-- <span v-if="attendee.pivot.extra === '1'" class="italic text-sm">+10 burpee</span> -->
           </td>
-          <td class="border-t">
+          <td :class="{ 'italic': attendee.pivot.extra === '1', 'text-red-dark': attendee.pivot.extra === '1' }" class="border-t">
             {{ attendee.pivot.created_at }}
           </td>
         </tr>
