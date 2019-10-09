@@ -1,5 +1,5 @@
 <template>
-  <layout :title="`${form.name}`">
+  <layout>
     <div class="mb-8 flex justify-start max-w-lg">
       <h1 class="font-bold text-3xl">
         <inertia-link class="text-indigo-light hover:text-indigo-dark" :href="route('users')">Warriorok</inertia-link>
@@ -50,6 +50,9 @@ import FileInput from '@/Shared/FileInput'
 import TrashedMessage from '@/Shared/TrashedMessage'
 
 export default {
+  metaInfo() {
+    return { title: this.form.name }
+  },
   components: {
     Layout,
     LoadingButton,

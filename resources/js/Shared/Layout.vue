@@ -2,7 +2,7 @@
   <div>
     <portal-target name="dropdown" slim />
     <div class="flex flex-col">
-      <div class="min-h-screen flex flex-col" @click="hideDropdownMenus">
+      <div class="h-screen flex flex-col" @click="hideDropdownMenus">
         <div class="md:flex">
           <div class="bg-indigo-darkest md:flex-no-shrink md:w-56 px-6 py-4 flex items-center justify-between md:justify-center">
             <inertia-link class="mt-1" href="/">
@@ -10,8 +10,10 @@
             </inertia-link>
             <dropdown class="md:hidden" placement="bottom-end">
               <svg class="fill-white w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" /></svg>
-              <div slot="dropdown" class="mt-2 px-8 py-4 shadow-lg bg-indigo-darker rounded">
-                <main-menu />
+              <div class="flex flex-grow overflow-hidden">
+                <main-menu class="bg-indigo-darker flex-no-shrink w-56 p-12 hidden md:block overflow-y-auto" />
+                <flash-messages />
+                <slot />
               </div>
             </dropdown>
           </div>
@@ -62,22 +64,11 @@ export default {
     Logo,
     MainMenu,
   },
-  props: {
-    title: String,
-  },
   data() {
     return {
       showUserMenu: false,
     //   accounts: null,
     }
-  },
-  watch: {
-    title: {
-      immediate: true,
-      handler(title) {
-        document.title = title ? `${title} | Kiskunlacháza Warriors` : 'Kiskunlacháza Warriors'
-      },
-    },
   },
   methods: {
     hideDropdownMenus() {

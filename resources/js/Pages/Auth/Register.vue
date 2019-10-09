@@ -26,6 +26,7 @@ import LoadingButton from '@/Shared/LoadingButton'
 import TextInput from '@/Shared/TextInput'
 
 export default {
+  metaInfo: { title: 'Regisztráció' },
   components: {
     LoadingButton,
     TextInput,
@@ -43,9 +44,6 @@ export default {
         password_confirmation: null,
       },
     }
-  },
-  mounted() {
-    document.title = 'Regisztráció | Kiskunlacháza Warriors'
   },
   methods: {
     submit() {

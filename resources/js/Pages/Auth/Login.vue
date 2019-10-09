@@ -30,6 +30,7 @@ import Logo from '@/Shared/Logo'
 import TextInput from '@/Shared/TextInput'
 
 export default {
+  metaInfo: { title: 'Bejelentkezés' },
   components: {
     LoadingButton,
     Logo,
@@ -44,12 +45,9 @@ export default {
       form: {
         email: null,
         password: null,
-        remember: null,
+        remember: true,
       },
     }
-  },
-  mounted() {
-    document.title = 'Bejelentkezés | Kiskunlacháza Warriors'
   },
   methods: {
     submit() {

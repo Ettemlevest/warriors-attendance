@@ -1,5 +1,5 @@
 <template>
-  <layout title="Edzés hozzáadása">
+  <layout>
     <h1 class="mb-8 font-bold text-3xl">
       <inertia-link class="text-indigo-light hover:text-indigo-dark" :href="route('trainings')">Edzések</inertia-link>
       <span class="text-indigo-light font-medium">/</span> Létrehozás
@@ -31,6 +31,7 @@ import TextInput from '@/Shared/TextInput'
 import CheckboxInput from '@/Shared/CheckboxInput'
 
 export default {
+  metaInfo: { title: 'Edzés hozzáadása' },
   components: {
     Layout,
     LoadingButton,

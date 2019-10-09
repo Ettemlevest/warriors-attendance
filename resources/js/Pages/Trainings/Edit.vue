@@ -1,5 +1,5 @@
 <template>
-  <layout :title="`${form.name}`">
+  <layout>
     <div class="mb-8 flex justify-start max-w-lg">
       <h1 class="font-bold text-3xl">
         <inertia-link class="text-indigo-light hover:text-indigo-dark" :href="route('trainings')">Edzések</inertia-link>
@@ -58,6 +58,9 @@ import CheckboxInput from '@/Shared/CheckboxInput'
 import Icon from '@/Shared/Icon'
 
 export default {
+  metaInfo() {
+    return { title: this.form.name }
+  },
   components: {
     Layout,
     LoadingButton,

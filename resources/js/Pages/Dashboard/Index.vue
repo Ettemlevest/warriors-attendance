@@ -1,6 +1,6 @@
 <template>
-  <layout title="Dashboard">
-    <h1 class="mb-8 font-bold text-3xl">Kezdőlap</h1>
+  <layout>
+    <h1 class="mb-8 font-bold text-3xl">Üdvözlünk!</h1>
     <p class="mb-12 leading-normal">Szia Warrior! Itt jelentkezhetsz a következő edzésekre.</p>
 
     <h2 class="mb-8 font-bold text-xl">Közelgő edzések</h2>
@@ -46,6 +46,7 @@ import Layout from '@/Shared/Layout'
 import Icon from '@/Shared/Icon'
 
 export default {
+  metaInfo: { title: 'Kezdőlap' },
   components: {
     Icon,
     Layout,

@@ -1,5 +1,5 @@
 <template>
-  <layout title="Warrior hozzáadása">
+  <layout>
     <h1 class="mb-8 font-bold text-3xl">
       <inertia-link class="text-indigo-light hover:text-indigo-dark" :href="route('users')">Warriorok</inertia-link>
       <span class="text-indigo-light font-medium">/</span> Létrehozás
@@ -42,6 +42,7 @@ import TextInput from '@/Shared/TextInput'
 import FileInput from '@/Shared/FileInput'
 
 export default {
+  metaInfo: { title: 'Warrior hozzáadása' },
   components: {
     Layout,
     LoadingButton,
