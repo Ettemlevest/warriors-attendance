@@ -10,14 +10,14 @@ $examples = [
 ];
 
 $factory->define(App\Training::class, function (Faker $faker) use ($examples) {
-    $date = $faker->dateTimeBetween('now', '+7 days')->format('Y-m-d');
+    $date = $faker->dateTimeBetween('-7 days', '+30 days')->format('Y-m-d');
 
     return [
         'name' => $faker->randomElement($examples['names']),
         'place' => $faker->randomElement($examples['places']),
         'start_at' => $date.' '.$faker->randomElement($examples['times']),
         'length' => $faker->randomElement($examples['length']),
-        'max_attendees' => $faker->numberBetween(10, 32),
+        'max_attendees' => $faker->numberBetween(2, 15),
         'can_attend_more' => $faker->boolean(),
     ];
 });
