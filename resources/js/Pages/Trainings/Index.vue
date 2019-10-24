@@ -45,6 +45,7 @@
           <td class="border-t">
             <inertia-link class="px-6 py-4 flex items-center" :href="route($page.auth.user.owner ? 'trainings.edit' : 'trainings.view', training.id)" tabindex="-1">
               {{ training.attendees }} / {{ training.max_attendees }}
+              <icon v-show="training.attendees > training.max_attendees" name="exclamation" class="block w-6 h-6 fill-red ml-2" />
             </inertia-link>
           </td>
           <td class="border-t w-px">
