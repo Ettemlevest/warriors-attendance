@@ -5,7 +5,7 @@ namespace App;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
-class Training extends Model
+final class Training extends Model
 {
     protected $dates = [
         'start_at',

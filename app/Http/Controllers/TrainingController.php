@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 
-class TrainingController extends Controller
+final class TrainingController extends Controller
 {
     public function index()
     {

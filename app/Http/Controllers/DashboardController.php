@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
-class DashboardController extends Controller
+final class DashboardController extends Controller
 {
     public function __invoke()
     {

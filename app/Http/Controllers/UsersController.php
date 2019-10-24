@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
 
-class UsersController extends Controller
+final class UsersController extends Controller
 {
     public function index()
     {
