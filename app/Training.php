@@ -3,6 +3,7 @@
 namespace App;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class Training extends Model
 {
@@ -59,6 +60,16 @@ class Training extends Model
                 ]);
 
                 return;
+            }
+        })->when($filters['attendance'] ?? null, function ($query, $attendance) {
+            if (in_array($attendance, ['attended', 'not_attended'])) {
+                $query->whereIn('id', function ($q) use ($attendance) {
+                    $operator = $attendance === 'attended' ? '=' : '<>';
+
+                    $q->select('training_id')
+                        ->from('trainings_attendance')
+                        ->where('user_id', $operator, Auth::user()->id);
+                });
             }
         });
     }

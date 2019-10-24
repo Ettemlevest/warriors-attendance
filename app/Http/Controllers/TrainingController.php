@@ -17,9 +17,9 @@ class TrainingController extends Controller
     public function index()
     {
         return Inertia::render('Trainings/Index', [
-            'filters' => Request::all('search', 'start_at'),
+            'filters' => Request::all('search', 'start_at', 'attendance'),
             'trainings' => Training::orderBy('start_at', 'desc')
-                    ->filter(Request::all('search', 'start_at'))
+                    ->filter(Request::all('search', 'start_at', 'attendance'))
                     ->with('attendees')
                     ->paginate()
                     ->transform(function ($training) {

@@ -11,6 +11,12 @@
           <option value="future">Jövőben</option>
           <option value="past">Múltban</option>
         </select>
+        <label class="mt-4 block text-grey-darkest">Jelentkezés:</label>
+        <select v-model="form.attendance" class="mt-1 w-full form-select">
+          <option :value="null" />
+          <option value="attended">Jelentkeztem</option>
+          <option value="not_attended">Még nem jelentkeztem</option>
+        </select>
       </search-filter>
       <inertia-link v-if="$page.auth.user.owner" class="btn-indigo" :href="route('trainings.create')">
         <span>Létrehozás</span>
@@ -81,13 +87,14 @@ export default {
   props: {
     trainings: Object,
     filters: Object,
+    total: Number,
   },
   data() {
     return {
       form: {
         search: this.filters.search,
         start_at: this.filters.start_at,
-        role: this.filters.role,
+        attendance: this.filters.attendance,
       },
     }
   },
