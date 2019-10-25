@@ -11,6 +11,7 @@
 |
 */
 
+use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
@@ -50,3 +51,10 @@ Route::put('trainings/{training}', [TrainingController::class, 'update'])->name(
 Route::delete('trainings/{training}', [TrainingController::class, 'destroy'])->name('trainings.destroy')->middleware('auth');
 Route::post('trainings/{training}/attend', [TrainingController::class, 'attend'])->name('trainings.attend')->middleware('auth');
 Route::delete('trainings/{training}/withdraw', [TrainingController::class, 'withdraw'])->name('trainings.withdraw')->middleware('auth');
+
+// Photo albums
+Route::get('albums', [AlbumController::class, 'index'])->name('albums')->middleware('auth');
+Route::get('albums/create', [AlbumController::class, 'create'])->name('albums.create')->middleware('auth');
+Route::post('albums', [AlbumController::class, 'store'])->name('albums.store')->middleware('auth');
+Route::get('albums/{album}/view', [AlbumController::class, 'view'])->name('albums.view')->middleware('auth');
+Route::get('albums/{album}/edit', [AlbumController::class, 'edit'])->name('albums.edit')->middleware('auth');

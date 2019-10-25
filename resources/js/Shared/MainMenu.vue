@@ -13,6 +13,12 @@
       </inertia-link>
     </div>
     <div class="mb-4">
+      <inertia-link class="flex items-center group py-3" :href="route('albums')">
+        <icon name="office" class="w-4 h-4 mr-2" :class="isUrl('albums') ? 'fill-white' : 'fill-indigo-light group-hover:fill-white'" />
+        <div :class="isUrl('albums') ? 'text-white' : 'text-indigo-lighter group-hover:text-white'">Képek</div>
+      </inertia-link>
+    </div>
+    <div class="mb-4">
       <inertia-link class="flex items-center group py-3 ml-6" :href="route('logout')" method="post">
         <div class="text-indigo-lighter group-hover:text-white">Kilépés</div>
       </inertia-link>
