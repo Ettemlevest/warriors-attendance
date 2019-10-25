@@ -87,15 +87,15 @@ final class UsersController extends Controller
 
     public function update(UserUpdateRequest $request, User $user)
     {
-        $user->update($request->only('name', 'email', 'owner', 'size', 'birth_date'));
-
         if ($request->file('photo')) {
-            $user->update(['photo_path' => $request->file('photo')->store('users')]);
+            $user->photo_path = $request->file('photo')->store('users');
         }
 
         if ($request->get('password')) {
-            $user->update(['password' => $request->get('password')]);
+            $user->password = $request->get('password');
         }
+
+        $user->update($request->only('name', 'email', 'owner', 'size', 'birth_date'));
 
         return Redirect::route('users.edit', $user)->with('success', 'Warrior sikeresen frissítve.');
     }
