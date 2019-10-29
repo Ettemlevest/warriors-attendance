@@ -39,7 +39,7 @@ final class User extends Model implements AuthenticatableContract, AuthorizableC
             return null;
         }
 
-        return $this->attributes['birth_date']->age;
+        return $this->birth_date->age;
     }
 
     public function setPasswordAttribute($password)
