@@ -21,5 +21,9 @@ $factory->define(App\User::class, function (Faker $faker) {
         'password' => 'secret',
         'remember_token' => Str::random(10),
         'owner' => false,
+        'size' => $faker->boolean === true ? $faker->randomElement(['S', 'M', 'L', 'XL', 'XXL']) : null,
+        'birth_date' => $faker->boolean === true ? $faker->dateTimeThisCentury->format('Y-m-d') : null,
+        'address' => $faker->boolean === true ? $faker->address : null,
+        'phone' => $faker->boolean === true ? $faker->phoneNumber : null,
     ];
 });
