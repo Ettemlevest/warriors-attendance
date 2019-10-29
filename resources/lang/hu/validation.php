@@ -157,5 +157,7 @@ return [
         'email' => 'e-mail',
         'size' => 'póló méret',
         'birth_day' => 'születési idő',
+        'address' => 'lakcím',
+        'phone' => 'telefonszám',
     ],
 ];
