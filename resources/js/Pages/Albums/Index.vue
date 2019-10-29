@@ -10,17 +10,24 @@
       <div class="flex flex-row flex-wrap -mx-2">
         <div v-for="album in albums" :key="album.id" class="w-full sm:w-1/2 md:w-1/2 lg:w-1/4 mb-4 px-2">
           <div class="relative bg-white rounded border">
-            <picture class="block bg-grey-dark border-b">
-              <img class="block" src="https://via.placeholder.com/800x600/EDF2F7/E2E8F0/&amp;text=Album" alt="Card 1">
-            </picture>
+            <inertia-link :href="route($page.auth.user.owner ? 'albums.edit' : 'albums.view', album.id)">
+              <picture class="block bg-grey-dark border-b">
+                <img class="block" src="https://via.placeholder.com/800x600/EDF2F7/E2E8F0/&amp;text=Album" :alt="album.name">
+              </picture>
+            </inertia-link>
             <div class="p-4">
-              <h3 class="text-lg font-bold">
-                Card 1 {{ album.name }}
-              </h3>
-              <time class="block mb-2 text-sm text-grey-dark" datetime="2019-01-01">1st January 2019</time>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              <inertia-link :href="route($page.auth.user.owner ? 'albums.edit' : 'albums.view', album.id)">
+                <h3 class="text-lg font-bold">{{ album.name }}</h3>
+              </inertia-link>
+              <p class="mt-2">
+                <icon name="location" class="w-3 h-3 fill-grey mr-2" />
+                <span class="text-sm text-grey-dark">{{ album.place }}</span>
               </p>
+              <p class="mt-2">
+                <icon name="dashboard" class="w-3 h-3 fill-grey mr-2" />
+                <time class="mt-2 mb-2 text-sm text-grey-dark" :datetime="album.date_from">{{ album.date_from }}</time>
+              </p>
+              <p class="mt-2">{{ album.description }}</p>
             </div>
           </div>
         </div>
