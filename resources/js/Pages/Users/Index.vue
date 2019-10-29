@@ -25,6 +25,7 @@
         <tr class="text-left font-bold">
           <th class="px-6 pt-6 pb-4">Név</th>
           <th class="px-6 pt-6 pb-4">E-mail</th>
+          <th class="px-6 pt-6 pb-4">Életkor</th>
           <th class="px-6 pt-6 pb-4" colspan="2">Jogosultság</th>
         </tr>
         <tr v-for="user in users.data" :key="user.id" class="hover:bg-grey-lightest focus-within:bg-grey-lightest">
@@ -38,6 +39,12 @@
           <td class="border-t">
             <inertia-link class="px-6 py-4 flex items-center" :href="route('users.edit', user.id)" tabindex="-1">
               {{ user.email }}
+            </inertia-link>
+          </td>
+          <td class="border-t w-px">
+            <inertia-link class="px-4 text-center" :href="route('users.edit', user.id)" tabindex="-1">
+              <span v-if="user.age">{{ user.age }} év</span>
+              <span v-else>--</span>
             </inertia-link>
           </td>
           <td class="border-t">

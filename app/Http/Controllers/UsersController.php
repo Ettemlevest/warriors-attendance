@@ -31,6 +31,7 @@ final class UsersController extends Controller
                         'name' => $user->name,
                         'email' => $user->email,
                         'owner' => $user->owner,
+                        'age' => $user->age,
                         'photo' => $user->photoUrl(['w' => 40, 'h' => 40, 'fit' => 'crop']),
                         'deleted_at' => $user->deleted_at,
                     ];
