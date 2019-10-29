@@ -15,6 +15,7 @@
             <option :value="true">Igen</option>
             <option :value="false">Nem</option>
           </select-input>
+          <h3 class="w-full mb-4">Hasznos adatok</h3>
           <file-input v-model="form.photo" :errors="$page.errors.photo" class="pr-6 pb-8 w-full lg:w-1/2" type="file" accept="image/*" label="Fénykép" />
           <select-input v-model="form.size" :errors="$page.errors.size" class="pr-6 pb-8 w-full lg:w-1/2" label="Póló méret">
             <option :value="null" />
@@ -25,6 +26,8 @@
             <option value="XXL">XXL</option>
           </select-input>
           <text-input v-model="form.birth_date" :errors="$page.errors.birth_date" class="pr-6 pb-8 w-full lg:w-1/2" type="date" label="Szül. dátum" />
+          <text-input v-model="form.phone" :errors="$page.errors.phone" class="pr-6 pb-8 w-full lg:w-1/2" label="Telefonszám" />
+          <text-input v-model="form.address" :errors="$page.errors.address" class="pr-6 pb-8 w-full" label="Lakcím" />
         </div>
         <div class="px-8 py-4 bg-grey-lightest border-t border-grey-lighter flex justify-end items-center">
           <loading-button :loading="sending" class="btn-indigo" type="submit">Warrior mentése</loading-button>
@@ -62,6 +65,8 @@ export default {
         photo: null,
         size: null,
         birth_date: null,
+        phone: null,
+        address: null,
       },
     }
   },
@@ -77,6 +82,8 @@ export default {
       data.append('photo', this.form.photo || '')
       data.append('size', this.form.size || '')
       data.append('birth_date', this.form.birth_date || '')
+      data.append('phone', this.form.phone || '')
+      data.append('address', this.form.address || '')
 
       this.$inertia.post(this.route('users.store'), data)
         .then(() => this.sending = false)
