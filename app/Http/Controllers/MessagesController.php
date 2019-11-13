@@ -54,8 +54,8 @@ class MessagesController extends Controller
                 'id' => $message->id,
                 'title' => $message->title,
                 'body' => $message->body,
-                'showed_from' => $message->showed_from,
-                'showed_to' => $message->showed_to,
+                'showed_from' => $message->showed_from ? $message->showed_from->format('Y-m-d') : null,
+                'showed_to' => $message->showed_to ? $message->showed_to->format('Y-m-d') : null,
             ],
         ]);
     }
