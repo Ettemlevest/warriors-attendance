@@ -12,7 +12,7 @@
         <div :class="isUrl('trainings') ? 'text-white' : 'text-indigo-lighter group-hover:text-white'">Edzések</div>
       </inertia-link>
     </div>
-    <div class="mb-4" :v-if="$page.auth.user.owner">
+    <div class="mb-4" v-if="$page.auth.user.owner">
       <inertia-link class="flex items-center group py-3" :href="route('messages')">
         <icon name="chat-bubble-dots" class="w-4 h-4 mr-2" :class="isUrl('messages') ? 'fill-white' : 'fill-indigo-light group-hover:fill-white'" />
         <div :class="isUrl('messages') ? 'text-white' : 'text-indigo-lighter group-hover:text-white'">Üzenetek</div>
