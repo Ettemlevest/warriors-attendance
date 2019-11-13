@@ -95,10 +95,6 @@ final class AlbumController extends Controller
 
     public function destroy(AlbumDestroyRequest $request, Album $album)
     {
-        // Storage::delete($album->photos->map(function ($photo) {
-        //     return $photo->path;
-        // })->toArray());
-
         Storage::deleteDirectory('album_'.$album->id);
 
         $album->delete();
