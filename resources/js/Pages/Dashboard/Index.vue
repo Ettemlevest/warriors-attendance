@@ -3,6 +3,16 @@
     <h1 class="mb-8 font-bold text-3xl">Üdvözlünk!</h1>
     <p class="mb-12 leading-normal">Szia Warrior! Itt jelentkezhetsz a következő edzésekre.</p>
 
+    <div v-if="this.message" class="mb-8 flex items-center justify-between bg-blue rounded max-w">
+      <div class="flex items-center">
+        <icon name="notifications" class="ml-8 mr-4 flex-no-shrink w-8 h-8 fill-white" />
+        <div class="py-4 text-white text-sm font-medium">
+          <p class="font-bold text-xl mb-2">{{ this.message.title }}</p>
+          {{ this.message.body }}
+        </div>
+      </div>
+    </div>
+
     <h2 class="mb-8 font-bold text-xl">Közelgő edzések</h2>
     <p v-if="trainings.length === 0" class="mb-12 leading-normal">Egyelőre nincs felvéve új edzés. Nézz vissza később 😊</p>
     <div v-for="training in trainings" :key="training.id" class="overflow-x-auto block lg:flex-wrap xl:flex-wrap">
@@ -52,6 +62,7 @@ export default {
     Layout,
   },
   props: {
+    message: Object,
     trainings: Array,
   },
   methods: {
