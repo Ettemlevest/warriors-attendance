@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\MessageDestroyRequest;
-use App\Http\Requests\MessagesCreationRequest;
-use App\Http\Requests\MessagesUpdateRequest;
 use App\Message;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Redirect;
+use App\Http\Requests\MessageDestroyRequest;
+use App\Http\Requests\MessagesUpdateRequest;
+use App\Http\Requests\MessagesCreationRequest;
 
 class MessagesController extends Controller
 {
