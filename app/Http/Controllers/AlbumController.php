@@ -47,6 +47,27 @@ final class AlbumController extends Controller
         return Redirect::route('albums.edit', $album)->with('success', 'Album sikeresen létrehozva.');
     }
 
+    public function view(Album $album)
+    {
+        return Inertia::render('Albums/View', [
+            'album' => [
+                'id' => $album->id,
+                'name' => $album->name,
+                'description' => $album->description,
+                'place' => $album->place,
+                'date_from' => $album->date_from->format('Y-m-d'),
+                'date_to' => $album->date_to->format('Y-m-d'),
+                'photos' => $album->photos->transform(function ($photo) {
+                    return [
+                        'id' => $photo->id,
+                        'path' => $photo->photoUrl(['w' => 400, 'fit' => 'stretch']),
+                        'original_path' => $photo->photoUrl(['fit' => 'contain']),
+                    ];
+                }),
+            ],
+        ]);
+    }
+
     public function edit(Album $album)
     {
         if (! Auth::user()->owner) {
