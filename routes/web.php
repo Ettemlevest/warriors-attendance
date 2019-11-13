@@ -17,6 +17,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\MessagesController;
+use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\UsersController;
 
@@ -59,6 +60,9 @@ Route::get('albums/create', [AlbumController::class, 'create'])->name('albums.cr
 Route::post('albums', [AlbumController::class, 'store'])->name('albums.store')->middleware('auth');
 Route::get('albums/{album}/view', [AlbumController::class, 'view'])->name('albums.view')->middleware('auth');
 Route::get('albums/{album}/edit', [AlbumController::class, 'edit'])->name('albums.edit')->middleware('auth');
+Route::put('albums/{album}', [AlbumController::class, 'update'])->name('albums.update')->middleware('auth');
+Route::delete('albums/{album}', [AlbumController::class, 'destroy'])->name('albums.destroy')->middleware('auth');
+Route::delete('photos/{photo}', [PhotoController::class, 'destroy'])->name('photos.destroy')->middleware('auth');
 
 // Messages
 Route::get('messages', [MessagesController::class, 'index'])->name('messages')->middleware('remember', 'auth');

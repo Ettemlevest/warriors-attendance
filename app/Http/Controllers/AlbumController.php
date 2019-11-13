@@ -4,8 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Album;
 use App\Http\Requests\AlbumCreationRequest;
+use App\Http\Requests\AlbumDestroyRequest;
+use App\Http\Requests\AlbumUpdateRequest;
+use App\Photo;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 final class AlbumController extends Controller
@@ -47,6 +52,8 @@ final class AlbumController extends Controller
             return Redirect::route('albums');
         }
 
+
+
         return Inertia::render('Albums/Edit', [
             'album' => [
                 'id' => $album->id,
@@ -55,8 +62,47 @@ final class AlbumController extends Controller
                 'place' => $album->place,
                 'date_from' => $album->date_from->format('Y-m-d'),
                 'date_to' => $album->date_to->format('Y-m-d'),
-                'photos' => [],
+                'photos' => $album->photos->transform(function ($photo) {
+                    return [
+                        'id' => $photo->id,
+                        'path' => $photo->photoUrl(['w' => 200, 'fit' => 'strech'])
+                    ];
+                }),
             ],
         ]);
+    }
+
+    public function update(AlbumUpdateRequest $request, Album $album)
+    {
+        $album->update($request->only([
+            'name',
+            'description',
+            'place',
+            'date_from',
+            'date_to',
+        ]));
+
+        foreach($request->file('photos') as $file) {
+            $path = $file->store('album_'.$album->id);
+
+            $album->photos()->create([
+                'path' => $path,
+            ]);
+        }
+
+        return Redirect::route('albums.edit', $album)->with('success', 'Album sikeresen frissítve.');
+    }
+
+    public function destroy(AlbumDestroyRequest $request, Album $album)
+    {
+        // Storage::delete($album->photos->map(function ($photo) {
+        //     return $photo->path;
+        // })->toArray());
+
+        Storage::deleteDirectory('album_'.$album->id);
+
+        $album->delete();
+
+        return Redirect::route('albums')->with('success', 'Album sikeresen törölve.');
     }
 }
