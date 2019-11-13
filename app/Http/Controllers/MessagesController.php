@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MessagesCreationRequest;
+use App\Http\Requests\MessagesUpdateRequest;
 use App\Message;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Request;
 
@@ -24,5 +28,58 @@ class MessagesController extends Controller
                     ];
                 }),
         ]);
+    }
+
+    public function create()
+    {
+        return Inertia::render('Messages/Create');
+    }
+
+    public function store(MessagesCreationRequest $request)
+    {
+        Message::create($this->prepareDataForDB($request->all()));
+
+        return Redirect::route('messages')->with('success', 'Üzenet sikeresen létrehozva.');
+    }
+
+    public function edit(Message $message)
+    {
+        if (! Auth::user()->owner) {
+            return Redirect::route('dashboard');
+        }
+
+        return Inertia::render('Message/Edit', [
+            'messsage' => [
+                'id' => $message->id,
+                'title' => $message->title,
+                'body' => $message->body,
+                'showed_from' => $message->showed_from,
+                'showed_to' => $message->showed_to,
+            ],
+        ]);
+    }
+
+    public function update(MessagesUpdateRequest $request, Message $message)
+    {
+        $message->update($this->prepareDataForDB($request->all()));
+
+        return Redirect::route('message.edit', $message)->with('success', 'Üzenet sikeresen mentve.');
+    }
+
+    public function destroy($request, Message $message)
+    {
+        $message->delete();
+
+        return Redirect::route('messages')->with('success', 'Üzenet sikeresen törölve.');
+    }
+
+    protected function prepareDataForDB(Array $inputs)
+    {
+        return [
+            'title' => $inputs['title'],
+            'body' => $inputs['body'],
+            'showed_from' => $inputs['showed_from'],
+            'showed_to' => $inputs['showed_to'],
+        ];
     }
 }
