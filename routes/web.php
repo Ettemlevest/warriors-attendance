@@ -43,3 +43,11 @@ Route::put('trainings/{training}')->name('trainings.update')->uses('TrainingCont
 Route::delete('trainings/{training}')->name('trainings.destroy')->uses('TrainingController@destroy')->middleware('auth');
 Route::post('trainings/{training}/attend')->name('trainings.attend')->uses('TrainingController@attend')->middleware('auth');
 Route::delete('trainings/{training}/withdraw')->name('trainings.withdraw')->uses('TrainingController@withdraw')->middleware('auth');
+
+// Messages
+Route::get('messages')->name('messages')->uses('MessagesController@index')->middleware('remember', 'auth');
+Route::get('messages/create')->name('messages.create')->uses('MessagesController@create')->middleware('auth');
+Route::post('messages')->name('messages.store')->uses('MessagesController@store')->middleware('auth');
+Route::get('messages/{message}/edit')->name('messages.edit')->uses('MessagesController@edit')->middleware('auth');
+Route::put('messages/{message}')->name('messages.update')->uses('MessagesController@update')->middleware('auth');
+Route::delete('messages/{message}')->name('messages.destroy')->uses('MessagesController@destroy')->middleware('auth');
