@@ -11,8 +11,8 @@
         <div v-for="album in albums" :key="album.id" class="w-full sm:w-1/2 md:w-1/2 lg:w-1/4 mb-4 px-2">
           <div class="relative bg-white rounded border">
             <inertia-link :href="route('albums.view', album.id)">
-              <picture class="block bg-grey-dark border-b">
-                <img class="block" src="https://via.placeholder.com/800x600/EDF2F7/E2E8F0/&amp;text=Album" :alt="album.name">
+              <picture class="flex justify-center bg-grey-dark border-b">
+                <img class="" :src="album.cover_photo_url" :alt="album.name">
               </picture>
             </inertia-link>
             <div class="p-4">

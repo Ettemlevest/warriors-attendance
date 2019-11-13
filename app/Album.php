@@ -9,6 +9,11 @@ final class Album extends Model
         'date_to',
     ];
 
+    public function coverPhoto()
+    {
+        return $this->hasOne(Photo::class, 'id', 'cover_photo_id');
+    }
+
     public function photos()
     {
         return $this->hasMany(Photo::class);

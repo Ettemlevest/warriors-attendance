@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Album;
+use App\Http\Requests\AlbumCoverSettingRequest;
 use App\Http\Requests\AlbumCreationRequest;
 use App\Http\Requests\AlbumDestroyRequest;
 use App\Http\Requests\AlbumUpdateRequest;
@@ -28,7 +29,7 @@ final class AlbumController extends Controller
                         'place' => $album->place,
                         'date_from' => $album->date_from->format('Y-m-d'),
                         'date_to' => $album->date_to->format('Y-m-d'),
-                        // 'cover_photo_url' => $album->coverUrl(['w' => 200, 'h' => 200, 'fit' => 'crop']),
+                        'cover_photo_url' => $album->coverPhoto->photoUrl(['w' => 500, 'h' => 500]),
                     ];
                 }),
         ]);
@@ -51,8 +52,6 @@ final class AlbumController extends Controller
         if (! Auth::user()->owner) {
             return Redirect::route('albums');
         }
-
-
 
         return Inertia::render('Albums/Edit', [
             'album' => [
@@ -100,5 +99,14 @@ final class AlbumController extends Controller
         $album->delete();
 
         return Redirect::route('albums')->with('success', 'Album sikeresen törölve.');
+    }
+
+    public function setCover(AlbumCoverSettingRequest $request, Album $album, Photo $photo)
+    {
+        $album->update([
+            'cover_photo_id' => $photo->id,
+        ]);
+
+        return Redirect::route('albums.edit', $album)->with('success', 'Borítókép sikeresen beállítva.');
     }
 }

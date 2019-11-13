@@ -28,11 +28,16 @@
     <div class="bg-white rounded shadow overflow-hidden max-w-lg mt-8">
       <table class="w-full">
         <tr class="text-left font-bold">
-          <th class="px-6 pt-6 pb-4" colspan="2">Képek <span class="italic">({{ album.photos.length }} kép)</span></th>
+          <th class="px-6 pt-6 pb-4" colspan="3">Képek <span class="italic">({{ album.photos.length }} kép)</span></th>
         </tr>
         <tr v-for="photo in album.photos" :key="photo.id" class="hover:bg-grey-lightest focus-within:bg-grey-lightest">
           <td class="border-t">
             <img :src="photo.path" class="block m-4">
+          </td>
+          <td class="border-t">
+            <button class="btn hover:underline" tabindex="-1" type="button" @click="setAsCover(photo.id)">
+              <icon name="star" class="flex-no-shrink w-5 h-5 fill-yellow" />
+            </button>
           </td>
           <td class="border-t">
             <button class="btn-danger text-red hover:underline" tabindex="-1" type="button" @click="destroyPhoto(photo.id)">
@@ -91,9 +96,6 @@ export default {
     submit() {
       this.sending = true
 
-    console.log(typeof this.$refs.photos)
-    console.log(this.$refs.photos)
-
       var data = new FormData()
       data.append('name', this.form.name || '')
       data.append('description', this.form.description || '')
@@ -124,6 +126,9 @@ export default {
       if (confirm('Biztosan törlöd a képet?')) {
         this.$inertia.delete(this.route('photos.destroy', photo_id))
       }
+    },
+    setAsCover(photo_id) {
+      this.$inertia.post(this.route('albums.cover', [this.album.id, photo_id]))
     }
   },
 }

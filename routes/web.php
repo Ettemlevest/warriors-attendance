@@ -62,6 +62,7 @@ Route::get('albums/{album}/view', [AlbumController::class, 'view'])->name('album
 Route::get('albums/{album}/edit', [AlbumController::class, 'edit'])->name('albums.edit')->middleware('auth');
 Route::put('albums/{album}', [AlbumController::class, 'update'])->name('albums.update')->middleware('auth');
 Route::delete('albums/{album}', [AlbumController::class, 'destroy'])->name('albums.destroy')->middleware('auth');
+Route::post('album/{album}/cover/{photo}', [AlbumController::class, 'setCover'])->name('albums.cover')->middleware('auth');
 Route::delete('photos/{photo}', [PhotoController::class, 'destroy'])->name('photos.destroy')->middleware('auth');
 
 // Messages
