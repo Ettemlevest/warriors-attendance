@@ -18,23 +18,25 @@
         </tr>
         <tr v-for="message in messages.data" :key="message.id" class="hover:bg-grey-lightest focus-within:bg-grey-lightest">
           <td class="border-t">
-            <inertia-link class="px-6 py-4 flex items-center focus:text-indigo" :href="route('messsages.edit', message.id)">
+            <inertia-link class="px-6 py-4 flex items-center focus:text-indigo" :href="route('messages.edit', message.id)">
               {{ message.title }}
             </inertia-link>
           </td>
           <td class="border-t">
-            <inertia-link class="px-6 py-4 flex items-center focus:text-indigo" :href="route('messsages.edit', message.id)">
+            <inertia-link class="px-6 py-4 flex items-center focus:text-indigo" :href="route('messages.edit', message.id)">
               {{ message.body }}
             </inertia-link>
           </td>
           <td class="border-t">
             <inertia-link class="px-6 py-4 flex items-center" :href="route('messages.edit', message.id)" tabindex="-1">
-              {{ user.showed_from }}
+              <span v-if="message.showed_from">{{ message.showed_from }}</span>
+              <span v-else>--</span>
             </inertia-link>
           </td>
           <td class="border-t w-px">
             <inertia-link class="px-4 text-center" :href="route('messages.edit', message.id)" tabindex="-1">
-              {{ message.showed_to }}
+              <span v-if="message.showed_to">{{ message.showed_to }}</span>
+              <span v-else>--</span>
             </inertia-link>
           </td>
           <td class="border-t w-px">

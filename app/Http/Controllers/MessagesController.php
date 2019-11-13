@@ -48,7 +48,7 @@ class MessagesController extends Controller
             return Redirect::route('dashboard');
         }
 
-        return Inertia::render('Message/Edit', [
+        return Inertia::render('Messages/Edit', [
             'messsage' => [
                 'id' => $message->id,
                 'title' => $message->title,
@@ -63,7 +63,7 @@ class MessagesController extends Controller
     {
         $message->update($this->prepareDataForDB($request->all()));
 
-        return Redirect::route('message.edit', $message)->with('success', 'Üzenet sikeresen mentve.');
+        return Redirect::route('messages.edit', $message)->with('success', 'Üzenet sikeresen mentve.');
     }
 
     public function destroy($request, Message $message)
