@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MessageDestroyRequest;
 use App\Http\Requests\MessagesCreationRequest;
 use App\Http\Requests\MessagesUpdateRequest;
 use App\Message;
@@ -23,8 +24,8 @@ class MessagesController extends Controller
                         'id' => $message->id,
                         'title' => $message->title,
                         'body' => $message->body,
-                        'showed_from' => $message->showed_from,
-                        'showed_to' => $message->showed_to,
+                        'showed_from' => $message->showed_from ? $message->showed_from->format('Y-m-d') : null,
+                        'showed_to' => $message->showed_to ? $message->showed_to->format('Y-m-d') : null,
                     ];
                 }),
         ]);
@@ -49,7 +50,7 @@ class MessagesController extends Controller
         }
 
         return Inertia::render('Messages/Edit', [
-            'messsage' => [
+            'message' => [
                 'id' => $message->id,
                 'title' => $message->title,
                 'body' => $message->body,
@@ -66,7 +67,7 @@ class MessagesController extends Controller
         return Redirect::route('messages.edit', $message)->with('success', 'Üzenet sikeresen mentve.');
     }
 
-    public function destroy($request, Message $message)
+    public function destroy(MessageDestroyRequest $request, Message $message)
     {
         $message->delete();
 

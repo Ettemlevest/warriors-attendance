@@ -2,7 +2,7 @@
   <layout>
     <h1 class="mb-8 font-bold text-3xl">
       <inertia-link class="text-indigo-light hover:text-indigo-dark" :href="route('messages')">Üzenetek</inertia-link>
-      <span class="text-indigo-light font-medium">/</span> Létrehozás
+      <span class="text-indigo-light font-medium">/</span> Üzenet
     </h1>
     <div v-if="$page.auth.user.owner" class="bg-white rounded shadow overflow-hidden max-w-lg">
       <form @submit.prevent="submit">
@@ -13,7 +13,8 @@
           <text-input v-model="form.showed_to" :errors="$page.errors.showed_to" class="pr-6 pb-8 w-full lg:w-1/2" label="Dátumig" type="date" timezone="Europe/Budapest" />
         </div>
         <div class="px-8 py-4 bg-grey-lightest border-t border-grey-lighter flex justify-end items-center">
-          <loading-button :loading="sending" class="btn-indigo" type="submit">Üzenet mentése</loading-button>
+          <button class="text-red hover:underline" tabindex="-1" type="button" @click="destroy">Törlés</button>
+          <loading-button :loading="sending" class="btn-indigo ml-auto" type="submit">Üzenet mentése</loading-button>
         </div>
       </form>
     </div>
@@ -28,7 +29,7 @@ import TextInput from '@/Shared/TextInput'
 import CheckboxInput from '@/Shared/CheckboxInput'
 
 export default {
-  metaInfo: { title: 'Üzenet hozzáadása' },
+  metaInfo: { title: 'Üzenet szerkesztése' },
   components: {
     Layout,
     LoadingButton,
@@ -36,15 +37,18 @@ export default {
     TextInput,
     CheckboxInput,
   },
+  props: {
+    message: Object,
+  },
   // remember: 'form',
   data() {
     return {
       sending: false,
       form: {
-        title: null,
-        body: null,
-        showed_from: null,
-        showed_to: null,
+        title: this.message.title,
+        body: this.message.body,
+        showed_from: this.message.showed_from,
+        showed_to: this.message.showed_to,
       }
     }
   },
@@ -57,10 +61,18 @@ export default {
       data.append('body', this.form.body || '')
       data.append('showed_from', this.form.showed_from || '')
       data.append('showed_to', this.form.showed_to || '')
+      data.append('_method', 'put')
 
-      this.$inertia.post(this.route('messages.store'), data)
-        .then(() => this.sending = false)
-    }
+      this.$inertia.post(this.route('messages.update', this.message.id), data)
+        .then(() => {
+          this.sending = false
+        })
+    },
+    destroy() {
+      if (confirm('Biztosan törlöd az üzenetet?')) {
+        this.$inertia.delete(this.route('messages.destroy', this.message.id))
+      }
+    },
   },
 }
 </script>

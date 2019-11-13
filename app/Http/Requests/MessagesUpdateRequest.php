@@ -29,10 +29,10 @@ class MessagesUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => ['sometimes', 'string', 'max:255'],
+            'title' => ['nullable', 'string', 'max:255'],
             'body'  => ['required', 'string'],
-            'showed_from' => ['sometimes', 'date_format:Y-m-d'],
-            'showed_to' => ['sometimes', 'date_format:Y-m-d'],
+            'showed_from' => ['nullable', 'date_format:Y-m-d'],
+            'showed_to' => ['nullable', 'date_format:Y-m-d'],
         ];
     }
 }
