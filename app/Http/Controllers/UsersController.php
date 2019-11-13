@@ -31,9 +31,8 @@ final class UsersController extends Controller
                         'name' => $user->name,
                         'email' => $user->email,
                         'owner' => $user->owner,
+                        'age' => $user->age,
                         'photo' => $user->photoUrl(['w' => 40, 'h' => 40, 'fit' => 'crop']),
-                        'size' => $user->size,
-                        'birth_date' => $user->birth_date ? $user->birth_date->format('Y-m-d') : null,
                         'deleted_at' => $user->deleted_at,
                     ];
                 }),
@@ -58,6 +57,8 @@ final class UsersController extends Controller
             'owner',
             'size',
             'birth_date',
+            'phone',
+            'address',
         ]), [
             'photo_path' => $request->file('photo') ? $request->file('photo')->store('users') : null,
         ]));
@@ -80,6 +81,8 @@ final class UsersController extends Controller
                 'photo' => $user->photoUrl(['w' => 60, 'h' => 60, 'fit' => 'crop']),
                 'size' => $user->size,
                 'birth_date' => $user->birth_date ? $user->birth_date->format('Y-m-d') : null,
+                'phone' => $user->phone,
+                'address' => $user->address,
                 'deleted_at' => $user->deleted_at,
             ],
         ]);
@@ -87,15 +90,23 @@ final class UsersController extends Controller
 
     public function update(UserUpdateRequest $request, User $user)
     {
-        $user->update($request->only('name', 'email', 'owner', 'size', 'birth_date'));
-
         if ($request->file('photo')) {
-            $user->update(['photo_path' => $request->file('photo')->store('users')]);
+            $user->photo_path = $request->file('photo')->store('users');
         }
 
         if ($request->get('password')) {
-            $user->update(['password' => $request->get('password')]);
+            $user->password = $request->get('password');
         }
+
+        $user->update($request->only([
+            'name',
+            'email',
+            'owner',
+            'size',
+            'birth_date',
+            'phone',
+            'address'
+        ]));
 
         return Redirect::route('users.edit', $user)->with('success', 'Warrior sikeresen frissítve.');
     }

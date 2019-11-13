@@ -58,3 +58,20 @@ Route::get('albums/create', [AlbumController::class, 'create'])->name('albums.cr
 Route::post('albums', [AlbumController::class, 'store'])->name('albums.store')->middleware('auth');
 Route::get('albums/{album}/view', [AlbumController::class, 'view'])->name('albums.view')->middleware('auth');
 Route::get('albums/{album}/edit', [AlbumController::class, 'edit'])->name('albums.edit')->middleware('auth');
+Route::get('trainings')->name('trainings')->uses('TrainingController@index')->middleware('remember', 'auth');
+Route::get('trainings/create')->name('trainings.create')->uses('TrainingController@create')->middleware('auth');
+Route::get('trainings/{training}/view')->name('trainings.view')->uses('TrainingController@view')->middleware('auth');
+Route::post('trainings')->name('trainings.store')->uses('TrainingController@store')->middleware('auth');
+Route::get('trainings/{training}/edit')->name('trainings.edit')->uses('TrainingController@edit')->middleware('auth');
+Route::put('trainings/{training}')->name('trainings.update')->uses('TrainingController@update')->middleware('auth');
+Route::delete('trainings/{training}')->name('trainings.destroy')->uses('TrainingController@destroy')->middleware('auth');
+Route::post('trainings/{training}/attend')->name('trainings.attend')->uses('TrainingController@attend')->middleware('auth');
+Route::delete('trainings/{training}/withdraw')->name('trainings.withdraw')->uses('TrainingController@withdraw')->middleware('auth');
+
+// Messages
+Route::get('messages')->name('messages')->uses('MessagesController@index')->middleware('remember', 'auth');
+Route::get('messages/create')->name('messages.create')->uses('MessagesController@create')->middleware('auth');
+Route::post('messages')->name('messages.store')->uses('MessagesController@store')->middleware('auth');
+Route::get('messages/{message}/edit')->name('messages.edit')->uses('MessagesController@edit')->middleware('auth');
+Route::put('messages/{message}')->name('messages.update')->uses('MessagesController@update')->middleware('auth');
+Route::delete('messages/{message}')->name('messages.destroy')->uses('MessagesController@destroy')->middleware('auth');

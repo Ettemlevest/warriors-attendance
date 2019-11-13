@@ -24,9 +24,22 @@ final class User extends Model implements AuthenticatableContract, AuthorizableC
         'owner' => 'boolean',
     ];
 
+    protected $appends = [
+        'age',
+    ];
+
     public function getOwnerAttribute()
     {
         return $this->attributes['owner'] === '1';
+    }
+
+    public function getAgeAttribute()
+    {
+        if (is_null($this->attributes['birth_date'])) {
+            return null;
+        }
+
+        return $this->birth_date->age;
     }
 
     public function setPasswordAttribute($password)
