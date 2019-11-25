@@ -9,10 +9,13 @@ use App\Http\Requests\AlbumDestroyRequest;
 use App\Http\Requests\AlbumUpdateRequest;
 use App\Photo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
+use League\Glide\Server;
 
 final class AlbumController extends Controller
 {
@@ -29,7 +32,9 @@ final class AlbumController extends Controller
                         'place' => $album->place,
                         'date_from' => $album->date_from->format('Y-m-d'),
                         'date_to' => $album->date_to->format('Y-m-d'),
-                        'cover_photo_url' => $album->coverPhoto->photoUrl(['w' => 500, 'h' => 500]),
+                        'cover_photo_url' => $album->coverPhoto
+                            ? $album->coverPhoto->photoUrl(['w' => 500, 'h' => 500]) ?? ''
+                            : URL::to(App::make(Server::class)->fromPath('placeholder-image.png', ['w' => 500, 'h' => 500])),
                     ];
                 }),
         ]);
