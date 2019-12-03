@@ -25,7 +25,7 @@ use App\Http\Controllers\UsersController;
 Route::get('login', [LoginController::class, 'showLoginForm'])->name('login')->middleware('guest');
 Route::post('login', [LoginController::class, 'login'])->name('login.attempt')->middleware('guest');
 Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register')->middleware('guest');
-Route::post('register', [RegisterController::class, 'register'])->name('register')->middleware('guest');
+Route::post('register', [RegisterController::class, 'register'])->name('register')->middleware(['guest', 'lowercase']);
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
 // Dashboard
