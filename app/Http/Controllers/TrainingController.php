@@ -121,7 +121,7 @@ final class TrainingController extends Controller
             return Redirect::back()->with('error', 'Már megtelt az edzés, nem lehet rá jelentkezni.');
         }
 
-        if ($training->can_attend_more && $training->attendees->count() >= $training->max_attendees) {
+        if ($training->can_attend_more && $training->max_attendees > 0 && $training->attendees->count() >= $training->max_attendees) {
             $extra = true;
             $message .= ' Vállaltam a 10 burpeet beugrónak!';
         }
