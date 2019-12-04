@@ -21,7 +21,14 @@ class DatabaseSeeder extends Seeder
 
         factory(User::class, 50)->create();
 
-        factory(Training::class, 123)->create()->each(function ($training) {
+        // generate some trainings
+        factory(Training::class, 51)->create();
+
+        // add some unlimited trainigns to collection
+        factory(Training::class, 21)->states('unlimited')->create();
+
+        // add some attendees to trainings
+        Training::all()->each(function ($training) {
             $users = User::take(
                     rand(0, $training->max_attendees + 5)
                 )

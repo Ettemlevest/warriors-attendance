@@ -21,3 +21,7 @@ $factory->define(App\Training::class, function (Faker $faker) use ($examples) {
         'can_attend_more' => $faker->boolean(),
     ];
 });
+
+$factory->state(App\Training::class, 'unlimited', [
+    'max_attendees' => 0,
+]);
