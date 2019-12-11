@@ -2,31 +2,31 @@
   <div>
     <div class="mb-4">
       <inertia-link class="flex items-center group py-3" :href="route('dashboard')">
-        <icon name="dashboard" class="w-4 h-4 mr-2" :class="isUrl('') ? 'fill-white' : 'fill-indigo-light group-hover:fill-white'" />
-        <div :class="isUrl('') ? 'text-white' : 'text-indigo-lighter group-hover:text-white'">Kezdőlap</div>
+        <icon name="dashboard" class="w-4 h-4 mr-2" :class="isUrl('') ? 'fill-white' : 'fill-indigo-300 group-hover:fill-white'" />
+        <div :class="isUrl('') ? 'text-white' : 'text-indigo-300er group-hover:text-white'">Kezdőlap</div>
       </inertia-link>
     </div>
     <div class="mb-4">
       <inertia-link class="flex items-center group py-3" :href="route('trainings')">
-        <icon name="book" class="w-4 h-4 mr-2" :class="isUrl('trainings') ? 'fill-white' : 'fill-indigo-light group-hover:fill-white'" />
-        <div :class="isUrl('trainings') ? 'text-white' : 'text-indigo-lighter group-hover:text-white'">Edzések</div>
+        <icon name="book" class="w-4 h-4 mr-2" :class="isUrl('trainings') ? 'fill-white' : 'fill-indigo-300 group-hover:fill-white'" />
+        <div :class="isUrl('trainings') ? 'text-white' : 'text-indigo-300er group-hover:text-white'">Edzések</div>
       </inertia-link>
     </div>
     <div class="mb-4">
       <inertia-link class="flex items-center group py-3" :href="route('albums')">
-        <icon name="office" class="w-4 h-4 mr-2" :class="isUrl('albums') ? 'fill-white' : 'fill-indigo-light group-hover:fill-white'" />
-        <div :class="isUrl('albums') ? 'text-white' : 'text-indigo-lighter group-hover:text-white'">Képek</div>
+        <icon name="office" class="w-4 h-4 mr-2" :class="isUrl('albums') ? 'fill-white' : 'fill-indigo-300 group-hover:fill-white'" />
+        <div :class="isUrl('albums') ? 'text-white' : 'text-indigo-300er group-hover:text-white'">Képek</div>
       </inertia-link>
     </div>
     <div class="mb-4" v-if="$page.auth.user.owner">
       <inertia-link class="flex items-center group py-3" :href="route('messages')">
-        <icon name="chat-bubble-dots" class="w-4 h-4 mr-2" :class="isUrl('messages') ? 'fill-white' : 'fill-indigo-light group-hover:fill-white'" />
-        <div :class="isUrl('messages') ? 'text-white' : 'text-indigo-lighter group-hover:text-white'">Üzenetek</div>
+        <icon name="chat-bubble-dots" class="w-4 h-4 mr-2" :class="isUrl('messages') ? 'fill-white' : 'fill-indigo-300 group-hover:fill-white'" />
+        <div :class="isUrl('messages') ? 'text-white' : 'text-indigo-300er group-hover:text-white'">Üzenetek</div>
       </inertia-link>
     </div>
     <div class="mb-4">
       <inertia-link class="flex items-center group py-3 ml-6" :href="route('logout')" method="post">
-        <div class="text-indigo-lighter group-hover:text-white">Kilépés</div>
+        <div class="text-indigo-300er group-hover:text-white">Kilépés</div>
       </inertia-link>
     </div>
   </div>

@@ -2,8 +2,8 @@
   <layout>
     <div class="mb-8 flex justify-start max-w-lg">
       <h1 class="font-bold text-3xl">
-        <inertia-link class="text-indigo-light hover:text-indigo-dark" :href="route('albums')">Képek</inertia-link>
-        <span class="text-indigo-light font-medium">/</span>
+        <inertia-link class="text-indigo-300 hover:text-indigo-600" :href="route('albums')">Képek</inertia-link>
+        <span class="text-indigo-300 font-medium">/</span>
         {{ form.name }}
       </h1>
     </div>
@@ -19,8 +19,8 @@
           <label class="form-label">Képek:</label>
           <input class="pr-6 pb-8 w-full" type="file" ref="photos" multiple="multiple" accept="image/*">
         </div>
-        <div class="px-8 py-4 bg-grey-lightest border-t border-grey-lighter flex items-center">
-          <button class="text-red hover:underline" tabindex="-1" type="button" @click="destroy">Törlés</button>
+        <div class="px-8 py-4 bg-gray-300 border-t border-gray-300er flex items-center">
+          <button class="text-red-500 hover:underline" tabindex="-1" type="button" @click="destroy">Törlés</button>
           <loading-button :loading="sending" class="btn-indigo ml-auto" type="submit">Album mentése</loading-button>
         </div>
       </form>
@@ -30,18 +30,18 @@
         <tr class="text-left font-bold">
           <th class="px-6 pt-6 pb-4" colspan="3">Képek <span class="italic">({{ album.photos.length }} kép)</span></th>
         </tr>
-        <tr v-for="photo in album.photos" :key="photo.id" class="hover:bg-grey-lightest focus-within:bg-grey-lightest">
+        <tr v-for="photo in album.photos" :key="photo.id" class="hover:bg-gray-300 focus-within:bg-gray-300">
           <td class="border-t">
             <img :src="photo.path" class="block m-4">
           </td>
           <td class="border-t">
             <button class="btn hover:underline" tabindex="-1" type="button" @click="setAsCover(photo.id)">
-              <icon name="star" class="flex-no-shrink w-5 h-5 fill-yellow" />
+              <icon name="star" class="flex-shrink-0 w-5 h-5 fill-yellow" />
             </button>
           </td>
           <td class="border-t">
-            <button class="btn-danger text-red hover:underline" tabindex="-1" type="button" @click="destroyPhoto(photo.id)">
-              <icon name="trash" class="flex-no-shrink w-5 h-5 fill-red" />
+            <button class="btn-danger text-red-500 hover:underline" tabindex="-1" type="button" @click="destroyPhoto(photo.id)">
+              <icon name="trash" class="flex-shrink-0 w-5 h-5 fill-red" />
             </button>
           </td>
         </tr>

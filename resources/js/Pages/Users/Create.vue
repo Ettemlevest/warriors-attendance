@@ -1,8 +1,8 @@
 <template>
   <layout>
     <h1 class="mb-8 font-bold text-3xl">
-      <inertia-link class="text-indigo-light hover:text-indigo-dark" :href="route('users')">Warriorok</inertia-link>
-      <span class="text-indigo-light font-medium">/</span> Létrehozás
+      <inertia-link class="text-indigo-300 hover:text-indigo-600" :href="route('users')">Warriorok</inertia-link>
+      <span class="text-indigo-300 font-medium">/</span> Létrehozás
     </h1>
     <div v-if="$page.auth.user.owner === false">Nincs jogosultságod Warrior hozzáadásához!</div>
     <div v-if="$page.auth.user.owner" class="bg-white rounded shadow overflow-hidden max-w-lg">
@@ -29,7 +29,7 @@
           <text-input v-model="form.phone" :errors="$page.errors.phone" class="pr-6 pb-8 w-full lg:w-1/2" label="Telefonszám" />
           <text-input v-model="form.address" :errors="$page.errors.address" class="pr-6 pb-8 w-full" label="Lakcím" />
         </div>
-        <div class="px-8 py-4 bg-grey-lightest border-t border-grey-lighter flex justify-end items-center">
+        <div class="px-8 py-4 bg-gray-300 border-t border-gray-300er flex justify-end items-center">
           <loading-button :loading="sending" class="btn-indigo" type="submit">Warrior mentése</loading-button>
         </div>
       </form>

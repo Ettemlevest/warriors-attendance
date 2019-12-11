@@ -1,8 +1,8 @@
 <template>
   <layout>
     <h1 class="mb-8 font-bold text-3xl">
-      <inertia-link class="text-indigo-light hover:text-indigo-dark" :href="route('trainings')">Edzések</inertia-link>
-      <span class="text-indigo-light font-medium">/</span> Létrehozás
+      <inertia-link class="text-indigo-300 hover:text-indigo-600" :href="route('trainings')">Edzések</inertia-link>
+      <span class="text-indigo-300 font-medium">/</span> Létrehozás
     </h1>
     <div v-if="$page.auth.user.owner" class="bg-white rounded shadow overflow-hidden max-w-lg">
       <form @submit.prevent="submit">
@@ -15,7 +15,7 @@
           <text-input v-model="form.max_attendees" :errors="$page.errors.max_attendees" class="pr-6 pb-8 w-full lg:w-1/2" label="Max. létszám" type="number" />
           <checkbox-input v-model="form.can_attend_more" :errors="$page.errors.can_attend_more" class="pr-6 pb-8 w-full lg:w-1/2" label="Maximális létszám túlléphető" :checked="form.can_attend_more" />
         </div>
-        <div class="px-8 py-4 bg-grey-lightest border-t border-grey-lighter flex justify-end items-center">
+        <div class="px-8 py-4 bg-gray-300 border-t border-gray-300er flex justify-end items-center">
           <loading-button :loading="sending" class="btn-indigo" type="submit">Edzés mentése</loading-button>
         </div>
       </form>

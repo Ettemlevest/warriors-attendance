@@ -11,7 +11,7 @@
         <div v-for="album in albums" :key="album.id" class="w-full sm:w-1/2 md:w-1/2 lg:w-1/4 mb-4 px-2">
           <div class="relative bg-white rounded border">
             <inertia-link :href="route('albums.view', album.id)">
-              <picture class="flex justify-center bg-grey-dark border-b">
+              <picture class="flex justify-center bg-gray-600 border-b">
                 <img class="" :src="album.cover_photo_url" :alt="album.name">
               </picture>
             </inertia-link>
@@ -20,13 +20,13 @@
                 <h3 class="text-lg font-bold">{{ album.name }}</h3>
               </inertia-link>
               <p class="mt-2">
-                <icon name="location" class="w-3 h-3 fill-grey mr-2" />
-                <span class="text-sm text-grey-dark">{{ album.place }}</span>
+                <icon name="location" class="w-3 h-3 fill-gray mr-2" />
+                <span class="text-sm text-gray-600">{{ album.place }}</span>
               </p>
               <p class="mt-2">
-                <icon name="dashboard" class="w-3 h-3 fill-grey mr-2" />
-                <time v-if="album.date_from === album.date_to" class="mt-2 mb-2 text-sm text-grey-dark" :datetime="album.date_from">{{ album.date_from }}</time>
-                <time v-else class="mt-2 mb-2 text-sm text-grey-dark" :datetime="album.date_from">{{ album.date_from+' - '+album.date_to }}</time>
+                <icon name="dashboard" class="w-3 h-3 fill-gray mr-2" />
+                <time v-if="album.date_from === album.date_to" class="mt-2 mb-2 text-sm text-gray-600" :datetime="album.date_from">{{ album.date_from }}</time>
+                <time v-else class="mt-2 mb-2 text-sm text-gray-600" :datetime="album.date_from">{{ album.date_from+' - '+album.date_to }}</time>
               </p>
               <p class="mt-2">{{ album.description }}</p>
               <div class="flex justify-between items-center">

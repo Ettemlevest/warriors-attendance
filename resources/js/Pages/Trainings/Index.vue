@@ -3,7 +3,7 @@
     <h1 class="mb-8 font-bold text-3xl">Edzések</h1>
     <div class="mb-6 flex justify-between items-center">
       <search-filter v-model="form.search" class="w-full max-w-sm mr-4" @reset="reset">
-        <label class="block text-grey-darkest">Kezdés:</label>
+        <label class="block text-gray-800">Kezdés:</label>
         <select v-model="form.start_at" class="mt-1 w-full form-select">
           <option :value="null" />
           <option value="next_seven_days">Következő 7 napban</option>
@@ -11,7 +11,7 @@
           <option value="future">Jövőben</option>
           <option value="past">Múltban</option>
         </select>
-        <label class="mt-4 block text-grey-darkest">Jelentkezés:</label>
+        <label class="mt-4 block text-gray-800">Jelentkezés:</label>
         <select v-model="form.attendance" class="mt-1 w-full form-select">
           <option :value="null" />
           <option value="attended">Jelentkeztem</option>
@@ -30,32 +30,32 @@
           <th class="px-6 pt-6 pb-4">Időtartam</th>
           <th class="px-6 pt-6 pb-4" colspan="2">Létszám</th>
         </tr>
-        <tr v-for="training in trainings.data" :key="training.id" class="hover:bg-grey-lightest focus-within:bg-grey-lightest">
-          <td class="border-t" :class="{ 'italic': training.max_attendees && training.attendees > training.max_attendees, 'text-red-dark': training.max_attendees && training.attendees > training.max_attendees }">
+        <tr v-for="training in trainings.data" :key="training.id" class="hover:bg-gray-300 focus-within:bg-gray-300">
+          <td class="border-t" :class="{ 'italic': training.max_attendees && training.attendees > training.max_attendees, 'text-red-600': training.max_attendees && training.attendees > training.max_attendees }">
             <inertia-link class="px-6 py-4 block items-center focus:text-indigo" :href="route($page.auth.user.owner ? 'trainings.edit' : 'trainings.view', training.id)">
               <div class="leading-normal text-lg">{{ training.name }}</div>
-              <div class="text-grey-darker text-sm italic flex items-center"><icon name="location" class="flex w-4 h-4 fill-grey mr-1" /> {{ training.place }}</div>
+              <div class="text-gray-600er text-sm italic flex items-center"><icon name="location" class="flex w-4 h-4 fill-gray mr-1" /> {{ training.place }}</div>
             </inertia-link>
           </td>
-          <td class="border-t" :class="{ 'italic': training.max_attendees && training.attendees > training.max_attendees, 'text-red-dark': training.max_attendees && training.attendees > training.max_attendees }">
+          <td class="border-t" :class="{ 'italic': training.max_attendees && training.attendees > training.max_attendees, 'text-red-600': training.max_attendees && training.attendees > training.max_attendees }">
             <inertia-link class="px-6 py-4 block items-center" :href="route($page.auth.user.owner ? 'trainings.edit' : 'trainings.view', training.id)" tabindex="-1">
               <div class="leading-normal">{{ training.start_at }}</div>
-              <div class="text-sm italic text-grey-darker">{{ training.diff }}</div>
+              <div class="text-sm italic text-gray-600er">{{ training.diff }}</div>
             </inertia-link>
           </td>
-          <td class="border-t" :class="{ 'italic': training.max_attendees && training.attendees > training.max_attendees, 'text-red-dark': training.max_attendees && training.attendees > training.max_attendees }">
+          <td class="border-t" :class="{ 'italic': training.max_attendees && training.attendees > training.max_attendees, 'text-red-600': training.max_attendees && training.attendees > training.max_attendees }">
             <inertia-link class="px-6 py-4 flex items-center" :href="route($page.auth.user.owner ? 'trainings.edit' : 'trainings.view', training.id)" tabindex="-1">
               {{ training.length }} perc
             </inertia-link>
           </td>
-          <td class="border-t" :class="{ 'italic': training.max_attendees && training.attendees > training.max_attendees, 'text-red-dark': training.max_attendees && training.attendees > training.max_attendees }">
+          <td class="border-t" :class="{ 'italic': training.max_attendees && training.attendees > training.max_attendees, 'text-red-600': training.max_attendees && training.attendees > training.max_attendees }">
             <inertia-link class="px-6 py-4 flex items-center" :href="route($page.auth.user.owner ? 'trainings.edit' : 'trainings.view', training.id)" tabindex="-1">
               {{ training.attendees }} / {{ training.max_attendees || '&infin;' }}
             </inertia-link>
           </td>
-          <td class="border-t w-px" :class="{ 'italic': training.attendees > training.max_attendees, 'text-red-dark': training.attendees > training.max_attendees }">
+          <td class="border-t w-px" :class="{ 'italic': training.attendees > training.max_attendees, 'text-red-600': training.attendees > training.max_attendees }">
             <inertia-link class="px-4 flex items-center" :href="route('trainings.view', training.id)" tabindex="-1">
-              <icon name="cheveron-right" class="block w-6 h-6 fill-grey" />
+              <icon name="cheveron-right" class="block w-6 h-6 fill-gray" />
             </inertia-link>
           </td>
         </tr>

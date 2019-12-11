@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6 bg-indigo-darker min-h-screen flex justify-center items-center">
+  <div class="p-6 bg-indigo-700 min-h-screen flex justify-center items-center">
     <div class="w-full max-w-sm">
       <!-- <logo class="block mx-auto w-full max-w-xs fill-white" height="50" /> -->
       <form class="mt-8 bg-white rounded-lg shadow-lg overflow-hidden" @submit.prevent="submit">
@@ -13,7 +13,7 @@
             <span class="text-sm">Remember Me</span>
           </label> -->
         </div>
-        <div class="px-10 py-4 bg-grey-lightest border-t border-grey-lighter flex justify-between items-center">
+        <div class="px-10 py-4 bg-gray-300 border-t border-gray-300er flex justify-between items-center">
           <inertia-link class="hover:underline hover:text-indigo focus-within:underline focus-within:text-indigo " :href="route('register')">
             Regisztráció
           </inertia-link>

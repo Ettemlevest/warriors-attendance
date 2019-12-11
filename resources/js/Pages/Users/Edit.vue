@@ -2,8 +2,8 @@
   <layout>
     <div class="mb-8 flex justify-start max-w-lg">
       <h1 class="font-bold text-3xl">
-        <inertia-link class="text-indigo-light hover:text-indigo-dark" :href="route('users')">Warriorok</inertia-link>
-        <span class="text-indigo-light font-medium">/</span>
+        <inertia-link class="text-indigo-300 hover:text-indigo-600" :href="route('users')">Warriorok</inertia-link>
+        <span class="text-indigo-300 font-medium">/</span>
         {{ form.name }}
       </h1>
       <img v-if="user.photo" class="block w-8 h-8 rounded-full ml-4" :src="user.photo">
@@ -35,8 +35,8 @@
           <text-input v-model="form.phone" :errors="$page.errors.phone" class="pr-6 pb-8 w-full lg:w-1/2" label="Telefonszám" />
           <text-input v-model="form.address" :errors="$page.errors.address" class="pr-6 pb-8 w-full" label="Lakcím" />
         </div>
-        <div class="px-8 py-4 bg-grey-lightest border-t border-grey-lighter flex items-center">
-          <button v-if="!user.deleted_at && $page.auth.user.id != this.user.id" class="text-red hover:underline" tabindex="-1" type="button" @click="destroy">Törlés</button>
+        <div class="px-8 py-4 bg-gray-300 border-t border-gray-300er flex items-center">
+          <button v-if="!user.deleted_at && $page.auth.user.id != this.user.id" class="text-red-500 hover:underline" tabindex="-1" type="button" @click="destroy">Törlés</button>
           <loading-button :loading="sending" class="btn-indigo ml-auto" type="submit">Warrior mentése</loading-button>
         </div>
       </form>
