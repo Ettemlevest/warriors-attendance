@@ -27,14 +27,14 @@
             <div class="text-lg italic">{{ training.attendees.length }} / {{ training.max_attendees || '&infin;' }}</div>
           </div>
         </div>
-        <button v-if="!training.registered && (training.max_attendees === 0 || training.attendees.length < training.max_attendees)" class="bg-blue hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" @click="attend(training.id)">
+        <button v-if="!training.registered && (training.max_attendees === 0 || training.attendees.length < training.max_attendees)" class="bg-blue-600 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" @click="attend(training.id)">
           Jelentkezem
         </button>
         <div v-if="!training.registered && training.max_attendees > 0 && training.attendees.length >= training.max_attendees && !training.can_attend_more" class="bg-red-600 text-white font-bold py-2 px-4 rounded">Megtelt, már nem lehet jelentkezni!</div>
         <button v-if="training.registered" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" @click="withdraw(training.id)">
           Lemondás
         </button>
-        <button v-if="!training.registered && training.max_attendees && training.attendees.length >= training.max_attendees && training.can_attend_more" class="bg-blue hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" @click="attend(training.id)">
+        <button v-if="!training.registered && training.max_attendees && training.attendees.length >= training.max_attendees && training.can_attend_more" class="bg-blue-600 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" @click="attend(training.id)">
           Megtelt, mégis jelentkezem. Vállalom a 10 burpeet beugrásnak!
         </button>
       </div>
@@ -44,7 +44,7 @@
         <tr class="text-left font-bold">
           <th class="px-6 pt-6 pb-4">Jelentkezve</th>
         </tr>
-        <tr v-for="attendee in training.attendees" :key="attendee.user_id" class="hover:bg-gray-300 focus-within:bg-gray-300">
+        <tr v-for="attendee in training.attendees" :key="attendee.user_id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t px-6 py-4 flex items-center">
             <img v-if="attendee.photo" class="block w-8 h-8 rounded-full mr-2 -my-2" :src="attendee.photo">
             {{ attendee.name }}

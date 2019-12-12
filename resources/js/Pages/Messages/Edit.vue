@@ -12,7 +12,7 @@
           <text-input v-model="form.showed_from" :errors="$page.errors.showed_from" class="pr-6 pb-8 w-full lg:w-1/2" label="Dátumtól" type="date" timezone="Europe/Budapest" />
           <text-input v-model="form.showed_to" :errors="$page.errors.showed_to" class="pr-6 pb-8 w-full lg:w-1/2" label="Dátumig" type="date" timezone="Europe/Budapest" />
         </div>
-        <div class="px-8 py-4 bg-gray-300 border-t border-gray-300 flex justify-end items-center">
+        <div class="px-8 py-4 bg-gray-100 border-t border-gray-300 flex justify-end items-center">
           <button class="text-red-500 hover:underline" tabindex="-1" type="button" @click="destroy">Törlés</button>
           <loading-button :loading="sending" class="btn-indigo ml-auto" type="submit">Üzenet mentése</loading-button>
         </div>

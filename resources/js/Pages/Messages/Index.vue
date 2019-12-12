@@ -16,7 +16,7 @@
           <th class="px-6 pt-6 pb-4">Dátumtól</th>
           <th class="px-6 pt-6 pb-4" colspan="2">Dátumig</th>
         </tr>
-        <tr v-for="message in messages.data" :key="message.id" class="hover:bg-gray-300 focus-within:bg-gray-300">
+        <tr v-for="message in messages.data" :key="message.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
             <inertia-link class="px-6 py-4 flex items-center focus:text-indigo" :href="route('messages.edit', message.id)">
               {{ message.title }}

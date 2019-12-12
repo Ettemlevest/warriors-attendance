@@ -30,7 +30,7 @@
           <th class="px-6 pt-6 pb-4">Időtartam</th>
           <th class="px-6 pt-6 pb-4" colspan="2">Létszám</th>
         </tr>
-        <tr v-for="training in trainings.data" :key="training.id" class="hover:bg-gray-300 focus-within:bg-gray-300">
+        <tr v-for="training in trainings.data" :key="training.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t" :class="{ 'italic': training.max_attendees && training.attendees > training.max_attendees, 'text-red-600': training.max_attendees && training.attendees > training.max_attendees }">
             <inertia-link class="px-6 py-4 block items-center focus:text-indigo" :href="route($page.auth.user.owner ? 'trainings.edit' : 'trainings.view', training.id)">
               <div class="leading-normal text-lg">{{ training.name }}</div>

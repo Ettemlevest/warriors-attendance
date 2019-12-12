@@ -29,7 +29,7 @@
           <text-input v-model="form.phone" :errors="$page.errors.phone" class="pr-6 pb-8 w-full lg:w-1/2" label="Telefonszám" />
           <text-input v-model="form.address" :errors="$page.errors.address" class="pr-6 pb-8 w-full" label="Lakcím" />
         </div>
-        <div class="px-8 py-4 bg-gray-300 border-t border-gray-300 flex justify-end items-center">
+        <div class="px-8 py-4 bg-gray-100 border-t border-gray-300 flex justify-end items-center">
           <loading-button :loading="sending" class="btn-indigo" type="submit">Warrior mentése</loading-button>
         </div>
       </form>

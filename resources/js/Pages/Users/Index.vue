@@ -28,7 +28,7 @@
           <th class="px-6 pt-6 pb-4">Életkor</th>
           <th class="px-6 pt-6 pb-4" colspan="2">Jogosultság</th>
         </tr>
-        <tr v-for="user in users.data" :key="user.id" class="hover:bg-gray-300 focus-within:bg-gray-300">
+        <tr v-for="user in users.data" :key="user.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
             <inertia-link class="px-6 py-4 flex items-center focus:text-indigo" :href="route('users.edit', user.id)">
               <img v-if="user.photo" class="block w-8 h-8 rounded-full mr-2 -my-2" :src="user.photo">

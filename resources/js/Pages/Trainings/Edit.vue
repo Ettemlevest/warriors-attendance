@@ -18,7 +18,7 @@
           <text-input v-model="form.max_attendees" :errors="$page.errors.max_attendees" class="pr-6 pb-8 w-full lg:w-1/2" label="Max. létszám" type="number" />
           <checkbox-input v-model="form.can_attend_more" :errors="$page.errors.can_attend_more" class="pr-6 pb-8 w-full lg:w-1/2" label="Maximális létszám túlléphető" :checked="form.can_attend_more" />
         </div>
-        <div class="px-8 py-4 bg-gray-300 border-t border-gray-300 flex items-center">
+        <div class="px-8 py-4 bg-gray-100 border-t border-gray-300 flex items-center">
           <button class="text-red-500 hover:underline" tabindex="-1" type="button" @click="destroy">Törlés</button>
           <loading-button :loading="sending" class="btn-indigo ml-auto" type="submit">Edzés mentése</loading-button>
         </div>
@@ -30,7 +30,7 @@
           <th class="px-6 pt-6 pb-4">Jelentkezve <span class="italic">({{ training.attendees.length }} fő)</span></th>
           <th class="px-6 pt-6 pb-4">Időpont</th>
         </tr>
-        <tr v-for="attendee in training.attendees" :key="attendee.user_id" class="hover:bg-gray-300 focus-within:bg-gray-300">
+        <tr v-for="attendee in training.attendees" :key="attendee.user_id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td :class="{ 'italic': attendee.pivot.extra === '1', 'text-red-600': attendee.pivot.extra === '1' }" class="border-t px-6 py-4 flex items-center">
             <img v-if="attendee.photo" class="block w-8 h-8 rounded-full mr-2 -my-2" :src="attendee.photo">
             {{ attendee.name }}

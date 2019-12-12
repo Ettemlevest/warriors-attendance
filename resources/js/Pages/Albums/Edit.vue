@@ -19,7 +19,7 @@
           <label class="form-label">Képek:</label>
           <input class="pr-6 pb-8 w-full" type="file" ref="photos" multiple="multiple" accept="image/*">
         </div>
-        <div class="px-8 py-4 bg-gray-300 border-t border-gray-300 flex items-center">
+        <div class="px-8 py-4 bg-gray-100 border-t border-gray-300 flex items-center">
           <button class="text-red-500 hover:underline" tabindex="-1" type="button" @click="destroy">Törlés</button>
           <loading-button :loading="sending" class="btn-indigo ml-auto" type="submit">Album mentése</loading-button>
         </div>
@@ -30,7 +30,7 @@
         <tr class="text-left font-bold">
           <th class="px-6 pt-6 pb-4" colspan="3">Képek <span class="italic">({{ album.photos.length }} kép)</span></th>
         </tr>
-        <tr v-for="photo in album.photos" :key="photo.id" class="hover:bg-gray-300 focus-within:bg-gray-300">
+        <tr v-for="photo in album.photos" :key="photo.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
             <img :src="photo.path" class="block m-4">
           </td>

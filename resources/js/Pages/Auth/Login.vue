@@ -13,7 +13,7 @@
             <span class="text-sm">Remember Me</span>
           </label> -->
         </div>
-        <div class="px-10 py-4 bg-gray-300 border-t border-gray-300 flex justify-between items-center">
+        <div class="px-10 py-4 bg-gray-100 border-t border-gray-300 flex justify-between items-center">
           <inertia-link class="hover:underline hover:text-indigo focus-within:underline focus-within:text-indigo " :href="route('register')">
             Regisztráció
           </inertia-link>
