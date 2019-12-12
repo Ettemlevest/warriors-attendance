@@ -4,13 +4,13 @@
     <div class="flex flex-col">
       <div class="h-screen flex flex-col" @click="hideDropdownMenus">
         <div class="md:flex">
-          <div class="bg-indigo-900 md:flex-shrink-0 md:w-56 px-6 py-4 flex items-center justify-between md:justify-center">
+          <div class="bg-black md:flex-shrink-0 md:w-56 px-6 py-4 flex items-center justify-between md:justify-center">
             <inertia-link class="mt-1" href="/">
               <logo class="fill-white" width="120" height="28" />
             </inertia-link>
             <dropdown class="md:hidden" placement="bottom-end">
               <svg class="fill-white w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" /></svg>
-              <div slot="dropdown" class="mt-2 px-8 py-4 shadow-lg bg-indigo-700 rounded">
+              <div slot="dropdown" class="mt-2 px-8 py-4 shadow-lg bg-indigo-900 rounded">
                 <main-menu />
               </div>
             </dropdown>
@@ -19,11 +19,11 @@
             <div class="mt-1 mr-4"><!-- account name were here --></div>
             <dropdown class="mt-1" placement="bottom-end">
               <div class="flex items-center cursor-pointer select-none group">
-                <div class="text-gray-800 group-hover:text-indigo-600 focus:text-indigo-600 mr-1 whitespace-no-wrap flex items-center">
+                <div class="text-gray-800 group-hover:text-indigo-900 focus:text-indigo-900 mr-1 whitespace-no-wrap flex items-center">
                   <img v-if="$page.auth.user.photo" class="block w-8 h-8 rounded-full mr-2 -my-2" :src="$page.auth.user.photo">
                   <span>{{ $page.auth.user.name }}</span>
                 </div>
-                <icon class="w-5 h-5 group-hover:fill-indigo-600 fill-gray-900 focus:fill-indigo-600" name="cheveron-down" />
+                <icon class="w-5 h-5 fill-current group-hover:text-indigo-900 text-gray-900 focus:text-indigo-900" name="cheveron-down" />
               </div>
               <div slot="dropdown" class="mt-2 py-2 shadow-lg bg-white rounded text-sm">
                 <inertia-link class="block px-6 py-2 hover:bg-indigo hover:text-white" :href="route('users.edit', $page.auth.user.id)">Profilom</inertia-link>
@@ -34,7 +34,7 @@
           </div>
         </div>
         <div class="flex flex-grow">
-          <div class="bg-indigo-700 flex-shrink-0 w-56 p-12 hidden md:block">
+          <div class="bg-indigo-900 flex-shrink-0 w-56 p-12 hidden md:block">
             <main-menu />
           </div>
           <div class="w-full overflow-hidden px-4 py-8 md:p-12">
