@@ -1,13 +1,13 @@
 <template>
   <layout>
-    <div class="mb-8 flex justify-start max-w-lg">
+    <div class="mb-8 flex justify-start max-w">
       <h1 class="font-bold text-3xl">
         <inertia-link class="text-indigo-300 hover:text-indigo-600" :href="route('trainings')">Edzések</inertia-link>
         <span class="text-indigo-300 font-medium">/</span>
         {{ form.name }}
       </h1>
     </div>
-    <div class="bg-white rounded shadow overflow-hidden max-w-lg">
+    <div class="bg-white rounded shadow overflow-hidden max-w">
       <form @submit.prevent="submit">
         <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
           <text-input v-model="form.name" :errors="$page.errors.name" class="pr-6 pb-8 w-full lg:w-1/2" label="Edzés neve" />
@@ -24,7 +24,7 @@
         </div>
       </form>
     </div>
-    <div class="bg-white rounded shadow overflow-hidden max-w-lg mt-8">
+    <div class="bg-white rounded shadow overflow-hidden max-w mt-8">
       <table class="w-full">
         <tr class="text-left font-bold">
           <th class="px-6 pt-6 pb-4">Jelentkezve <span class="italic">({{ training.attendees.length }} fő)</span></th>

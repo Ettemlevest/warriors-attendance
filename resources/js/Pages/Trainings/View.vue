@@ -1,13 +1,13 @@
 <template>
   <layout>
-    <div class="mb-8 flex justify-start max-w-lg">
+    <div class="mb-8 flex justify-start max-w">
       <h1 class="font-bold text-3xl">
         <inertia-link class="text-indigo-300 hover:text-indigo-600" :href="route('trainings')">Edzések</inertia-link>
         <span class="text-indigo-300 font-medium">/</span>
         {{ form.name }}
       </h1>
     </div>
-    <div class="bg-white block max-w-lg rounded shadow overflow-hidden">
+    <div class="bg-white block max-w rounded shadow overflow-hidden">
       <div class="text-center sm:w-auto md:w-auto lg:flex-1 xl:flex-1 m-4 p-4">
         <h2 class="text-xl mb-2 ml-8 mr-8 font-bold">
           {{ training.name }}
@@ -39,7 +39,7 @@
         </button>
       </div>
     </div>
-    <div class="bg-white rounded shadow overflow-hidden max-w-lg mt-8">
+    <div class="bg-white rounded shadow overflow-hidden max-w mt-8">
       <table class="w-full whitespace-no-wrap">
         <tr class="text-left font-bold">
           <th class="px-6 pt-6 pb-4">Jelentkezve</th>

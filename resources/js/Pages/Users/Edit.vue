@@ -1,6 +1,6 @@
 <template>
   <layout>
-    <div class="mb-8 flex justify-start max-w-lg">
+    <div class="mb-8 flex justify-start max-w">
       <h1 class="font-bold text-3xl">
         <inertia-link class="text-indigo-300 hover:text-indigo-600" :href="route('users')">Warriorok</inertia-link>
         <span class="text-indigo-300 font-medium">/</span>
@@ -11,7 +11,7 @@
     <trashed-message v-if="user.deleted_at" class="mb-6" @restore="restore">
       A Warrior törölve van.
     </trashed-message>
-    <div class="bg-white rounded shadow overflow-hidden max-w-lg">
+    <div class="bg-white rounded shadow overflow-hidden max-w">
       <form @submit.prevent="submit">
         <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
           <text-input v-model="form.name" :errors="$page.errors.name" class="pr-6 pb-8 w-full lg:w-1/2" label="Név" />

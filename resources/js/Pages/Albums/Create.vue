@@ -4,7 +4,7 @@
       <inertia-link class="text-indigo-300 hover:text-indigo-600" :href="route('albums')">Képek</inertia-link>
       <span class="text-indigo-300 font-medium">/</span> Létrehozás
     </h1>
-    <div v-if="$page.auth.user.owner" class="bg-white rounded shadow overflow-hidden max-w-lg">
+    <div v-if="$page.auth.user.owner" class="bg-white rounded shadow overflow-hidden max-w">
       <form @submit.prevent="submit">
         <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
           <text-input v-model="form.name" :errors="$page.errors.name" class="pr-6 pb-8 w-full lg:w-1/2" label="Album neve" autofocus />
