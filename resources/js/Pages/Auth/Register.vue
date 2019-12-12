@@ -10,7 +10,7 @@
           <text-input v-model="form.password" :errors="$page.errors.password" class="mt-6" label="Jelszó" type="password" />
           <text-input v-model="form.password_confirmation" class="mt-6" label="Jelszó megerősítés" type="password" />
         </div>
-        <div class="px-10 py-4 bg-gray-300 border-t border-gray-300er flex justify-between items-center">
+        <div class="px-10 py-4 bg-gray-300 border-t border-gray-300 flex justify-between items-center">
           <inertia-link class="hover:underline hover:text-indigo focus-within:underline focus-within:text-indigo" :href="route('login')">
             Bejelentkezés
           </inertia-link>

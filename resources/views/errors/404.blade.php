@@ -17,7 +17,7 @@
           <h1 class="text-center font-bold text-3xl">404</h1>
           <div class="mt-8 text-center text-3xl">Nem található a kért oldal!</div>
         </div>
-        <div class="px-10 py-4 bg-gray-300 border-t border-gray-300er flex justify-between items-center">
+        <div class="px-10 py-4 bg-gray-300 border-t border-gray-300 flex justify-between items-center">
         </div>
       </form>
     </div>

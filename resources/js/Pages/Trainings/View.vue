@@ -12,17 +12,17 @@
         <h2 class="text-xl mb-2 ml-8 mr-8">
           {{ training.name }}
         </h2>
-        <div class="text-gray-600er text-sm italic mb-6">{{ training.diff }}</div>
+        <div class="text-gray-600 text-sm italic mb-6">{{ training.diff }}</div>
         <div class="sm:block md:block lg:flex xl:flex lg:items-center">
           <div class="mb-4 flex lg:flex-1 xl:flex-1">
             <icon name="location" class="flex w-5 h-5 fill-gray mr-2" />
             <div class="text-purple text-lg italic">{{ training.place }}</div>
           </div>
-          <div class="mb-4 text-gray-600er items-center flex lg:flex-1 xl:flex-1">
+          <div class="mb-4 text-gray-600 items-center flex lg:flex-1 xl:flex-1">
             <icon name="dashboard" class="flex w-5 h-5 fill-gray mr-2" />
             <div class="text-lg italic">{{ training.start_at_day+' '+training.start_at_time }}</div>
           </div>
-          <div class="mb-4 text-gray-600er items-center flex lg:flex-1 xl:flex-1">
+          <div class="mb-4 text-gray-600 items-center flex lg:flex-1 xl:flex-1">
             <icon name="users" class="flex w-5 h-5 fill-gray mr-2" />
             <div class="text-lg italic">{{ training.attendees.length }} / {{ training.max_attendees || '&infin;' }}</div>
           </div>

@@ -19,7 +19,7 @@
           <label class="form-label">Képek:</label>
           <input class="pr-6 pb-8 w-full" type="file" ref="photos" multiple="multiple" accept="image/*">
         </div>
-        <div class="px-8 py-4 bg-gray-300 border-t border-gray-300er flex items-center">
+        <div class="px-8 py-4 bg-gray-300 border-t border-gray-300 flex items-center">
           <button class="text-red-500 hover:underline" tabindex="-1" type="button" @click="destroy">Törlés</button>
           <loading-button :loading="sending" class="btn-indigo ml-auto" type="submit">Album mentése</loading-button>
         </div>

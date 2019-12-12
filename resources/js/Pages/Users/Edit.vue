@@ -35,7 +35,7 @@
           <text-input v-model="form.phone" :errors="$page.errors.phone" class="pr-6 pb-8 w-full lg:w-1/2" label="Telefonszám" />
           <text-input v-model="form.address" :errors="$page.errors.address" class="pr-6 pb-8 w-full" label="Lakcím" />
         </div>
-        <div class="px-8 py-4 bg-gray-300 border-t border-gray-300er flex items-center">
+        <div class="px-8 py-4 bg-gray-300 border-t border-gray-300 flex items-center">
           <button v-if="!user.deleted_at && $page.auth.user.id != this.user.id" class="text-red-500 hover:underline" tabindex="-1" type="button" @click="destroy">Törlés</button>
           <loading-button :loading="sending" class="btn-indigo ml-auto" type="submit">Warrior mentése</loading-button>
         </div>
