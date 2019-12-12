@@ -9,7 +9,7 @@
     </div>
     <div class="bg-white block max-w-lg rounded shadow overflow-hidden">
       <div class="text-center sm:w-auto md:w-auto lg:flex-1 xl:flex-1 m-4 p-4">
-        <h2 class="text-xl mb-2 ml-8 mr-8">
+        <h2 class="text-xl mb-2 ml-8 mr-8 font-bold">
           {{ training.name }}
         </h2>
         <div class="text-gray-600 text-sm italic mb-6">{{ training.diff }}</div>
