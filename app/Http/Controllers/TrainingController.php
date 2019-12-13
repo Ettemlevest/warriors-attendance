@@ -93,6 +93,11 @@ final class TrainingController extends Controller
 
     public function update(TrainingUpdateRequest $request, Training $training)
     {
+        // do not allow to modify a training after two days have past from start time
+        if ($training->start_at < now()->addDay(-2)) {
+            return Redirect::back()->with('error', 'Múltbeli edzés már nem módosítható!');
+        }
+
         $training->update($this->prepareDataForDB($request->all()));
 
         return Redirect::route('trainings.edit', $training)->with('success', 'Edzés sikeresen mentve.');
