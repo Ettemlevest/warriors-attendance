@@ -36,12 +36,12 @@
           </td>
           <td class="border-t">
             <button class="btn hover:underline" tabindex="-1" type="button" @click="setAsCover(photo.id)">
-              <icon name="star" class="flex-shrink-0 w-5 h-5 fill-yellow" />
+              <icon name="star" class="flex-shrink-0 w-5 h-5 fill-current text-yellow-500" />
             </button>
           </td>
           <td class="border-t">
             <button class="btn-danger text-red-500 hover:underline" tabindex="-1" type="button" @click="destroyPhoto(photo.id)">
-              <icon name="trash" class="flex-shrink-0 w-5 h-5 fill-red" />
+              <icon name="trash" class="flex-shrink-0 w-5 h-5 fill-current text-red-700" />
             </button>
           </td>
         </tr>
