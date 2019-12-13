@@ -2,14 +2,14 @@
   <layout>
     <h1 class="mb-8 font-bold text-3xl">Warriorok</h1>
     <div class="mb-6 flex justify-between items-center">
-      <search-filter v-model="form.search" class="w-full max-w-sm mr-4" @reset="reset">
-        <label class="block text-grey-darkest">Jogosultság:</label>
+      <search-filter v-model="form.search" class="w-full max-w-xl mr-4" @reset="reset">
+        <label class="block text-gray-800">Jogosultság:</label>
         <select v-model="form.role" class="mt-1 w-full form-select">
           <option :value="null" />
           <option value="user">Warrior</option>
           <option value="owner">Edző</option>
         </select>
-        <label class="mt-4 block text-grey-darkest">Töröltek:</label>
+        <label class="mt-4 block text-gray-800">Töröltek:</label>
         <select v-model="form.trashed" class="mt-1 w-full form-select">
           <option :value="null" />
           <option value="with">Töröltekkel együtt</option>
@@ -28,12 +28,12 @@
           <th class="px-6 pt-6 pb-4">Életkor</th>
           <th class="px-6 pt-6 pb-4" colspan="2">Jogosultság</th>
         </tr>
-        <tr v-for="user in users.data" :key="user.id" class="hover:bg-grey-lightest focus-within:bg-grey-lightest">
+        <tr v-for="user in users.data" :key="user.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
             <inertia-link class="px-6 py-4 flex items-center focus:text-indigo" :href="route('users.edit', user.id)">
               <img v-if="user.photo" class="block w-8 h-8 rounded-full mr-2 -my-2" :src="user.photo">
               {{ user.name }}
-              <icon v-if="user.deleted_at" name="trash" class="flex-no-shrink w-3 h-3 fill-grey ml-2" />
+              <icon v-if="user.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 fill-current text-gray-500 ml-2" />
             </inertia-link>
           </td>
           <td class="border-t">
@@ -54,7 +54,7 @@
           </td>
           <td class="border-t w-px">
             <inertia-link class="px-4 flex items-center" :href="route('users.edit', user.id)" tabindex="-1">
-              <icon name="cheveron-right" class="block w-6 h-6 fill-grey" />
+              <icon name="cheveron-right" class="block w-6 h-6 fill-gray" />
             </inertia-link>
           </td>
         </tr>

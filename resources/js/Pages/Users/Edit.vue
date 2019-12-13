@@ -1,9 +1,9 @@
 <template>
   <layout>
-    <div class="mb-8 flex justify-start max-w-lg">
+    <div class="mb-8 flex justify-start max-w">
       <h1 class="font-bold text-3xl">
-        <inertia-link class="text-indigo-light hover:text-indigo-dark" :href="route('users')">Warriorok</inertia-link>
-        <span class="text-indigo-light font-medium">/</span>
+        <inertia-link class="text-indigo-500 hover:text-indigo-600" :href="route('users')">Warriorok</inertia-link>
+        <span class="text-indigo-500 font-medium">/</span>
         {{ form.name }}
       </h1>
       <img v-if="user.photo" class="block w-8 h-8 rounded-full ml-4" :src="user.photo">
@@ -11,7 +11,7 @@
     <trashed-message v-if="user.deleted_at" class="mb-6" @restore="restore">
       A Warrior törölve van.
     </trashed-message>
-    <div class="bg-white rounded shadow overflow-hidden max-w-lg">
+    <div class="bg-white rounded shadow overflow-hidden max-w">
       <form @submit.prevent="submit">
         <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
           <text-input v-model="form.name" :errors="$page.errors.name" class="pr-6 pb-8 w-full lg:w-1/2" label="Név" />
@@ -35,8 +35,8 @@
           <text-input v-model="form.phone" :errors="$page.errors.phone" class="pr-6 pb-8 w-full lg:w-1/2" label="Telefonszám" />
           <text-input v-model="form.address" :errors="$page.errors.address" class="pr-6 pb-8 w-full" label="Lakcím" />
         </div>
-        <div class="px-8 py-4 bg-grey-lightest border-t border-grey-lighter flex items-center">
-          <button v-if="!user.deleted_at && $page.auth.user.id != this.user.id" class="text-red hover:underline" tabindex="-1" type="button" @click="destroy">Törlés</button>
+        <div class="px-8 py-4 bg-gray-100 border-t border-gray-300 flex items-center">
+          <button v-if="!user.deleted_at && $page.auth.user.id != this.user.id" class="text-red-500 hover:underline tracking-widest" tabindex="-1" type="button" @click="destroy">Törlés</button>
           <loading-button :loading="sending" class="btn-indigo ml-auto" type="submit">Warrior mentése</loading-button>
         </div>
       </form>

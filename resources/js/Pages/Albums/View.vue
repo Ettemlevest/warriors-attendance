@@ -1,9 +1,9 @@
 <template>
   <layout>
-    <div class="mb-8 flex justify-start max-w-lg">
+    <div class="mb-8 flex justify-start max-w">
       <h1 class="font-bold text-3xl">
-        <inertia-link class="text-indigo-light hover:text-indigo-dark" :href="route('albums')">Képek</inertia-link>
-        <span class="text-indigo-light font-medium">/</span>
+        <inertia-link class="text-indigo-500 hover:text-indigo-600" :href="route('albums')">Képek</inertia-link>
+        <span class="text-indigo-500 font-medium">/</span>
         {{ album.name }}
       </h1>
     </div>

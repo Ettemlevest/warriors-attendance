@@ -1,10 +1,10 @@
 <template>
   <layout>
     <h1 class="mb-8 font-bold text-3xl">
-      <inertia-link class="text-indigo-light hover:text-indigo-dark" :href="route('messages')">Üzenetek</inertia-link>
-      <span class="text-indigo-light font-medium">/</span> Létrehozás
+      <inertia-link class="text-indigo-500 hover:text-indigo-600" :href="route('messages')">Üzenetek</inertia-link>
+      <span class="text-indigo-500 font-medium">/</span> Létrehozás
     </h1>
-    <div v-if="$page.auth.user.owner" class="bg-white rounded shadow overflow-hidden max-w-lg">
+    <div v-if="$page.auth.user.owner" class="bg-white rounded shadow overflow-hidden max-w">
       <form @submit.prevent="submit">
         <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
           <text-input v-model="form.title" :errors="$page.errors.title" class="pr-6 pb-8 w-full" label="Cím" autofocus />
@@ -12,7 +12,7 @@
           <text-input v-model="form.showed_from" :errors="$page.errors.showed_from" class="pr-6 pb-8 w-full lg:w-1/2" label="Dátumtól" type="date" timezone="Europe/Budapest" />
           <text-input v-model="form.showed_to" :errors="$page.errors.showed_to" class="pr-6 pb-8 w-full lg:w-1/2" label="Dátumig" type="date" timezone="Europe/Budapest" />
         </div>
-        <div class="px-8 py-4 bg-grey-lightest border-t border-grey-lighter flex justify-end items-center">
+        <div class="px-8 py-4 bg-gray-100 border-t border-gray-300 flex justify-end items-center">
           <loading-button :loading="sending" class="btn-indigo" type="submit">Üzenet mentése</loading-button>
         </div>
       </form>

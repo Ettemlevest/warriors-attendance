@@ -1,13 +1,13 @@
 <template>
   <layout>
-    <div class="mb-8 flex justify-start max-w-lg">
+    <div class="mb-8 flex justify-start max-w">
       <h1 class="font-bold text-3xl">
-        <inertia-link class="text-indigo-light hover:text-indigo-dark" :href="route('trainings')">Edzések</inertia-link>
-        <span class="text-indigo-light font-medium">/</span>
+        <inertia-link class="text-indigo-500 hover:text-indigo-600" :href="route('trainings')">Edzések</inertia-link>
+        <span class="text-indigo-500 font-medium">/</span>
         {{ form.name }}
       </h1>
     </div>
-    <div class="bg-white rounded shadow overflow-hidden max-w-lg">
+    <div class="bg-white rounded shadow overflow-hidden max-w">
       <form @submit.prevent="submit">
         <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
           <text-input v-model="form.name" :errors="$page.errors.name" class="pr-6 pb-8 w-full lg:w-1/2" label="Edzés neve" />
@@ -18,25 +18,25 @@
           <text-input v-model="form.max_attendees" :errors="$page.errors.max_attendees" class="pr-6 pb-8 w-full lg:w-1/2" label="Max. létszám" type="number" />
           <checkbox-input v-model="form.can_attend_more" :errors="$page.errors.can_attend_more" class="pr-6 pb-8 w-full lg:w-1/2" label="Maximális létszám túlléphető" :checked="form.can_attend_more" />
         </div>
-        <div class="px-8 py-4 bg-grey-lightest border-t border-grey-lighter flex items-center">
-          <button class="text-red hover:underline" tabindex="-1" type="button" @click="destroy">Törlés</button>
+        <div class="px-8 py-4 bg-gray-100 border-t border-gray-300 flex items-center">
+          <button class="text-red-500 hover:underline tracking-widest" tabindex="-1" type="button" @click="destroy">Törlés</button>
           <loading-button :loading="sending" class="btn-indigo ml-auto" type="submit">Edzés mentése</loading-button>
         </div>
       </form>
     </div>
-    <div class="bg-white rounded shadow overflow-hidden max-w-lg mt-8">
+    <div class="bg-white rounded shadow overflow-hidden max-w mt-8">
       <table class="w-full">
         <tr class="text-left font-bold">
           <th class="px-6 pt-6 pb-4">Jelentkezve <span class="italic">({{ training.attendees.length }} fő)</span></th>
           <th class="px-6 pt-6 pb-4">Időpont</th>
         </tr>
-        <tr v-for="attendee in training.attendees" :key="attendee.user_id" class="hover:bg-grey-lightest focus-within:bg-grey-lightest">
-          <td :class="{ 'italic': attendee.pivot.extra === '1', 'text-red-dark': attendee.pivot.extra === '1' }" class="border-t px-6 py-4 flex items-center">
+        <tr v-for="attendee in training.attendees" :key="attendee.user_id" class="hover:bg-gray-100 focus-within:bg-gray-100">
+          <td :class="{ 'italic': attendee.pivot.extra === '1', 'text-red-600': attendee.pivot.extra === '1' }" class="border-t px-6 py-4 flex items-center">
             <img v-if="attendee.photo" class="block w-8 h-8 rounded-full mr-2 -my-2" :src="attendee.photo">
             {{ attendee.name }}
-            <icon v-if="attendee.pivot.extra === '1'" name="users" class="flex-no-shrink w-3 h-3 fill-grey ml-4" />
+            <icon v-if="attendee.pivot.extra === '1'" name="users" class="flex-shrink-0 w-3 h-3 fill-current text-gray-500 ml-4" />
           </td>
-          <td :class="{ 'italic': attendee.pivot.extra === '1', 'text-red-dark': attendee.pivot.extra === '1' }" class="border-t">
+          <td :class="{ 'italic': attendee.pivot.extra === '1', 'text-red-600': attendee.pivot.extra === '1' }" class="border-t">
             {{ attendee.pivot.created_at }}
           </td>
         </tr>
