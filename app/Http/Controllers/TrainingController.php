@@ -45,6 +45,7 @@ final class TrainingController extends Controller
                 'id' => $training->id,
                 'name' => $training->name,
                 'place' => $training->place,
+                'start_at' => $training->start_at,
                 'start_at_day' => $training->start_at->format('Y-m-d'),
                 'start_at_time' => $training->start_at->format('H:i'),
                 'diff' => $training->start_at->diffForHumans(),
@@ -80,6 +81,7 @@ final class TrainingController extends Controller
                 'id' => $training->id,
                 'name' => $training->name,
                 'place' => $training->place,
+                'start_at' => $training->start_at,
                 'start_at_day' => $training->start_at->format('Y-m-d'),
                 'start_at_time' => $training->start_at->format('H:i'),
                 'length' => $training->length,
@@ -92,6 +94,11 @@ final class TrainingController extends Controller
 
     public function update(TrainingUpdateRequest $request, Training $training)
     {
+        // do not allow to modify a training after two days have past from start time
+        if ($training->start_at < now()->addDay(-2)) {
+            return Redirect::back()->with('error', 'Múltbeli edzés már nem módosítható!');
+        }
+
         $training->update($this->prepareDataForDB($request->all()));
 
         return Redirect::route('trainings.edit', $training)->with('success', 'Edzés sikeresen mentve.');
@@ -99,6 +106,11 @@ final class TrainingController extends Controller
 
     public function destroy(TrainingDestroyRequest $request, Training $training)
     {
+        // do not allow to delete a training in the past
+        if ($training->start_at < now()) {
+            return Redirect::back()->with('error', 'Múltbeli edzés már nem törölhető!');
+        }
+
         $training->delete();
 
         return Redirect::route('trainings')->with('success', 'Edzés sikeresen törölve.');
@@ -111,6 +123,10 @@ final class TrainingController extends Controller
 
         if (Auth::user()->trainings->contains($training->id)) {
             return Redirect::back()->with('error', 'Már jelentkeztél az edzésre.');
+        }
+
+        if ($training->start_at < now()) {
+            return Redirect::back()->with('error', 'Nem megengedett művelet múltbeli edzéshez!');
         }
 
         if (
@@ -133,6 +149,10 @@ final class TrainingController extends Controller
 
     public function withdraw(Training $training)
     {
+        if ($training->start_at < now()) {
+            return Redirect::back()->with('error', 'Nem megengedett művelet múltbeli edzéshez!');
+        }
+
         Auth::user()->trainings()->detach($training->id);
 
         return Redirect::back()->with('success', 'Sikeresen visszavontad a jelentkezésed.');
