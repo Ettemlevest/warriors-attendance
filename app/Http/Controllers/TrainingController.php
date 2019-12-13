@@ -45,6 +45,7 @@ final class TrainingController extends Controller
                 'id' => $training->id,
                 'name' => $training->name,
                 'place' => $training->place,
+                'start_at' => $training->start_at,
                 'start_at_day' => $training->start_at->format('Y-m-d'),
                 'start_at_time' => $training->start_at->format('H:i'),
                 'diff' => $training->start_at->diffForHumans(),
@@ -113,6 +114,10 @@ final class TrainingController extends Controller
             return Redirect::back()->with('error', 'Már jelentkeztél az edzésre.');
         }
 
+        if ($training->start_at < now()) {
+            return Redirect::back()->with('error', 'Nem megengedett művelet múltbeli edzéshez!');
+        }
+
         if (
             $training->attendees->count() >= $training->max_attendees
             &&
@@ -133,6 +138,10 @@ final class TrainingController extends Controller
 
     public function withdraw(Training $training)
     {
+        if ($training->start_at < now()) {
+            return Redirect::back()->with('error', 'Nem megengedett művelet múltbeli edzéshez!');
+        }
+
         Auth::user()->trainings()->detach($training->id);
 
         return Redirect::back()->with('success', 'Sikeresen visszavontad a jelentkezésed.');
