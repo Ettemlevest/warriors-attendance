@@ -2,8 +2,8 @@
   <layout>
     <div class="mb-8 flex justify-start max-w">
       <h1 class="font-bold text-3xl">
-        <inertia-link class="text-indigo-300 hover:text-indigo-600" :href="route('trainings')">Edzések</inertia-link>
-        <span class="text-indigo-300 font-medium">/</span>
+        <inertia-link class="text-indigo-500 hover:text-indigo-600" :href="route('trainings')">Edzések</inertia-link>
+        <span class="text-indigo-500 font-medium">/</span>
         {{ form.name }}
       </h1>
     </div>
@@ -15,19 +15,19 @@
         <div class="text-gray-600 text-sm italic mb-6">{{ training.diff }}</div>
         <div class="sm:block md:block lg:flex xl:flex lg:items-center">
           <div class="mb-4 flex lg:flex-1 xl:flex-1">
-            <icon name="location" class="flex w-5 h-5 fill-gray mr-2" />
-            <div class="text-purple text-lg italic">{{ training.place }}</div>
+            <icon name="location" class="flex w-5 h-5 fill-current text-gray-500 mr-2" />
+            <div class="text-purple-600 text-lg italic">{{ training.place }}</div>
           </div>
           <div class="mb-4 text-gray-600 items-center flex lg:flex-1 xl:flex-1">
-            <icon name="dashboard" class="flex w-5 h-5 fill-gray mr-2" />
+            <icon name="dashboard" class="flex w-5 h-5 fill-current text-gray-500 mr-2" />
             <div class="text-lg italic">{{ training.start_at_day+' '+training.start_at_time }}</div>
           </div>
           <div class="mb-4 text-gray-600 items-center flex lg:flex-1 xl:flex-1">
-            <icon name="users" class="flex w-5 h-5 fill-gray mr-2" />
+            <icon name="users" class="flex w-5 h-5 fill-current text-gray-500 mr-2" />
             <div class="text-lg italic">{{ training.attendees.length }} / {{ training.max_attendees || '&infin;' }}</div>
           </div>
         </div>
-        <button v-if="!training.registered && (training.max_attendees === 0 || training.attendees.length < training.max_attendees)" class="bg-blue-600 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" @click="attend(training.id)">
+        <button v-if="!training.registered && (training.max_attendees === 0 || training.attendees.length < training.max_attendees)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @click="attend(training.id)">
           Jelentkezem
         </button>
         <div v-if="!training.registered && training.max_attendees > 0 && training.attendees.length >= training.max_attendees && !training.can_attend_more" class="bg-red-600 text-white font-bold py-2 px-4 rounded">Megtelt, már nem lehet jelentkezni!</div>

@@ -2,7 +2,7 @@
   <layout>
     <h1 class="mb-8 font-bold text-3xl">Üzenetek</h1>
     <div class="mb-6 flex justify-between items-center">
-      <search-filter v-model="form.search" class="w-full max-w-sm mr-4" @reset="reset">
+      <search-filter v-model="form.search" class="w-full max-w-xl mr-4" @reset="reset">
       </search-filter>
       <inertia-link v-if="$page.auth.user.owner" class="btn-indigo" :href="route('messages.create')">
         <span>Létrehozás</span>

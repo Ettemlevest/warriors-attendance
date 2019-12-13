@@ -1,6 +1,6 @@
 <template>
   <div class="p-6 bg-indigo-900 min-h-screen flex justify-center items-center">
-    <div class="w-full max-w-sm">
+    <div class="w-full max-w-xl">
       <!-- <logo class="block mx-auto w-full max-w-xs fill-white" height="50" /> -->
       <form class="mt-8 bg-white rounded-lg shadow-lg overflow-hidden" @submit.prevent="submit">
         <div class="px-10 py-12">

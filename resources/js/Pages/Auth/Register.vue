@@ -1,6 +1,6 @@
 <template>
   <div class="p-6 bg-indigo-700 min-h-screen flex justify-center items-center">
-    <div class="w-full max-w-sm">
+    <div class="w-full max-w-xl">
       <form class="mt-8 bg-white rounded-lg shadow-lg overflow-hidden" @submit.prevent="submit">
         <div class="px-10 py-12">
           <h1 class="text-center font-bold text-3xl">Regisztráció</h1>

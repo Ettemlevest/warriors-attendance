@@ -1,8 +1,8 @@
 <template>
   <layout>
     <h1 class="mb-8 font-bold text-3xl">
-      <inertia-link class="text-indigo-300 hover:text-indigo-600" :href="route('trainings')">Edzések</inertia-link>
-      <span class="text-indigo-300 font-medium">/</span> Létrehozás
+      <inertia-link class="text-indigo-500 hover:text-indigo-600" :href="route('trainings')">Edzések</inertia-link>
+      <span class="text-indigo-500 font-medium">/</span> Létrehozás
     </h1>
     <div v-if="$page.auth.user.owner" class="bg-white rounded shadow overflow-hidden max-w">
       <form @submit.prevent="submit">

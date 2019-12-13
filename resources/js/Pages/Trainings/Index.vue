@@ -2,7 +2,7 @@
   <layout>
     <h1 class="mb-8 font-bold text-3xl">Edzések</h1>
     <div class="mb-6 flex justify-between items-center">
-      <search-filter v-model="form.search" class="w-full max-w-sm mr-4" @reset="reset">
+      <search-filter v-model="form.search" class="w-full max-w-xl mr-4" @reset="reset">
         <label class="block text-gray-800">Kezdés:</label>
         <select v-model="form.start_at" class="mt-1 w-full form-select">
           <option :value="null" />
@@ -34,7 +34,7 @@
           <td class="border-t" :class="{ 'italic': training.max_attendees && training.attendees > training.max_attendees, 'text-red-600': training.max_attendees && training.attendees > training.max_attendees }">
             <inertia-link class="px-6 py-4 block items-center focus:text-indigo" :href="route($page.auth.user.owner ? 'trainings.edit' : 'trainings.view', training.id)">
               <div class="leading-normal text-lg">{{ training.name }}</div>
-              <div class="text-gray-600 text-sm italic flex items-center"><icon name="location" class="flex w-4 h-4 fill-gray mr-1" /> {{ training.place }}</div>
+              <div class="text-gray-600 text-sm italic flex items-center"><icon name="location" class="flex w-4 h-4 fill-current text-gray-500 mr-1" /> {{ training.place }}</div>
             </inertia-link>
           </td>
           <td class="border-t" :class="{ 'italic': training.max_attendees && training.attendees > training.max_attendees, 'text-red-600': training.max_attendees && training.attendees > training.max_attendees }">

@@ -2,8 +2,8 @@
   <layout>
     <div class="mb-8 flex justify-start max-w">
       <h1 class="font-bold text-3xl">
-        <inertia-link class="text-indigo-300 hover:text-indigo-600" :href="route('albums')">Képek</inertia-link>
-        <span class="text-indigo-300 font-medium">/</span>
+        <inertia-link class="text-indigo-500 hover:text-indigo-600" :href="route('albums')">Képek</inertia-link>
+        <span class="text-indigo-500 font-medium">/</span>
         {{ form.name }}
       </h1>
     </div>
@@ -20,7 +20,7 @@
           <input class="pr-6 pb-8 w-full" type="file" ref="photos" multiple="multiple" accept="image/*">
         </div>
         <div class="px-8 py-4 bg-gray-100 border-t border-gray-300 flex items-center">
-          <button class="text-red-500 hover:underline" tabindex="-1" type="button" @click="destroy">Törlés</button>
+          <button class="text-red-500 hover:underline tracking-widest" tabindex="-1" type="button" @click="destroy">Törlés</button>
           <loading-button :loading="sending" class="btn-indigo ml-auto" type="submit">Album mentése</loading-button>
         </div>
       </form>

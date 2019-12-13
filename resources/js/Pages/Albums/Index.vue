@@ -20,11 +20,11 @@
                 <h3 class="text-lg font-bold">{{ album.name }}</h3>
               </inertia-link>
               <p class="mt-2">
-                <icon name="location" class="w-3 h-3 fill-gray mr-2" />
+                <icon name="location" class="w-3 h-3 fill-current text-gray-500 mr-2" />
                 <span class="text-sm text-gray-600">{{ album.place }}</span>
               </p>
               <p class="mt-2">
-                <icon name="dashboard" class="w-3 h-3 fill-gray mr-2" />
+                <icon name="dashboard" class="w-3 h-3 fill-current text-gray-500 mr-2" />
                 <time v-if="album.date_from === album.date_to" class="mt-2 mb-2 text-sm text-gray-600" :datetime="album.date_from">{{ album.date_from }}</time>
                 <time v-else class="mt-2 mb-2 text-sm text-gray-600" :datetime="album.date_from">{{ album.date_from+' - '+album.date_to }}</time>
               </p>

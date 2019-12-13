@@ -2,8 +2,8 @@
   <layout>
     <div class="mb-8 flex justify-start max-w">
       <h1 class="font-bold text-3xl">
-        <inertia-link class="text-indigo-300 hover:text-indigo-600" :href="route('trainings')">Edzések</inertia-link>
-        <span class="text-indigo-300 font-medium">/</span>
+        <inertia-link class="text-indigo-500 hover:text-indigo-600" :href="route('trainings')">Edzések</inertia-link>
+        <span class="text-indigo-500 font-medium">/</span>
         {{ form.name }}
       </h1>
     </div>
@@ -19,7 +19,7 @@
           <checkbox-input v-model="form.can_attend_more" :errors="$page.errors.can_attend_more" class="pr-6 pb-8 w-full lg:w-1/2" label="Maximális létszám túlléphető" :checked="form.can_attend_more" />
         </div>
         <div class="px-8 py-4 bg-gray-100 border-t border-gray-300 flex items-center">
-          <button class="text-red-500 hover:underline" tabindex="-1" type="button" @click="destroy">Törlés</button>
+          <button class="text-red-500 hover:underline tracking-widest" tabindex="-1" type="button" @click="destroy">Törlés</button>
           <loading-button :loading="sending" class="btn-indigo ml-auto" type="submit">Edzés mentése</loading-button>
         </div>
       </form>
@@ -34,7 +34,7 @@
           <td :class="{ 'italic': attendee.pivot.extra === '1', 'text-red-600': attendee.pivot.extra === '1' }" class="border-t px-6 py-4 flex items-center">
             <img v-if="attendee.photo" class="block w-8 h-8 rounded-full mr-2 -my-2" :src="attendee.photo">
             {{ attendee.name }}
-            <icon v-if="attendee.pivot.extra === '1'" name="users" class="flex-shrink-0 w-3 h-3 fill-gray ml-4" />
+            <icon v-if="attendee.pivot.extra === '1'" name="users" class="flex-shrink-0 w-3 h-3 fill-current text-gray-500 ml-4" />
           </td>
           <td :class="{ 'italic': attendee.pivot.extra === '1', 'text-red-600': attendee.pivot.extra === '1' }" class="border-t">
             {{ attendee.pivot.created_at }}
