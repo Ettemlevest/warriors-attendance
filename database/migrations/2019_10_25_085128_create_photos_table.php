@@ -20,5 +20,9 @@ class CreatePhotosTable extends Migration
             $table->string('path');
             $table->timestamps();
         });
+
+        Schema::table('albums', function (Blueprint $table) {
+            $table->foreign('cover_photo_id')->references('id')->on('photos');
+        });
     }
 }

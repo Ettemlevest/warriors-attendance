@@ -21,7 +21,6 @@ class CreateAlbumsTable extends Migration
             $table->date('date_from');
             $table->date('date_to');
             $table->unsignedInteger('cover_photo_id')->nullable();
-            $table->foreign('cover_photo_id')->references('id')->on('photos');
             $table->timestamps();
         });
     }
