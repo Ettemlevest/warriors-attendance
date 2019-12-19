@@ -7,6 +7,7 @@ use App\Http\Requests\TrainingDestroyRequest;
 use App\Http\Requests\TrainingUpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Training;
+use App\User;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -156,6 +157,28 @@ final class TrainingController extends Controller
         Auth::user()->trainings()->detach($training->id);
 
         return Redirect::back()->with('success', 'Sikeresen visszavontad a jelentkezésed.');
+    }
+
+    public function confirmAttendance(Training $training, User $attendee)
+    {
+        if ($training->doesntHaveAttendee($attendee)) {
+            return Redirect::back()->with('error', 'A Warrior nem jelentkezett az edzésre!');
+        }
+
+        $training->attendees()->updateExistingPivot($attendee, ['attended' => true]);
+
+        return Redirect::back()->with('success', "Sikeresen jóváhagytad {$attendee->name} részvételét.");
+    }
+
+    public function rejectAttendance(Training $training, User $attendee)
+    {
+        if ($training->doesntHaveAttendee($attendee)) {
+            return Redirect::back()->with('error', 'A Warrior nem jelentkezett az edzésre!');
+        }
+
+        $training->attendees()->updateExistingPivot($attendee, ['attended' => false]);
+
+        return Redirect::back()->with('success', "Sikeresen törölted {$attendee->name} részvételét.");
     }
 
     protected function prepareDataForDB(Array $inputs)
