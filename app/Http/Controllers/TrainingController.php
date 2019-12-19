@@ -165,6 +165,10 @@ final class TrainingController extends Controller
             return Redirect::back()->with('error', 'A Warrior nem jelentkezett az edzésre!');
         }
 
+        if ($training->start_at > now()) {
+            return Redirect::back()->with("error", "Még nem indult el az edzés!");
+        }
+
         $training->attendees()->updateExistingPivot($attendee, ['attended' => true]);
 
         return Redirect::back()->with('success', "Sikeresen jóváhagytad {$attendee->name} részvételét.");
@@ -174,6 +178,10 @@ final class TrainingController extends Controller
     {
         if ($training->doesntHaveAttendee($attendee)) {
             return Redirect::back()->with('error', 'A Warrior nem jelentkezett az edzésre!');
+        }
+
+        if ($training->start_at > now()) {
+            return Redirect::back()->with("error", "Még nem indult el az edzés!");
         }
 
         $training->attendees()->updateExistingPivot($attendee, ['attended' => false]);

@@ -42,10 +42,10 @@
             {{ attendee.pivot.created_at }}
           </td>
           <td class="border-t">
-            <button v-if="attendee.pivot.attended === '0'" class="btn-green ml-auto hover:text-green-600" @click="confirmAttendance(attendee.id)" title="Megjelent" type="button">
+            <button v-if="attendee.pivot.attended === '0'" class="btn-green ml-auto hover:text-green-600" :class="{ 'opacity-50': training.start_at > new Date().toISOString(), 'cursor-not-allowed': training.start_at > new Date().toISOString() }" @click="confirmAttendance(attendee.id)" title="Megjelent" type="button">
               <icon name="thumbs-up" class="flex-shrink-0 w-4 h-4 fill-current" />
             </button>
-            <button v-if="attendee.pivot.attended === '1'" class="btn-red ml-auto hover:text-red-600" @click="rejectAttendance(attendee.id)" title="Nem jelent meg" type="button">
+            <button v-if="attendee.pivot.attended === '1'" class="btn-red ml-auto hover:text-red-600" :class="{ 'opacity-50': training.start_at > new Date().toISOString(), 'cursor-not-allowed': training.start_at > new Date().toISOString() }" @click="rejectAttendance(attendee.id)" title="Nem jelent meg" type="button">
               <icon name="thumbs-down" class="flex-shrink-0 w-4 h-4 fill-current" />
             </button>
           </td>
@@ -126,14 +126,18 @@ export default {
       }
     },
     confirmAttendance(user_id) {
-      this.$inertia.post(this.route('trainings.attendance.confirm', [this.training.id, user_id]), {
-        preserveScroll: true
-      })
+      if (this.training.start_at < new Date().toISOString()) {
+        this.$inertia.post(this.route('trainings.attendance.confirm', [this.training.id, user_id]), {
+          preserveScroll: true
+        })
+      }
     },
     rejectAttendance(user_id) {
-      this.$inertia.post(this.route('trainings.attendance.reject', [this.training.id, user_id]), {
-        preserveScroll: true
-      })
+      if (this.training.start_at < new Date().toISOString()) {
+        this.$inertia.post(this.route('trainings.attendance.reject', [this.training.id, user_id]), {
+          preserveScroll: true
+        })
+      }
     }
   },
 }
