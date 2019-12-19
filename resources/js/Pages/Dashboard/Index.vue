@@ -28,21 +28,21 @@
           </div>
           <div class="mb-4 text-gray-600 items-center flex lg:flex-1 xl:flex-1">
             <icon name="dashboard" class="flex w-5 h-5 fill-current text-gray-500 mr-2" />
-            <div class="text-lg italic">{{ training.start_at }}</div>
+            <div class="text-lg italic">{{ training.formatted_start_at }}</div>
           </div>
           <div class="mb-4 text-gray-600 items-center flex lg:flex-1 xl:flex-1">
             <icon name="users" class="flex w-5 h-5 fill-current text-gray-500 mr-2" />
             <div class="text-lg italic">{{ training.attendees.length }} / {{ training.max_attendees || '&infin;' }}</div>
           </div>
         </div>
-        <button v-if="!training.registered && (training.max_attendees === 0 || training.attendees.length < training.max_attendees)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @click="attend(training.id)">
+        <button v-if="training.start_at > new Date().toISOString() && !training.registered && (training.max_attendees === 0 || training.attendees.length < training.max_attendees)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @click="attend(training.id)">
           Jelentkezem
         </button>
-        <div v-if="!training.registered && training.attendees.length >= training.max_attendees && !training.can_attend_more" class="bg-red-600 text-white font-bold py-2 px-4 rounded">Megtelt, már nem lehet jelentkezni!</div>
+        <div v-if="training.start_at > new Date().toISOString() && !training.registered && training.max_attendees > 0 && training.attendees.length >= training.max_attendees && !training.can_attend_more" class="bg-red-600 text-white font-bold py-2 px-4 rounded">Megtelt, már nem lehet jelentkezni!</div>
         <button v-if="training.registered" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" @click="withdraw(training.id)">
           Lemondás
         </button>
-        <button v-if="!training.registered && training.max_attendees && training.attendees.length >= training.max_attendees && training.can_attend_more" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @click="attend(training.id)">
+        <button v-if="training.start_at > new Date().toISOString() && !training.registered && training.max_attendees && training.attendees.length >= training.max_attendees && training.can_attend_more" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @click="attend(training.id)">
           Megtelt, mégis jelentkezem. Vállalom a 10 burpeet beugrásnak!
         </button>
       </div>
