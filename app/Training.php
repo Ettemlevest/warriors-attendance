@@ -20,7 +20,7 @@ final class Training extends Model
     public function attendees()
     {
         return $this->belongsToMany(User::class, 'trainings_attendance')
-            ->withPivot('extra')
+            ->withPivot(['extra', 'attended'])
             ->withTimestamps();
     }
 
