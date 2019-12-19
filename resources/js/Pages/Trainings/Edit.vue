@@ -29,15 +29,25 @@
         <tr class="text-left font-bold">
           <th class="px-6 pt-6 pb-4">Jelentkezve <span class="italic">({{ training.attendees.length }} fő)</span></th>
           <th class="px-6 pt-6 pb-4">Időpont</th>
+          <th class="px-6 pt-6 pb-4">Részvétel</th>
         </tr>
         <tr v-for="attendee in training.attendees" :key="attendee.user_id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td :class="{ 'italic': attendee.pivot.extra === '1', 'text-red-600': attendee.pivot.extra === '1' }" class="border-t px-6 py-4 flex items-center">
             <img v-if="attendee.photo" class="block w-8 h-8 rounded-full mr-2 -my-2" :src="attendee.photo">
             {{ attendee.name }}
             <icon v-if="attendee.pivot.extra === '1'" name="users" class="flex-shrink-0 w-3 h-3 fill-current text-gray-500 ml-4" />
+            <icon v-if="attendee.pivot.attended === '1'" name="thumbs-up" class="flex-shrink-0 w-3 h-3 fill-current text-gray-500 ml-4" />
           </td>
           <td :class="{ 'italic': attendee.pivot.extra === '1', 'text-red-600': attendee.pivot.extra === '1' }" class="border-t">
             {{ attendee.pivot.created_at }}
+          </td>
+          <td class="border-t">
+            <button v-if="attendee.pivot.attended === '0'" class="btn-green ml-auto hover:text-green-600" @click="confirmAttendance(attendee.id)" title="Megjelent" type="button">
+              <icon name="thumbs-up" class="flex-shrink-0 w-4 h-4 fill-current" />
+            </button>
+            <button v-if="attendee.pivot.attended === '1'" class="btn-red ml-auto hover:text-red-600" @click="rejectAttendance(attendee.id)" title="Nem jelent meg" type="button">
+              <icon name="thumbs-down" class="flex-shrink-0 w-4 h-4 fill-current" />
+            </button>
           </td>
         </tr>
         <tr v-if="training.attendees.length === 0">
@@ -115,6 +125,16 @@ export default {
         this.$inertia.delete(this.route('trainings.destroy', this.training.id))
       }
     },
+    confirmAttendance(user_id) {
+      this.$inertia.post(this.route('trainings.attendance.confirm', [this.training.id, user_id]), {
+        preserveScroll: true
+      })
+    },
+    rejectAttendance(user_id) {
+      this.$inertia.post(this.route('trainings.attendance.reject', [this.training.id, user_id]), {
+        preserveScroll: true
+      })
+    }
   },
 }
 </script>
