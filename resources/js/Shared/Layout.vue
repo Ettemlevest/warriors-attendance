@@ -6,10 +6,10 @@
         <div class="md:flex">
           <div class="bg-black md:flex-shrink-0 md:w-56 px-6 py-4 flex items-center justify-between md:justify-center">
             <inertia-link class="mt-1" href="/">
-              <logo class="fill-white" width="120" height="28" />
+              <logo class="fill-current text-white" width="120" height="28" />
             </inertia-link>
             <dropdown class="md:hidden" placement="bottom-end">
-              <svg class="fill-white w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" /></svg>
+              <svg class="fill-current text-white w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" /></svg>
               <div slot="dropdown" class="mt-2 px-8 py-4 shadow-lg bg-indigo-900 rounded">
                 <main-menu />
               </div>
