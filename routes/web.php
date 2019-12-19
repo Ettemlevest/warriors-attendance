@@ -53,6 +53,8 @@ Route::put('trainings/{training}', [TrainingController::class, 'update'])->name(
 Route::delete('trainings/{training}', [TrainingController::class, 'destroy'])->name('trainings.destroy')->middleware('auth');
 Route::post('trainings/{training}/attend', [TrainingController::class, 'attend'])->name('trainings.attend')->middleware('auth');
 Route::delete('trainings/{training}/withdraw', [TrainingController::class, 'withdraw'])->name('trainings.withdraw')->middleware('auth');
+Route::post('trainings/{training}/attendee/{attendee}/confirm', [TrainingController::class, 'confirmAttendance'])->name('trainings.attendance.confirm')->middleware('auth');
+Route::post('trainings/{training}/attendee/{attendee}/reject', [TrainingController::class, 'rejectAttendance'])->name('trainings.attendance.reject')->middleware('auth');
 
 // Photo albums
 Route::get('albums', [AlbumController::class, 'index'])->name('albums')->middleware('auth');

@@ -20,8 +20,18 @@ final class Training extends Model
     public function attendees()
     {
         return $this->belongsToMany(User::class, 'trainings_attendance')
-            ->withPivot('extra')
+            ->withPivot(['extra', 'attended'])
             ->withTimestamps();
+    }
+
+    public function hasAttendee(User $attendee)
+    {
+        return $this->attendees()->whereUserId($attendee->id)->exists();
+    }
+
+    public function doesntHaveAttendee(User $attendee)
+    {
+        return $this->attendees()->whereUserId($attendee->id)->doesntExist();
     }
 
     public function scopeFilter($query, array $filters)
