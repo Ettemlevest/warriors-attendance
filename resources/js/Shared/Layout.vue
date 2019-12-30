@@ -143,7 +143,6 @@ import Dropdown from '@/Shared/Dropdown'
 import FlashMessages from '@/Shared/FlashMessages'
 import Icon from '@/Shared/Icon'
 import Logo from '@/Shared/Logo'
-import MainMenu from '@/Shared/MainMenu'
 
 export default {
   components: {
@@ -151,7 +150,6 @@ export default {
     FlashMessages,
     Icon,
     Logo,
-    MainMenu,
   },
   data() {
     return {
