@@ -63,15 +63,27 @@
         </div>
         <nav class="mt-16 sm:mt-0">
           <div class="mt-8 px-6">
-            <inertia-link :href="route('dashboard')" class="mt-2 -mx-3 px-3 py-2 flex items-center text-sm font-medium hover:bg-gray-200 rounded-lg text-gray-700">
+            <inertia-link
+              :href="route('dashboard')"
+              class="mt-2 -mx-3 px-3 py-2 flex items-center text-sm font-medium hover:bg-gray-200 rounded-lg text-gray-700"
+              :class="isUrl('') ? 'bg-gray-200 font-bold' : ''"
+            >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" class="w-4 h-4 mr-2 fill-current"><path d="M10 20a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm-5.6-4.29a9.95 9.95 0 0 1 11.2 0 8 8 0 1 0-11.2 0zm6.12-7.64l3.02-3.02 1.41 1.41-3.02 3.02a2 2 0 1 1-1.41-1.41z"></path></svg>
               Kezdőlap
             </inertia-link>
-            <inertia-link :href="route('trainings')" class="mt-2 -mx-3 px-3 py-2 flex items-center text-sm font-medium hover:bg-gray-200 rounded-lg text-gray-700">
+            <inertia-link
+              :href="route('trainings')"
+              class="mt-2 -mx-3 px-3 py-2 flex items-center text-sm font-medium hover:bg-gray-200 rounded-lg text-gray-700"
+              :class="isUrl('trainings') ? 'bg-gray-200 font-bold' : ''"
+            >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" class="w-4 h-4 mr-2 fill-current"><path d="M6 4H5a1 1 0 1 1 0-2h11V1a1 1 0 0 0-1-1H4a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V5a1 1 0 0 0-1-1h-7v8l-2-2-2 2V4z"></path></svg>
               Edzések
             </inertia-link>
-            <inertia-link :href="route('albums')" class="mt-2 -mx-3 px-3 py-2 flex items-center text-sm font-medium hover:bg-gray-200 rounded-lg text-gray-700">
+            <inertia-link
+              :href="route('albums')"
+              class="mt-2 -mx-3 px-3 py-2 flex items-center text-sm font-medium hover:bg-gray-200 rounded-lg text-gray-700"
+              :class="isUrl('albums') ? 'bg-gray-200 font-bold' : ''"
+            >
               <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" class="w-4 h-4 mr-2 fill-current"><path fill-rule="evenodd" d="M7 0h86v100H57.108V88.418H42.892V100H7V0zm9 64h11v15H16V64zm57 0h11v15H73V64zm-19 0h11v15H54V64zm-19 0h11v15H35V64zM16 37h11v15H16V37zm57 0h11v15H73V37zm-19 0h11v15H54V37zm-19 0h11v15H35V37zM16 11h11v15H16V11zm57 0h11v15H73V11zm-19 0h11v15H54V11zm-19 0h11v15H35V11z"></path></svg>
               Képek
             </inertia-link>
@@ -79,17 +91,16 @@
               :href="route('messages')"
               v-if="$page.auth.user.owner"
               class="mt-2 -mx-3 px-3 py-2 flex items-center text-sm font-medium hover:bg-gray-200 rounded-lg text-gray-700"
+              :class="isUrl('messages') ? 'bg-gray-200 font-bold' : ''"
             >
               <icon name="chat-bubble-dots" class="w-4 h-4 mr-2 fill-current" />
               Üzenetek
             </inertia-link>
-
-
-
             <inertia-link
               :href="route('users')"
               v-if="$page.auth.user.owner"
               class="mt-2 -mx-3 px-3 py-2 flex items-center text-sm font-medium hover:bg-gray-200 rounded-lg text-gray-700"
+              :class="isUrl('users') ? 'bg-gray-200 font-bold' : ''"
             >
               <svg class="h-4 w-4 mr-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M7 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0 1c2.15 0 4.2.4 6.1 1.09L12 16h-1.25L10 20H4l-.75-4H2L.9 10.09A17.93 17.93 0 0 1 7 9zm8.31.17c1.32.18 2.59.48 3.8.92L18 16h-1.25L16 20h-3.96l.37-2h1.25l1.65-8.83zM13 0a4 4 0 1 1-1.33 7.76 5.96 5.96 0 0 0 0-7.52C12.1.1 12.53 0 13 0z"/></svg>
               Warriorok
@@ -159,6 +170,13 @@ export default {
   methods: {
     hideDropdownMenus() {
       this.menuBarOpen = false
+    },
+    isUrl(...urls) {
+      if (urls[0] === '') {
+        return location.pathname.substr(1) === ''
+      }
+
+      return urls.filter(url => location.pathname.substr(1).startsWith(url)).length
     },
   },
 }
