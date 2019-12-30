@@ -19,7 +19,7 @@
       </div>
       <div class="flex-1 flex items-center justify-between pl-2 pr-6 bg-gray-700 lg:px-6">
         <div class="text-white font-bold tracking-wider flex items-center">
-          <img class="h-8 w-8 mr-4" src="logo.png" />
+          <img class="h-8 w-8 mr-4" src="/logo.png" />
           Kiskunlacháza WARRIORS
         </div>
         <!-- <nav class="hidden sm:flex">
