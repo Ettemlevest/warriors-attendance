@@ -8,7 +8,7 @@
         <span>Létrehozás</span>
       </inertia-link>
     </div>
-    <div class="bg-white rounded shadow overflow-x-auto">
+    <div class="bg-white rounded shadow scrolling-touch">
       <table class="w-full whitespace-no-wrap">
         <tr class="text-left font-bold">
           <th class="px-6 pt-6 pb-4">Cím</th>
