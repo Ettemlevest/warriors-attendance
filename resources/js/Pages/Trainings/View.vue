@@ -27,14 +27,15 @@
             <div class="text-lg italic">{{ training.attendees.length }} / {{ training.max_attendees || '&infin;' }}</div>
           </div>
         </div>
-        <button v-if="training.start_at > new Date().toISOString() && !training.registered && (training.max_attendees === 0 || training.attendees.length < training.max_attendees)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @click="attend(training.id)">
+        <button v-if="training.can_attend_from < new Date().toISOString() && training.start_at > new Date().toISOString() && !training.registered && (training.max_attendees === 0 || training.attendees.length < training.max_attendees)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @click="attend(training.id)">
           Jelentkezem
         </button>
-        <div v-if="training.start_at > new Date().toISOString() && !training.registered && training.max_attendees > 0 && training.attendees.length >= training.max_attendees && !training.can_attend_more" class="bg-red-600 text-white font-bold py-2 px-4 rounded">Megtelt, már nem lehet jelentkezni!</div>
-        <button v-if="training.start_at > new Date().toISOString() && training.registered" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" @click="withdraw(training.id)">
+        <div v-if="training.can_attend_from > new Date().toISOString()" class="bg-yellow-600 text-white font-bold py-2 px-4 rounded">Még nem lehet jelentkezni az edzésre! Gyere vissza 7 nappal előtte.</div>
+        <div v-if="training.can_attend_from < new Date().toISOString() && training.start_at > new Date().toISOString() && !training.registered && training.max_attendees > 0 && training.attendees.length >= training.max_attendees && !training.can_attend_more" class="bg-red-600 text-white font-bold py-2 px-4 rounded">Megtelt, már nem lehet jelentkezni!</div>
+        <button v-if="training.can_attend_from < new Date().toISOString() && training.start_at > new Date().toISOString() && training.registered" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" @click="withdraw(training.id)">
           Lemondás
         </button>
-        <button v-if="training.start_at > new Date().toISOString() && !training.registered && training.max_attendees && training.attendees.length >= training.max_attendees && training.can_attend_more" class="bg-blue-600 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" @click="attend(training.id)">
+        <button v-if="training.can_attend_from < new Date().toISOString() && training.start_at > new Date().toISOString() && !training.registered && training.max_attendees && training.attendees.length >= training.max_attendees && training.can_attend_more" class="bg-blue-600 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" @click="attend(training.id)">
           Megtelt, mégis jelentkezem. Vállalom a 10 burpeet beugrásnak!
         </button>
       </div>
