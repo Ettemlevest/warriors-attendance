@@ -37,6 +37,8 @@ class UserCreationRequest extends FormRequest
             'photo' => ['nullable', 'image'],
             'size' => ['nullable', 'string'],
             'birth_date' => ['nullable', 'date_format:Y-m-d'],
+            'safety_person' => ['nullable', 'string', 'max:255'],
+            'safety_phone' => ['nullable', 'string', 'max:255'],
         ];
     }
 }
