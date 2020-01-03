@@ -9,7 +9,7 @@
         <button
           v-for="template in templates"
           :key="template"
-          class="btn-indigo inline-block rounded-full px-4 py-2 text-sm font-semibold mr-2"
+          class="btn-indigo inline-block rounded-full px-4 py-2 text-sm font-semibold m-2"
           @click="setTemplate(template)"
         >
           {{ template.template }}
