@@ -130,6 +130,10 @@ final class TrainingController extends Controller
             return Redirect::back()->with('error', 'Nem megengedett művelet múltbeli edzéshez!');
         }
 
+        if ($training->start_at > now()->addDays(7)) {
+            return Redirect::back()->with('error', 'Még nem lehet jelentkezni az edzésre!');
+        }
+
         if (
             $training->attendees->count() >= $training->max_attendees
             &&
