@@ -57,7 +57,7 @@ export default {
       templates: [
         {
           template: 'Köredzés 18:45',
-          name: 'Köredzés',
+          name: 'Köredzés korai',
           place: 'Sportcsarnok',
           start_at_time: '18:45',
           length: '60',
@@ -66,7 +66,7 @@ export default {
         },
         {
           template: 'Köredzés 20:00',
-          name: 'Köredzés',
+          name: 'Köredzés késői',
           place: 'Sportcsarnok',
           start_at_time: '20:00',
           length: '60',
