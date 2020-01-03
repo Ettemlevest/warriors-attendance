@@ -55,6 +55,7 @@ final class TrainingController extends Controller
                 'registered' => $training->attendees->contains(Auth::user()->id),
                 'max_attendees' => $training->max_attendees,
                 'can_attend_more' => (boolean)$training->can_attend_more,
+                'can_attend_from' => $training->start_at->addDays(-7),
             ],
         ]);
     }
@@ -89,6 +90,7 @@ final class TrainingController extends Controller
                 'attendees' => UserResource::collection($training->attendees),
                 'max_attendees' => $training->max_attendees,
                 'can_attend_more' => (boolean)$training->can_attend_more,
+                'can_attend_from' => $training->start_at->addDays(-7),
             ],
         ]);
     }
@@ -128,6 +130,10 @@ final class TrainingController extends Controller
 
         if ($training->start_at < now()) {
             return Redirect::back()->with('error', 'Nem megengedett művelet múltbeli edzéshez!');
+        }
+
+        if ($training->start_at > now()->addDays(7)) {
+            return Redirect::back()->with('error', 'Még nem lehet jelentkezni az edzésre!');
         }
 
         if (
