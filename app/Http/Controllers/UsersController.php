@@ -59,6 +59,8 @@ final class UsersController extends Controller
             'birth_date',
             'phone',
             'address',
+            'safety_person',
+            'safety_phone',
         ]), [
             'photo_path' => $request->file('photo') ? $request->file('photo')->store('users') : null,
         ]));
@@ -83,6 +85,8 @@ final class UsersController extends Controller
                 'birth_date' => $user->birth_date ? $user->birth_date->format('Y-m-d') : null,
                 'phone' => $user->phone,
                 'address' => $user->address,
+                'safety_person' => $user->safety_person,
+                'safety_phone' => $user->safety_phone,
                 'deleted_at' => $user->deleted_at,
             ],
         ]);
@@ -105,7 +109,9 @@ final class UsersController extends Controller
             'size',
             'birth_date',
             'phone',
-            'address'
+            'address',
+            'safety_person',
+            'safety_phone'
         ]));
 
         return Redirect::route('users.edit', $user)->with('success', 'Warrior sikeresen frissítve.');

@@ -39,6 +39,8 @@ class UserUpdateRequest extends FormRequest
             'password' => ['nullable'],
             'owner' => ['required', 'boolean'],
             'photo' => ['nullable', 'image'],
+            'safety_person' => ['nullable', 'string', 'max:255'],
+            'safety_phone' => ['nullable', 'string', 'max:255'],
         ];
     }
 }
