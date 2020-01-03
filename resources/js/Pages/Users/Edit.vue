@@ -21,7 +21,7 @@
             <option :value="true">Igen</option>
             <option :value="false">Nem</option>
           </select-input>
-          <h3 class="w-full mb-4 mr-6 p-2 border-b border-gray-400 tracking-wider text-lg italic pl-0">Versenyre jelentkezéshez</h3>
+          <h3 class="w-full mb-4 mr-6 p-2 border-b border-gray-400 tracking-wider text-lg italic pl-0">Információk versenyre jelentkezéshez</h3>
           <file-input v-model="form.photo" :errors="$page.errors.photo" class="pr-6 pb-8 w-full lg:w-1/2" type="file" accept="image/*" label="Fénykép" />
           <select-input v-model="form.size" :errors="$page.errors.size" class="pr-6 pb-8 w-full lg:w-1/2" label="Póló méret">
             <option :value="null" />
