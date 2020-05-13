@@ -33,9 +33,9 @@ final class DashboardController extends Controller
                 })
                 ->first(),
             'trainings' => Training::where('start_at', '>=', Carbon::now())
+                    ->where('start_at', '<=', Carbon::now()->addDays(7))
                     ->orderBy('start_at', 'asc')
                     ->with('attendees')
-                    ->take(2)
                     ->get()
                     ->transform(function ($training) {
                         return [
