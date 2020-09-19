@@ -89,4 +89,15 @@ final class User extends Model implements AuthenticatableContract, AuthorizableC
     {
         return $this->belongsToMany(Training::class, 'trainings_attendance')->withTimestamps();
     }
+
+    public function last_attendance_date()
+    {
+        if ($this->trainings->count() == 0) {
+            return false;
+        }
+
+        return $this->trainings()
+                    ->orderBy('trainings_attendance.created_at', 'desc')
+                    ->first()->pivot->created_at;
+    }
 }

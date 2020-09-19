@@ -8,6 +8,7 @@ use App\Http\Requests\TrainingUpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Training;
 use App\User;
+use Carbon\Carbon;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -147,6 +148,16 @@ final class TrainingController extends Controller
         if ($training->can_attend_more && $training->max_attendees > 0 && $training->attendees->count() >= $training->max_attendees) {
             $extra = true;
             $message .= ' Vállaltam a 10 burpeet beugrónak!';
+        }
+
+        if (Auth::user()->trainings->count()) {
+            $last_attend_action = Auth::user()->last_attendance_date();
+            $diff_in_minutes = Carbon::now()->diffInMinutes($last_attend_action);
+
+            if ($diff_in_minutes < 10) {
+                $diff_in_minutes = 10 - $diff_in_minutes;
+                return Redirect::back()->with('error', "Nemrég jelentkeztél már egy edzésre. Próbáld újra {$diff_in_minutes} perc múlva.");
+            }
         }
 
         Auth::user()->trainings()->attach($training->id, ['extra' => $extra]);
