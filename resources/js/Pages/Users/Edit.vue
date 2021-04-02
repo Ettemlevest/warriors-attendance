@@ -95,6 +95,12 @@ export default {
   methods: {
     update() {
       this.form.put(this.route('users.update', this.user.id))
+        .then(() => {
+          if (Object.keys(this.$page.errors).length === 0) {
+            this.form.photo = null
+            this.form.password = null
+          }
+        })
     },
     destroy() {
       if (confirm('Biztosan törlöd a Warriort?')) {

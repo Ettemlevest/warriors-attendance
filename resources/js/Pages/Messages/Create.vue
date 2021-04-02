@@ -4,10 +4,9 @@
       <inertia-link class="text-gray-500 hover:text-gray-800" :href="route('messages')">Üzenetek</inertia-link>
       <span class="text-gray-400 font-medium">/</span> Létrehozás
     </h1>
-    <div v-if="$page.props.auth.user.owner" class="bg-white rounded shadow overflow-hidden max-w">
+    <div v-if="$page.props.auth.user.owner" class="bg-white rounded-md shadow overflow-hidden max-w">
       <form @submit.prevent="store">
         <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
-          {{ form }}
           <text-input v-model="form.title" :error="form.errors.title" class="pr-6 pb-8 w-full" label="Cím" autofocus />
           <textarea-input v-model="form.body" :error="form.errors.body" class="pr-6 pb-8 w-full" label="Üzenet" />
           <text-input v-model="form.showed_from" :error="form.errors.showed_from" class="pr-6 pb-8 w-full lg:w-1/2" label="Dátumtól" type="date" timezone="Europe/Budapest" />

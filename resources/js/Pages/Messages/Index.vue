@@ -17,7 +17,7 @@
         </tr>
         <tr v-for="message in messages.data" :key="message.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
-            <inertia-link class="px-6 py-4 flex items-center focus:text-indigo-500" :href="route('messages.edit', message.id)">
+            <inertia-link class="px-6 py-4 flex items-center" :href="route('messages.edit', message.id)">
               {{ message.title }}
             </inertia-link>
           </td>

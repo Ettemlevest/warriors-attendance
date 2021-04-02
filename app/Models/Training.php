@@ -54,6 +54,12 @@ final class Training extends Model
                 return;
             }
 
+            if ($start_at === 'this_year') {
+                $query->whereYear('start_at', Carbon::now()->year);
+
+                return;
+            }
+
             if ($start_at === 'next_seven_days') {
                 $query->whereBetween('start_at', [
                     Carbon::now(),

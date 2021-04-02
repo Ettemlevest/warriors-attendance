@@ -33,7 +33,7 @@
           <text-input v-model="form.safety_person" :error="form.errors.safety_person" class="pr-6 pb-8 w-full lg:w-1/2" label="Név" />
           <text-input v-model="form.safety_phone" :error="form.errors.safety_phone" class="pr-6 pb-8 w-full lg:w-1/2" label="Telefonszám" />
         </div>
-        <div class="px-8 py-4 bg-gray-50 border-t border-gray-100 flex justify-end items-center">
+        <div class="px-8 py-4 bg-gray-100 border-t border-gray-300 flex justify-end items-center">
           <loading-button :loading="form.processing" class="btn-indigo" type="submit">Create User</loading-button>
         </div>
       </form>
