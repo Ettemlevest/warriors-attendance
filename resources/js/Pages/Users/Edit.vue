@@ -1,29 +1,30 @@
 <template>
-  <layout>
-    <div class="mb-8 flex justify-start max-w">
+  <div>
+    <div class="mb-8 flex justify-start max-w-3xl">
       <h1 class="font-bold text-3xl">
-        <inertia-link class="text-indigo-500 hover:text-indigo-600" :href="route('users')">Warriorok</inertia-link>
-        <span class="text-indigo-500 font-medium">/</span>
+        <inertia-link class="text-gray-500 hover:text-gray-800" :href="route('users')">Warriorok</inertia-link>
+        <span class="text-gray-400 font-medium">/</span>
         {{ form.name }}
       </h1>
-      <img v-if="user.photo" class="block w-8 h-8 rounded-full ml-4" :src="user.photo">
+      <img v-if="form.photo" class="block w-8 h-8 rounded-full ml-4" :src="form.photo">
     </div>
     <trashed-message v-if="user.deleted_at" class="mb-6" @restore="restore">
       A Warrior törölve van.
     </trashed-message>
-    <div class="bg-white rounded shadow overflow-hidden max-w">
-      <form @submit.prevent="submit">
+    <div class="bg-white rounded-md shadow overflow-hidden max-w-3xl">
+      <form @submit.prevent="update">
         <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
-          <text-input v-model="form.name" :errors="$page.errors.name" class="pr-6 pb-8 w-full lg:w-1/2" label="Név" />
-          <text-input v-model="form.email" :errors="$page.errors.email" class="pr-6 pb-8 w-full lg:w-1/2" label="E-mail" />
-          <text-input v-model="form.password" :errors="$page.errors.password" class="pr-6 pb-8 w-full lg:w-1/2" type="password" autocomplete="new-password" label="Jelszó" />
-          <select-input v-if="$page.auth.user.owner" v-model="form.owner" :errors="$page.errors.owner" class="pr-6 pb-8 w-full lg:w-1/2" label="Edző">
+          <text-input v-model="form.name" :error="form.errors.name" class="pr-6 pb-8 w-full lg:w-1/2" label="Név" />
+          <text-input v-model="form.email" :error="form.errors.email" class="pr-6 pb-8 w-full lg:w-1/2" label="E-mail" type="email" />
+          <text-input v-model="form.password" :error="form.errors.password" class="pr-6 pb-8 w-full lg:w-1/2" label="Jelszó" type="password" />
+          <select-input v-if="$page.props.auth.user.owner" v-model="form.owner" :error="form.errors.owner" class="pr-6 pb-8 w-full lg:w-1/2" label="Edző">
             <option :value="true">Igen</option>
             <option :value="false">Nem</option>
           </select-input>
-          <h3 class="w-full mb-4 mr-6 p-2 border-b border-gray-400 tracking-wider text-lg italic pl-0">Információk versenyre jelentkezéshez</h3>
-          <file-input v-model="form.photo" :errors="$page.errors.photo" class="pr-6 pb-8 w-full lg:w-1/2" type="file" accept="image/*" label="Fénykép" />
-          <select-input v-model="form.size" :errors="$page.errors.size" class="pr-6 pb-8 w-full lg:w-1/2" label="Póló méret">
+
+          <h3 class="w-full mb-4 mr-6 p-2 border-b border-gray-400 tracking-widest text-lg italic pl-0">Információk versenyre jelentkezéshez</h3>
+          <file-input v-model="form.photo" :error="form.errors.photo" class="pr-6 pb-8 w-full lg:w-1/2" type="file" accept="image/*" label="Fénykép" />
+          <select-input v-model="form.size" :error="form.errors.size" class="pr-6 pb-8 w-full lg:w-1/2" label="Póló méret">
             <option :value="null" />
             <option value="S">S</option>
             <option value="M">M</option>
@@ -31,28 +32,30 @@
             <option value="XL">XL</option>
             <option value="XXL">XXL</option>
           </select-input>
-          <text-input v-model="form.birth_date" :errors="$page.errors.birth_date" class="pr-6 pb-8 w-full lg:w-1/2" type="date" label="Szül. dátum" />
-          <text-input v-model="form.phone" :errors="$page.errors.phone" class="pr-6 pb-8 w-full lg:w-1/2" label="Telefonszám" />
-          <text-input v-model="form.address" :errors="$page.errors.address" class="pr-6 pb-8 w-full" label="Lakcím" />
-          <h3 class="w-full mb-4 mr-6 p-2 border-b border-gray-400 tracking-wider text-lg italic pl-0">Baleset esetén értesítendő</h3>
-          <text-input v-model="form.safety_person" :errors="$page.errors.safety_person" class="pr-6 pb-8 w-full lg:w-1/2" label="Név" />
-          <text-input v-model="form.safety_phone" :errors="$page.errors.safety_phone" class="pr-6 pb-8 w-full lg:w-1/2" label="Telefonszám" />
+          <text-input v-model="form.birth_date" :error="form.errors.birth_date" class="pr-6 pb-8 w-full lg:w-1/2" label="Születési dátum" type="date" />
+          <text-input v-model="form.phone" :error="form.errors.phone" class="pr-6 pb-8 w-full lg:w-1/2" label="Telefonszám" />
+          <text-input v-model="form.address" :error="form.errors.address" class="pr-6 pb-8 w-full" label="Lakcím" />
+
+          <h3 class="w-full mb-4 mr-6 p-2 border-b border-gray-400 tracking-widest text-lg italic pl-0">Baleset esetén értesítendő</h3>
+          <text-input v-model="form.safety_person" :error="form.errors.safety_person" class="pr-6 pb-8 w-full lg:w-1/2" label="Név" />
+          <text-input v-model="form.safety_phone" :error="form.errors.safety_phone" class="pr-6 pb-8 w-full lg:w-1/2" label="Telefonszám" />
         </div>
-        <div class="px-8 py-4 bg-gray-100 border-t border-gray-300 flex items-center">
-          <button v-if="!user.deleted_at && $page.auth.user.id != this.user.id" class="text-red-500 hover:underline tracking-widest" tabindex="-1" type="button" @click="destroy">Törlés</button>
-          <loading-button :loading="sending" class="btn-indigo ml-auto" type="submit">Warrior mentése</loading-button>
+        <div class="px-8 py-4 bg-gray-50 border-t border-gray-100 flex items-center">
+          <button v-if="!user.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Törlés</button>
+          <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Warrior mentése</loading-button>
         </div>
       </form>
     </div>
-  </layout>
+  </div>
 </template>
 
 <script>
+import Icon from '@/Shared/Icon'
 import Layout from '@/Shared/Layout'
-import LoadingButton from '@/Shared/LoadingButton'
-import SelectInput from '@/Shared/SelectInput'
-import TextInput from '@/Shared/TextInput'
 import FileInput from '@/Shared/FileInput'
+import TextInput from '@/Shared/TextInput'
+import SelectInput from '@/Shared/SelectInput'
+import LoadingButton from '@/Shared/LoadingButton'
 import TrashedMessage from '@/Shared/TrashedMessage'
 
 export default {
@@ -60,61 +63,38 @@ export default {
     return { title: this.form.name }
   },
   components: {
-    Layout,
+    Icon,
     LoadingButton,
     SelectInput,
     TextInput,
     FileInput,
     TrashedMessage,
   },
+  layout: Layout,
   props: {
     user: Object,
   },
   remember: 'form',
   data() {
     return {
-      sending: false,
-      form: {
+      form: this.$inertia.form({
         name: this.user.name,
         email: this.user.email,
         password: this.user.password,
         owner: this.user.owner,
-        photo: null,
+        photo: this.user.photo,
         size: this.user.size,
         birth_date: this.user.birth_date,
         phone: this.user.phone,
         address: this.user.address,
         safety_person: this.user.safety_person,
         safety_phone: this.user.safety_phone,
-      },
+      }),
     }
   },
   methods: {
-    submit() {
-      this.sending = true
-
-      var data = new FormData()
-      data.append('name', this.form.name || '')
-      data.append('email', this.form.email || '')
-      data.append('password', this.form.password || '')
-      data.append('owner', this.form.owner ? '1' : '0')
-      data.append('photo', this.form.photo || '')
-      data.append('size', this.form.size || '')
-      data.append('birth_date', this.form.birth_date || '')
-      data.append('phone', this.form.phone || '')
-      data.append('address', this.form.address || '')
-      data.append('safety_person', this.form.safety_person || '')
-      data.append('safety_phone', this.form.safety_phone || '')
-      data.append('_method', 'put')
-
-      this.$inertia.post(this.route('users.update', this.user.id), data)
-        .then(() => {
-          this.sending = false
-          if (Object.keys(this.$page.errors).length === 0) {
-            this.form.photo = null
-            this.form.password = null
-          }
-        })
+    update() {
+      this.form.put(this.route('users.update', this.user.id))
     },
     destroy() {
       if (confirm('Biztosan törlöd a Warriort?')) {
