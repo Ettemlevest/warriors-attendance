@@ -1,7 +1,5 @@
 <?php
 
-namespace Database\Seeders;
-
 use App\Training;
 use App\User;
 use Illuminate\Database\Seeder;

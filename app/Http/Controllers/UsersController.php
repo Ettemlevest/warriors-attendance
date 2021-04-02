@@ -2,36 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UserCreationRequest;
-use App\Http\Requests\UserDestroyRequest;
-use App\Http\Requests\UserRestoreRequest;
-use App\Http\Requests\UserUpdateRequest;
-use App\User;
-use Inertia\Inertia;
+use App\Models\User;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Validation\Rule;
+use Inertia\Inertia;
 
-final class UsersController extends Controller
+class UsersController extends Controller
 {
     public function index()
     {
-        $query = User::orderByName()->filter(Request::only('search', 'role', 'trashed'));
-
-        if (! Auth::user()->owner) {
-            $query->where('id', Auth::user()->id);
-        }
-
         return Inertia::render('Users/Index', [
             'filters' => Request::all('search', 'role', 'trashed'),
-            'users' => $query->paginate()
+            'users' => Auth::user()->account->users()
+                ->orderByName()
+                ->filter(Request::only('search', 'role', 'trashed'))
+                ->get()
                 ->transform(function ($user) {
                     return [
                         'id' => $user->id,
                         'name' => $user->name,
                         'email' => $user->email,
                         'owner' => $user->owner,
-                        'age' => $user->age,
                         'photo' => $user->photoUrl(['w' => 40, 'h' => 40, 'fit' => 'crop']),
                         'deleted_at' => $user->deleted_at,
                     ];
@@ -41,93 +35,90 @@ final class UsersController extends Controller
 
     public function create()
     {
-        if (! Auth::user()->owner) {
-            return Redirect::route('users');
-        }
-
         return Inertia::render('Users/Create');
     }
 
-    public function store(UserCreationRequest $request)
+    public function store()
     {
-        User::create(array_merge($request->only([
-            'name',
-            'email',
-            'password',
-            'owner',
-            'size',
-            'birth_date',
-            'phone',
-            'address',
-            'safety_person',
-            'safety_phone',
-        ]), [
-            'photo_path' => $request->file('photo') ? $request->file('photo')->store('users') : null,
-        ]));
+        Request::validate([
+            'first_name' => ['required', 'max:50'],
+            'last_name' => ['required', 'max:50'],
+            'email' => ['required', 'max:50', 'email', Rule::unique('users')],
+            'password' => ['nullable'],
+            'owner' => ['required', 'boolean'],
+            'photo' => ['nullable', 'image'],
+        ]);
 
-        return Redirect::route('users')->with('success', 'Warrior sikeresen létrehozva.');
+        Auth::user()->account->users()->create([
+            'first_name' => Request::get('first_name'),
+            'last_name' => Request::get('last_name'),
+            'email' => Request::get('email'),
+            'password' => Request::get('password'),
+            'owner' => Request::get('owner'),
+            'photo_path' => Request::file('photo') ? Request::file('photo')->store('users') : null,
+        ]);
+
+        return Redirect::route('users')->with('success', 'User created.');
     }
 
     public function edit(User $user)
     {
-        if (! Auth::user()->owner && $user->id <> Auth::user()->id) {
-            return Redirect::route('users');
-        }
-
         return Inertia::render('Users/Edit', [
             'user' => [
                 'id' => $user->id,
-                'name' => $user->name,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
                 'email' => $user->email,
                 'owner' => $user->owner,
                 'photo' => $user->photoUrl(['w' => 60, 'h' => 60, 'fit' => 'crop']),
-                'size' => $user->size,
-                'birth_date' => $user->birth_date ? $user->birth_date->format('Y-m-d') : null,
-                'phone' => $user->phone,
-                'address' => $user->address,
-                'safety_person' => $user->safety_person,
-                'safety_phone' => $user->safety_phone,
                 'deleted_at' => $user->deleted_at,
             ],
         ]);
     }
 
-    public function update(UserUpdateRequest $request, User $user)
+    public function update(User $user)
     {
-        if ($request->file('photo')) {
-            $user->photo_path = $request->file('photo')->store('users');
+        if (App::environment('demo') && $user->isDemoUser()) {
+            return Redirect::back()->with('error', 'Updating the demo user is not allowed.');
         }
 
-        if ($request->get('password')) {
-            $user->password = $request->get('password');
+        Request::validate([
+            'first_name' => ['required', 'max:50'],
+            'last_name' => ['required', 'max:50'],
+            'email' => ['required', 'max:50', 'email', Rule::unique('users')->ignore($user->id)],
+            'password' => ['nullable'],
+            'owner' => ['required', 'boolean'],
+            'photo' => ['nullable', 'image'],
+        ]);
+
+        $user->update(Request::only('first_name', 'last_name', 'email', 'owner'));
+
+        if (Request::file('photo')) {
+            $user->update(['photo_path' => Request::file('photo')->store('users')]);
         }
 
-        $user->update($request->only([
-            'name',
-            'email',
-            'owner',
-            'size',
-            'birth_date',
-            'phone',
-            'address',
-            'safety_person',
-            'safety_phone'
-        ]));
+        if (Request::get('password')) {
+            $user->update(['password' => Request::get('password')]);
+        }
 
-        return Redirect::route('users.edit', $user)->with('success', 'Warrior sikeresen frissítve.');
+        return Redirect::back()->with('success', 'User updated.');
     }
 
-    public function destroy(UserDestroyRequest $request, User $user)
+    public function destroy(User $user)
     {
+        if (App::environment('demo') && $user->isDemoUser()) {
+            return Redirect::back()->with('error', 'Deleting the demo user is not allowed.');
+        }
+
         $user->delete();
 
-        return Redirect::route('users.edit', $user)->with('success', 'Warrior sikeresen törölve.');
+        return Redirect::back()->with('success', 'User deleted.');
     }
 
-    public function restore(UserRestoreRequest $request, User $user)
+    public function restore(User $user)
     {
         $user->restore();
 
-        return Redirect::route('users.edit', $user)->with('success', 'Warrior sikeresen visszaállítva.');
+        return Redirect::back()->with('success', 'User restored.');
     }
 }

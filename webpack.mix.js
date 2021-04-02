@@ -1,9 +1,7 @@
+const path = require('path')
+const mix = require('laravel-mix')
 const cssImport = require('postcss-import')
 const cssNesting = require('postcss-nesting')
-const mix = require('laravel-mix')
-const path = require('path')
-const tailwindcss = require('tailwindcss')
-require('laravel-mix-purgecss')
 
 /*
  |--------------------------------------------------------------------------
@@ -16,24 +14,23 @@ require('laravel-mix-purgecss')
  |
  */
 
-mix.js('resources/js/app.js', 'public/js')
+mix
+  .js('resources/js/app.js', 'public/js')
+  .vue()
   .postCss('resources/css/app.css', 'public/css', [
+    // prettier-ignore
     cssImport(),
     cssNesting(),
-    tailwindcss('tailwind.config.js'),
+    require('tailwindcss'),
   ])
-  .purgeCss()
   .webpackConfig({
     output: { chunkFilename: 'js/[name].js?id=[chunkhash]' },
     resolve: {
       alias: {
-        'vue$': 'vue/dist/vue.runtime.esm.js',
+        vue$: 'vue/dist/vue.runtime.esm.js',
         '@': path.resolve('resources/js'),
       },
     },
-  })
-  .babelConfig({
-    plugins: ['@babel/plugin-syntax-dynamic-import'],
   })
   .version()
   .sourceMaps()

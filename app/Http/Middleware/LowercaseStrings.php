@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\Middleware\TransformsRequest;
 class LowercaseStrings extends TransformsRequest
 {
     /**
-     * The attributes that should not be trimmed.
+     * The attributes that should not be lowercased.
      *
      * @var array
      */

@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\UserResource;
-use App\Message;
-use App\Training;
+use App\Models\Message;
+use App\Models\Training;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
-final class DashboardController extends Controller
+class DashboardController extends Controller
 {
     public function __invoke()
     {
