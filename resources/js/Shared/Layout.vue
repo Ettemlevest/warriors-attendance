@@ -26,6 +26,7 @@
             </div>
             <dropdown class="mt-1" placement="bottom-end">
               <div class="flex items-center cursor-pointer select-none group">
+                <img v-if="$page.props.auth.user.photo" class="w-8 h-8 rounded-full mr-4" :src="$page.props.auth.user.photo" />
                 <div class="text-white group-hover:text-gray-200 focus:text-gray-200 mr-1 whitespace-nowrap">
                   <span>{{ $page.props.auth.user.name }}</span>
                 </div>
