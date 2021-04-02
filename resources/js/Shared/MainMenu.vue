@@ -31,7 +31,7 @@
       </inertia-link>
     </div>
     <div class="mb-4 ml-6">
-      <inertia-link class="flex items-center group py-3" :href="route('logout')" method="post">
+      <inertia-link class="flex items-center group py-3" :href="route('logout')" method="post" as="button">
         <div :class="isUrl('logout') ? 'text-black font-bold' : 'text-gray-700 group-hover:text-black'">Kilépés</div>
       </inertia-link>
     </div>

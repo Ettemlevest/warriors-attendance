@@ -7,11 +7,9 @@ use App\Http\Requests\UserDestroyRequest;
 use App\Http\Requests\UserRestoreRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Models\User;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class UsersController extends Controller

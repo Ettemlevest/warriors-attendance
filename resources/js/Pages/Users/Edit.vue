@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="mb-8 flex justify-start max-w-3xl">
+    <div class="mb-8 flex justify-start max-w">
       <h1 class="font-bold text-3xl">
         <inertia-link class="text-gray-500 hover:text-gray-800" :href="route('users')">Warriorok</inertia-link>
         <span class="text-gray-400 font-medium">/</span>
@@ -11,7 +11,7 @@
     <trashed-message v-if="user.deleted_at" class="mb-6" @restore="restore">
       A Warrior törölve van.
     </trashed-message>
-    <div class="bg-white rounded-md shadow overflow-hidden max-w-3xl">
+    <div class="bg-white rounded-md shadow overflow-hidden max-w">
       <form @submit.prevent="update">
         <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
           <text-input v-model="form.name" :error="form.errors.name" class="pr-6 pb-8 w-full lg:w-1/2" label="Név" />
@@ -40,7 +40,7 @@
           <text-input v-model="form.safety_person" :error="form.errors.safety_person" class="pr-6 pb-8 w-full lg:w-1/2" label="Név" />
           <text-input v-model="form.safety_phone" :error="form.errors.safety_phone" class="pr-6 pb-8 w-full lg:w-1/2" label="Telefonszám" />
         </div>
-        <div class="px-8 py-4 bg-gray-50 border-t border-gray-100 flex items-center">
+        <div class="px-8 py-4 bg-gray-100 border-t border-gray-300 flex items-center">
           <button v-if="!user.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Törlés</button>
           <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Warrior mentése</loading-button>
         </div>
