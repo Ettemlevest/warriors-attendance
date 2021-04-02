@@ -1,7 +1,7 @@
 <?php
 
-use App\Training;
-use App\User;
+use App\Models\Training;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder

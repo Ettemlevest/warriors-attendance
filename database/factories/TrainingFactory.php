@@ -9,7 +9,7 @@ $examples = [
     'length' => [60, 90, 120],
 ];
 
-$factory->define(App\Training::class, function (Faker $faker) use ($examples) {
+$factory->define(App\Models\Training::class, function (Faker $faker) use ($examples) {
     $date = $faker->dateTimeBetween('-7 days', '+30 days')->format('Y-m-d');
 
     return [
@@ -22,6 +22,6 @@ $factory->define(App\Training::class, function (Faker $faker) use ($examples) {
     ];
 });
 
-$factory->state(App\Training::class, 'unlimited', [
+$factory->state(App\Models\Training::class, 'unlimited', [
     'max_attendees' => 0,
 ]);
