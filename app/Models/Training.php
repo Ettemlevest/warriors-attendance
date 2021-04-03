@@ -39,7 +39,8 @@ final class Training extends Model
         $query->when($filters['search'] ?? null, function ($query, $search) {
             $query->where(function ($query) use ($search) {
                 $query->where('name', 'like', '%'.$search.'%')
-                    ->orWhere('place', 'like', '%'.$search.'%');
+                    ->orWhere('place', 'like', '%'.$search.'%')
+                    ->orWhereRaw('CAST(start_at AS VARCHAR) LIKE ?', '%'.$search.'%');
             });
         })->when($filters['start_at'] ?? null, function ($query, $start_at) {
             if ($start_at === 'future') {
