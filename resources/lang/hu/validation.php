@@ -145,6 +145,7 @@ return [
     */
 
     'attributes' => [
+        'title' => 'cím',
         'name'     => 'név',
         'password' => 'jelszó',
         'place' => 'helyszín',
