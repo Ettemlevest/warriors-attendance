@@ -64,8 +64,8 @@ class AlbumController extends Controller
                 'photos' => $album->photos->transform(function ($photo) {
                     return [
                         'id' => $photo->id,
-                        'path' => $photo->photoUrl(['w' => 400, 'fit' => 'stretch']),
-                        'original_path' => $photo->photoUrl(['fit' => 'contain']),
+                        'thumbnail' => $photo->photoUrl(['w' => 400, 'fit' => 'stretch']),
+                        'src' => $photo->photoUrl(['fit' => 'contain']),
                     ];
                 }),
             ],

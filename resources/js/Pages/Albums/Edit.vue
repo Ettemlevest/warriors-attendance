@@ -1,27 +1,27 @@
 <template>
-  <layout>
+  <div>
     <div class="mb-8 flex justify-start max-w">
       <h1 class="font-bold text-3xl">
-        <inertia-link class="text-indigo-500 hover:text-indigo-600" :href="route('albums')">Képek</inertia-link>
-        <span class="text-indigo-500 font-medium">/</span>
+        <inertia-link class="text-gray-500 hover:text-gray-800" :href="route('albums')">Képek</inertia-link>
+        <span class="text-gray-400 font-medium">/</span>
         {{ form.name }}
       </h1>
     </div>
     <div class="bg-white rounded shadow overflow-hidden max-w">
-      <form @submit.prevent="submit">
+      <form @submit.prevent="update">
         <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
-          <text-input v-model="form.name" :errors="$page.errors.name" class="pr-6 pb-8 w-full lg:w-1/2" label="Album neve" autofocus />
-          <text-input v-model="form.place" :errors="$page.errors.place" class="pr-6 pb-8 w-full lg:w-1/2" label="Helyszín" />
-          <text-input v-model="form.description" :errors="$page.errors.description" class="pr-6 pb-8 w-full" label="Leírás" />
-          <text-input v-model="form.date_from" :errors="$page.errors.date_from" class="pr-6 pb-8 w-full lg:w-1/2" label="Kezdés (dátum)" type="date" timezone="Europe/Budapest" />
-          <text-input v-model="form.date_to" :errors="$page.errors.date_to" class="pr-6 pb-8 w-full lg:w-1/2" label="Vége (dátum)" type="date" timezone="Europe/Budapest" />
-          <!-- <file-input v-model="form.photos" :errors="$page.errors.photos" class="pr-6 pb-8 w-full" type="file" accept="image/*" label="Képek" multiple="multiple" /> -->
-          <label class="form-label">Képek:</label>
-          <input class="pr-6 pb-8 w-full" type="file" ref="photos" multiple="multiple" accept="image/*">
+          <text-input v-model="form.name" :error="form.errors.name" class="pr-6 pb-8 w-full lg:w-1/2" label="Album neve" autofocus />
+          <text-input v-model="form.place" :error="form.errors.place" class="pr-6 pb-8 w-full lg:w-1/2" label="Helyszín" />
+          <text-input v-model="form.description" :error="form.errors.description" class="pr-6 pb-8 w-full" label="Leírás" />
+          <text-input v-model="form.date_from" :error="form.errors.date_from" class="pr-6 pb-8 w-full lg:w-1/2" label="Kezdés (dátum)" type="date" timezone="Europe/Budapest" />
+          <text-input v-model="form.date_to" :error="form.errors.date_to" class="pr-6 pb-8 w-full lg:w-1/2" label="Vége (dátum)" type="date" timezone="Europe/Budapest" />
+          <file-input v-model="form.photos" :error="form.errors.photos" class="pr-6 pb-8 w-full" type="file" accept="image/*" label="Képek" />
+          <!-- <label class="form-label">Képek:</label>
+          <input class="pr-6 pb-8 w-full" type="file" ref="photos" multiple="multiple" accept="image/*"> -->
         </div>
         <div class="px-8 py-4 bg-gray-100 border-t border-gray-300 flex items-center">
-          <button class="text-red-500 hover:underline tracking-widest" tabindex="-1" type="button" @click="destroy">Törlés</button>
-          <loading-button :loading="sending" class="btn-indigo ml-auto" type="submit">Album mentése</loading-button>
+          <button class="text-red-500 hover:underline" tabindex="-1" type="button" @click="destroy">Törlés</button>
+          <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Album mentése</loading-button>
         </div>
       </form>
     </div>
@@ -50,15 +50,13 @@
         </tr>
       </table>
     </div>
-  </layout>
+  </div>
 </template>
 
 <script>
 import Layout from '@/Shared/Layout'
 import LoadingButton from '@/Shared/LoadingButton'
-import SelectInput from '@/Shared/SelectInput'
 import TextInput from '@/Shared/TextInput'
-import CheckboxInput from '@/Shared/CheckboxInput'
 import FileInput from '@/Shared/FileInput'
 import Icon from '@/Shared/Icon'
 
@@ -67,55 +65,33 @@ export default {
     return { title: this.form.name }
   },
   components: {
-    Layout,
     LoadingButton,
-    SelectInput,
     TextInput,
-    CheckboxInput,
     FileInput,
     Icon,
   },
+  layout: Layout,
   props: {
     album: Object,
   },
-  // remember: 'form',
+  remember: 'form',
   data() {
     return {
-      sending: false,
-      form: {
+      form: this.$inertia.form({
         name: this.album.name,
         place: this.album.place,
         description: this.album.description,
         date_from: this.album.date_from,
         date_to: this.album.date_to,
         photos: null,
-      },
+      }),
     }
   },
   methods: {
-    submit() {
-      this.sending = true
-
-      var data = new FormData()
-      data.append('name', this.form.name || '')
-      data.append('description', this.form.description || '')
-      data.append('place', this.form.place || '')
-      data.append('date_from', this.form.date_from || '')
-      data.append('date_to', this.form.date_to || '')
-
-      for(var i=0; i < this.$refs.photos.files.length; i++) {
-        data.append('photos[]', this.$refs.photos.files[i] || '')
-      }
-
-      data.append('_method', 'put')
-
-      this.$inertia.post(this.route('albums.update', this.album.id), data)
-        .then(() => {
-          this.sending = false
-          if (Object.keys(this.$page.errors).length === 0) {
-            this.form.photos = null
-          }
-        })
+    update() {
+      this.form.put(this.route('albums.update', this.album.id), {
+        onSuccess: () => this.form.reset('photos')
+      })
     },
     destroy() {
       if (confirm('Biztosan törlöd az albumot?')) {

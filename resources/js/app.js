@@ -3,12 +3,14 @@ import VueMeta from 'vue-meta'
 import PortalVue from 'portal-vue'
 import { App, plugin } from '@inertiajs/inertia-vue'
 import { InertiaProgress } from '@inertiajs/progress/src'
+import VueSilentbox from 'vue-silentbox'
 
 Vue.config.productionTip = false
 Vue.mixin({ methods: { route: window.route } })
 Vue.use(plugin)
 Vue.use(PortalVue)
 Vue.use(VueMeta)
+Vue.use(VueSilentbox)
 
 InertiaProgress.init()
 

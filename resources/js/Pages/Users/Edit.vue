@@ -126,7 +126,7 @@ export default {
         email: this.user.email,
         password: this.user.password,
         owner: this.user.owner,
-        photo: this.user.photo,
+        photo: null,
         size: this.user.size,
         birth_date: this.user.birth_date,
         phone: this.user.phone,
@@ -144,13 +144,9 @@ export default {
   },
   methods: {
     update() {
-      this.form.put(this.route('users.update', this.user.id))
-        .then(() => {
-          if (Object.keys(this.$page.errors).length === 0) {
-            this.form.photo = null
-            this.form.password = null
-          }
-        })
+      this.form.put(this.route('users.update', this.user.id), {
+        onSuccess: () => this.form.reset('password', 'photo')
+      })
     },
     destroy() {
       if (confirm('Biztosan törlöd a Warriort?')) {

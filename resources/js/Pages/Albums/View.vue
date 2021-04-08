@@ -1,22 +1,19 @@
 <template>
-  <layout>
+  <div>
     <div class="mb-8 flex justify-start max-w">
       <h1 class="font-bold text-3xl">
-        <inertia-link class="text-indigo-500 hover:text-indigo-600" :href="route('albums')">Képek</inertia-link>
-        <span class="text-indigo-500 font-medium">/</span>
+        <inertia-link class="text-gray-500 hover:text-gray-800" :href="route('albums')">Képek</inertia-link>
+        <span class="text-gray-400 font-medium">/</span>
         {{ album.name }}
       </h1>
     </div>
-    <div class="container mx-auto p-8">
-      <div class="flex flex-row flex-wrap -mx-2">
-        <div v-for="photo in album.photos" :key="photo.id" class="w-full md:w-1/2 md:h-auto mb-4 px-2 sm:w-1/2 md:w-1/2 lg:w-1/4 mb-4 px-2 mx-4">
-          <a :href="photo.original_path">
-            <img :src="photo.path" class="bg-white rounded shadow p-2" />
-          </a>
-        </div>
-      </div>
-    </div>
-  </layout>
+
+    <silent-box :gallery="album.photos">
+      <template v-slot:silentbox-item="{ silentboxItem }">
+        <img :src="silentboxItem.thumbnail" class="bg-white rounded-md shadow m-2 p-2" />
+      </template>
+    </silent-box>
+  </div>
 </template>
 
 <script>
@@ -28,13 +25,12 @@ export default {
     return { title: this.album.name }
   },
   components: {
-    Layout,
     Icon,
   },
+  layout: Layout,
   props: {
     album: Object,
   },
-  // remember: 'form',
   data() {
     return {}
   },

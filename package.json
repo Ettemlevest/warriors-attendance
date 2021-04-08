@@ -27,6 +27,7 @@
         "vue": "^2.6.11",
         "vue-loader": "^15.9.6",
         "vue-meta": "^2.3.1",
+        "vue-silentbox": "^2.4.4",
         "vue-template-compiler": "^2.6.12"
     }
 }
