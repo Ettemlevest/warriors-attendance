@@ -27,9 +27,12 @@
     <div class="bg-white rounded shadow overflow-hidden max-w mt-8">
       <table class="w-full">
         <tr class="text-left font-bold truncate">
-          <th class="px-6 pt-6 pb-4">Jelentkezve <span class="italic">({{ training.attendees.data.length }} fő)</span></th>
-          <th class="px-6 pt-6 pb-4">Időpont</th>
-          <th class="px-6 pt-6 pb-4">Részvétel</th>
+          <th class="px-6 pt-6 pb-4 flex justify-between">
+            <div>Jelentkezve</div>
+            <div class="italic text-gray-500 font-normal">{{ training.attendees.data.length }} fő</div>
+          </th>
+          <th class="px-6 pt-6 pb-4 text-center">Időpont</th>
+          <th class="px-6 pt-6 pb-4 text-center">Részvétel</th>
         </tr>
         <tr v-for="attendee in training.attendees.data" :key="attendee.user_id" class="hover:bg-gray-100 focus-within:bg-gray-100 truncate">
           <td :class="{ 'italic': attendee.pivot.extra === '1', 'text-red-600': attendee.pivot.extra === '1' }" class="border-t px-6 py-4 flex items-center">
@@ -38,14 +41,14 @@
             <icon v-if="attendee.pivot.extra === '1'" name="users" class="flex-shrink-0 w-3 h-3 fill-current text-gray-500 ml-4" />
             <icon v-if="attendee.pivot.attended === '1'" name="thumbs-up" class="flex-shrink-0 w-3 h-3 fill-current text-gray-500 ml-4" />
           </td>
-          <td :class="{ 'italic': attendee.pivot.extra === '1', 'text-red-600': attendee.pivot.extra === '1' }" class="border-t">
+          <td :class="{ 'italic': attendee.pivot.extra === '1', 'text-red-600': attendee.pivot.extra === '1' }" class="border-t text-center">
             {{ attendee.pivot.created_at }}
           </td>
-          <td class="border-t">
-            <button v-if="attendee.pivot.attended === '0'" class="btn-green ml-auto hover:text-green-600" :class="{ 'opacity-50': training.start_at > new Date().toISOString(), 'cursor-not-allowed': training.start_at > new Date().toISOString() }" @click="confirmAttendance(attendee.id)" title="Megjelent" type="button">
+          <td class="border-t px-4">
+            <button v-if="attendee.pivot.attended === '0'" class="btn-green ml-auto hover:text-green-600 w-full flex justify-center" :class="{ 'opacity-50': training.start_at > new Date().toISOString(), 'cursor-not-allowed': training.start_at > new Date().toISOString() }" @click="confirmAttendance(attendee.id)" title="Megjelent" type="button">
               <icon name="thumbs-up" class="flex-shrink-0 w-4 h-4 fill-current" />
             </button>
-            <button v-if="attendee.pivot.attended === '1'" class="btn-red ml-auto hover:text-red-600" :class="{ 'opacity-50': training.start_at > new Date().toISOString(), 'cursor-not-allowed': training.start_at > new Date().toISOString() }" @click="rejectAttendance(attendee.id)" title="Nem jelent meg" type="button">
+            <button v-if="attendee.pivot.attended === '1'" class="btn-red ml-auto hover:text-red-600 w-full flex justify-center" :class="{ 'opacity-50': training.start_at > new Date().toISOString(), 'cursor-not-allowed': training.start_at > new Date().toISOString() }" @click="rejectAttendance(attendee.id)" title="Nem jelent meg" type="button">
               <icon name="thumbs-down" class="flex-shrink-0 w-4 h-4 fill-current" />
             </button>
           </td>

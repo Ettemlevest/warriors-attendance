@@ -5,9 +5,9 @@
       <div class="md:h-screen md:flex md:flex-col">
         <div class="md:flex md:flex-shrink-0">
           <div class="bg-indigo-900 md:flex-shrink-0 md:w-56 px-6 py-4 flex items-center justify-between md:justify-center">
-            <inertia-link class="text-white font-bold" href="/">
-              <!-- <logo class="fill-white" width="120" height="28" /> -->
-              KKL Warriors
+            <inertia-link class="text-white font-bold flex" href="/">
+              <img class="h-8 w-8 mr-4" src="/logo.png" />
+              <div class="mt-2">KKL Warriors</div>
             </inertia-link>
             <dropdown class="md:hidden" placement="bottom-end">
               <svg class="fill-white w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" /></svg>
