@@ -89,7 +89,7 @@ final class TrainingController extends Controller
                 'start_at_day' => $training->start_at->format('Y-m-d'),
                 'start_at_time' => $training->start_at->format('H:i'),
                 'length' => $training->length,
-                'attendees' => UserResource::collection($training->attendees),
+                'attendees' => UserResource::collection($training->attendees()->orderByPivot('created_at', 'desc')->get()),
                 'max_attendees' => $training->max_attendees,
                 'can_attend_more' => (bool)$training->can_attend_more,
                 'can_attend_from' => $training->start_at->addDays(-7),
