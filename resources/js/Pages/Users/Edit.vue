@@ -6,7 +6,7 @@
         <span class="text-gray-400 font-medium">/</span>
         {{ form.name }}
       </h1>
-      <img v-if="form.photo" class="block w-8 h-8 rounded-full ml-4" :src="form.photo">
+      <img v-if="user.photo" class="block w-8 h-8 rounded-full ml-4" :src="user.photo">
     </div>
     <trashed-message v-if="user.deleted_at" class="mb-6" @restore="restore">
       A Warrior törölve van.
@@ -122,9 +122,10 @@ export default {
   data() {
     return {
       form: this.$inertia.form({
+        _method: 'put',
         name: this.user.name,
         email: this.user.email,
-        password: this.user.password,
+        password: null,
         owner: this.user.owner,
         photo: null,
         size: this.user.size,
@@ -144,7 +145,7 @@ export default {
   },
   methods: {
     update() {
-      this.form.put(this.route('users.update', this.user.id), {
+      this.form.post(this.route('users.update', this.user.id), {
         onSuccess: () => this.form.reset('password', 'photo')
       })
     },
