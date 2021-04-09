@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TrainingCreationRequest;
 use App\Http\Requests\TrainingDestroyRequest;
 use App\Http\Requests\TrainingUpdateRequest;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\AttendeeResource;
 use App\Models\Training;
 use App\Models\User;
 use Carbon\Carbon;
@@ -53,7 +53,7 @@ final class TrainingController extends Controller
                 'start_at_time' => $training->start_at->format('H:i'),
                 'diff' => $training->start_at->diffForHumans(),
                 'length' => $training->length,
-                'attendees' => UserResource::collection($training->attendees),
+                'attendees' => AttendeeResource::collection($training->attendees()->orderByPivot('created_at', 'desc')->get()),
                 'registered' => $training->attendees->contains(Auth::user()->id),
                 'max_attendees' => $training->max_attendees,
                 'can_attend_more' => (bool)$training->can_attend_more,
@@ -89,7 +89,7 @@ final class TrainingController extends Controller
                 'start_at_day' => $training->start_at->format('Y-m-d'),
                 'start_at_time' => $training->start_at->format('H:i'),
                 'length' => $training->length,
-                'attendees' => UserResource::collection($training->attendees()->orderByPivot('created_at', 'desc')->get()),
+                'attendees' => AttendeeResource::collection($training->attendees()->orderByPivot('created_at', 'desc')->get()),
                 'max_attendees' => $training->max_attendees,
                 'can_attend_more' => (bool)$training->can_attend_more,
                 'can_attend_from' => $training->start_at->addDays(-7),

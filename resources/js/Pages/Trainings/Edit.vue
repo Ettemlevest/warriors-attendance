@@ -35,20 +35,20 @@
           <th class="px-6 pt-6 pb-4 text-center">Részvétel</th>
         </tr>
         <tr v-for="attendee in training.attendees.data" :key="attendee.user_id" class="hover:bg-gray-100 focus-within:bg-gray-100 truncate">
-          <td :class="{ 'italic': attendee.pivot.extra === '1', 'text-red-600': attendee.pivot.extra === '1' }" class="border-t px-6 py-4 flex items-center">
+          <td :class="{ 'italic': attendee.extra, 'text-red-600': attendee.extra }" class="border-t px-6 py-4 flex items-center">
             <img v-if="attendee.photo" class="block w-8 h-8 rounded-full mr-2 -my-2" :src="attendee.photo">
             {{ attendee.name }}
-            <icon v-if="attendee.pivot.extra === '1'" name="users" class="flex-shrink-0 w-3 h-3 fill-current text-gray-500 ml-4" />
-            <icon v-if="attendee.pivot.attended === '1'" name="thumbs-up" class="flex-shrink-0 w-3 h-3 fill-current text-gray-500 ml-4" />
+            <icon v-if="attendee.extra" name="users" class="flex-shrink-0 w-3 h-3 fill-current text-gray-500 ml-4" />
+            <icon v-if="attendee.attended" name="thumbs-up" class="flex-shrink-0 w-3 h-3 fill-current text-gray-500 ml-4" />
           </td>
-          <td :class="{ 'italic': attendee.pivot.extra === '1', 'text-red-600': attendee.pivot.extra === '1' }" class="border-t text-center">
-            {{ attendee.pivot.created_at }}
+          <td :class="{ 'italic': attendee.extra, 'text-red-600': attendee.extra }" class="border-t text-center">
+            {{ attendee.created_at }}
           </td>
           <td class="border-t px-4">
-            <button v-if="attendee.pivot.attended === '0'" class="btn-green ml-auto hover:text-green-600 w-full flex justify-center" :class="{ 'opacity-50': training.start_at > new Date().toISOString(), 'cursor-not-allowed': training.start_at > new Date().toISOString() }" @click="confirmAttendance(attendee.id)" title="Megjelent" type="button">
+            <button v-if="!attendee.attended" class="btn-green ml-auto hover:text-green-600 w-full flex justify-center" :class="{ 'opacity-50': training.start_at > new Date().toISOString(), 'cursor-not-allowed': training.start_at > new Date().toISOString() }" @click="confirmAttendance(attendee.id)" title="Megjelent" type="button">
               <icon name="thumbs-up" class="flex-shrink-0 w-4 h-4 fill-current" />
             </button>
-            <button v-if="attendee.pivot.attended === '1'" class="btn-red ml-auto hover:text-red-600 w-full flex justify-center" :class="{ 'opacity-50': training.start_at > new Date().toISOString(), 'cursor-not-allowed': training.start_at > new Date().toISOString() }" @click="rejectAttendance(attendee.id)" title="Nem jelent meg" type="button">
+            <button v-if="attendee.attended" class="btn-red ml-auto hover:text-red-600 w-full flex justify-center" :class="{ 'opacity-50': training.start_at > new Date().toISOString(), 'cursor-not-allowed': training.start_at > new Date().toISOString() }" @click="rejectAttendance(attendee.id)" title="Nem jelent meg" type="button">
               <icon name="thumbs-down" class="flex-shrink-0 w-4 h-4 fill-current" />
             </button>
           </td>
@@ -110,14 +110,14 @@ export default {
     },
     confirmAttendance(user_id) {
       if (this.training.start_at < new Date().toISOString()) {
-        this.$inertia.post(this.route('trainings.attendance.confirm', [this.training.id, user_id]), {
-          preserveScroll: true
+        this.$inertia.post(this.route('trainings.attendance.confirm', [this.training.id, user_id]), {}, {
+          preserveScroll: true,
         })
       }
     },
     rejectAttendance(user_id) {
       if (this.training.start_at < new Date().toISOString()) {
-        this.$inertia.post(this.route('trainings.attendance.reject', [this.training.id, user_id]), {
+        this.$inertia.post(this.route('trainings.attendance.reject', [this.training.id, user_id]), {}, {
           preserveScroll: true
         })
       }
