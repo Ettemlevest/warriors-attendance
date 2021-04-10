@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -39,8 +39,11 @@ final class Training extends Model
         $query->when($filters['search'] ?? null, function ($query, $search) {
             $query->where(function ($query) use ($search) {
                 $query->where('name', 'like', '%'.$search.'%')
-                    ->orWhere('place', 'like', '%'.$search.'%');
+                    ->orWhere('place', 'like', '%'.$search.'%')
+                    ->orWhereRaw('CAST(start_at AS VARCHAR) LIKE ?', '%'.$search.'%');
             });
+        })->when($filters['type'] ?? null, function ($query, $type) {
+            $query->where('type', $type);
         })->when($filters['start_at'] ?? null, function ($query, $start_at) {
             if ($start_at === 'future') {
                 $query->where('start_at', '>=', Carbon::now());
@@ -50,6 +53,12 @@ final class Training extends Model
 
             if ($start_at === 'past') {
                 $query->where('start_at', '<=', Carbon::now());
+
+                return;
+            }
+
+            if ($start_at === 'this_year') {
+                $query->whereYear('start_at', Carbon::now()->year);
 
                 return;
             }

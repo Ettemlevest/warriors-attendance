@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Album;
+use App\Models\Album;
 use App\Http\Requests\AlbumCoverSettingRequest;
 use App\Http\Requests\AlbumCreationRequest;
 use App\Http\Requests\AlbumDestroyRequest;
 use App\Http\Requests\AlbumUpdateRequest;
-use App\Photo;
-use Illuminate\Http\Request;
+use App\Models\Photo;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -17,7 +16,7 @@ use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 use League\Glide\Server;
 
-final class AlbumController extends Controller
+class AlbumController extends Controller
 {
     public function index()
     {
@@ -65,8 +64,8 @@ final class AlbumController extends Controller
                 'photos' => $album->photos->transform(function ($photo) {
                     return [
                         'id' => $photo->id,
-                        'path' => $photo->photoUrl(['w' => 400, 'fit' => 'stretch']),
-                        'original_path' => $photo->photoUrl(['fit' => 'contain']),
+                        'thumbnail' => $photo->photoUrl(['w' => 400, 'fit' => 'stretch']),
+                        'src' => $photo->photoUrl(['fit' => 'contain']),
                     ];
                 }),
             ],

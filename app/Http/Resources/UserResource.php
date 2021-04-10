@@ -21,7 +21,6 @@ class UserResource extends JsonResource
             'created_at' => (string) $this->created_at,
             'updated_at' => (string) $this->updated_at,
             'photo' => $this->photoUrl(['w' => 40, 'h' => 40, 'fit' => 'crop']),
-            'pivot' => $this->whenLoaded('pivot'),
         ];
     }
 }

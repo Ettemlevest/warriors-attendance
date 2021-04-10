@@ -1,14 +1,14 @@
 <template>
-  <layout>
+  <div>
     <h1 class="mb-8 font-bold text-3xl">
-      <inertia-link class="text-indigo-500 hover:text-indigo-600" :href="route('trainings')">Edzések</inertia-link>
-      <span class="text-indigo-500 font-medium">/</span> Létrehozás
+      <inertia-link class="text-gray-500 hover:text-gray-800" :href="route('trainings')">Edzések</inertia-link>
+      <span class="text-gray-400 font-medium">/</span> Létrehozás
     </h1>
-    <div v-if="$page.auth.user.owner" class="bg-white rounded shadow overflow-hidden max-w">
+    <div v-if="$page.props.auth.user.owner" class="bg-white rounded-md shadow overflow-hidden max-w">
       <div class="px-8 py-4">
         <button
           v-for="template in templates"
-          :key="template"
+          :key="template.template"
           class="btn-indigo inline-block rounded-full px-4 py-2 text-sm font-semibold m-2"
           @click="setTemplate(template)"
         >
@@ -16,22 +16,36 @@
         </button>
       </div>
 
-      <form @submit.prevent="submit">
+      <form @submit.prevent="store">
         <div class="px-8 py-4 -mr-6 -mb-8 flex flex-wrap">
-          <text-input v-model="form.name" :errors="$page.errors.name" class="pr-6 pb-8 w-full lg:w-1/2" label="Edzés neve" autofocus />
-          <text-input v-model="form.place" :errors="$page.errors.place" class="pr-6 pb-8 w-full lg:w-1/2" label="Helyszín" />
-          <text-input v-model="form.start_at_day" :errors="$page.errors.start_at_day" class="pr-6 pb-8 w-full lg:w-1/2" label="Kezdés (dátum)" type="date" timezone="Europe/Budapest" />
-          <text-input v-model="form.start_at_time" :errors="$page.errors.start_at_time" class="pr-6 pb-8 w-full lg:w-1/2" label="Kezdés (időpont)" type="time" timezone="Europe/Budapest" />
-          <text-input v-model="form.length" :errors="$page.errors.length" class="pr-6 pb-8 w-full lg:w-1/2" label="Időtartam (perc)" type="number" />
-          <text-input v-model="form.max_attendees" :errors="$page.errors.max_attendees" class="pr-6 pb-8 w-full lg:w-1/2" label="Max. létszám" type="number" />
-          <checkbox-input v-model="form.can_attend_more" :errors="$page.errors.can_attend_more" class="pr-6 pb-8 w-full lg:w-1/2" label="Maximális létszám túlléphető" :checked="form.can_attend_more" />
+          <select-input v-model="form.type" :error="form.errors.type" class="pr-6 pb-8 w-full lg:w-1/2" label="Típus">
+            <option value="easy">Felzárkóztató edzés</option>
+            <option value="running">Futó edzés</option>
+            <option value="hard">Haladó edzés</option>
+            <option value="other">Egyéb</option>
+          </select-input>
+          <div class="pr-6 pb-8 w-full lg:w-1/2">
+            <label class="form-label">Minta:</label>
+            <div class="flex items-center border rounded-md shadow italic px-4 py-1" :class="overalStyling">
+              <icon :name="form.type" class="w-8 h-8 mr-4 fill-current" />
+              {{ form.name || 'Minta edzés' }}
+            </div>
+          </div>
+
+          <text-input v-model="form.name" :error="form.errors.name" class="pr-6 pb-8 w-full lg:w-1/2" label="Edzés neve" autofocus />
+          <text-input v-model="form.place" :error="form.errors.place" class="pr-6 pb-8 w-full lg:w-1/2" label="Helyszín" />
+          <text-input v-model="form.start_at_day" :error="form.errors.start_at_day" class="pr-6 pb-8 w-full lg:w-1/2" label="Kezdés (dátum)" type="date" timezone="Europe/Budapest" />
+          <text-input v-model="form.start_at_time" :error="form.errors.start_at_time" class="pr-6 pb-8 w-full lg:w-1/2" label="Kezdés (időpont)" type="time" timezone="Europe/Budapest" />
+          <text-input v-model="form.length" :error="form.errors.length" class="pr-6 pb-8 w-full lg:w-1/2" label="Időtartam (perc)" type="number" />
+          <text-input v-model="form.max_attendees" :error="form.errors.max_attendees" class="pr-6 pb-8 w-full lg:w-1/2" label="Max. létszám" type="number" />
+          <checkbox-input v-model="form.can_attend_more" :error="form.errors.can_attend_more" class="pr-6 pb-8 w-full lg:w-1/2" label="Maximális létszám túlléphető" :checked="form.can_attend_more" />
         </div>
         <div class="px-8 py-4 bg-gray-100 border-t border-gray-300 flex justify-end items-center">
-          <loading-button :loading="sending" class="btn-indigo" type="submit">Edzés mentése</loading-button>
+          <loading-button :loading="form.processing" class="btn-indigo" type="submit">Edzés mentése</loading-button>
         </div>
       </form>
     </div>
-  </layout>
+  </div>
 </template>
 
 <script>
@@ -40,20 +54,21 @@ import LoadingButton from '@/Shared/LoadingButton'
 import SelectInput from '@/Shared/SelectInput'
 import TextInput from '@/Shared/TextInput'
 import CheckboxInput from '@/Shared/CheckboxInput'
+import Icon from '@/Shared/Icon'
 
 export default {
   metaInfo: { title: 'Edzés hozzáadása' },
   components: {
-    Layout,
     LoadingButton,
     SelectInput,
     TextInput,
     CheckboxInput,
+    Icon,
   },
-  // remember: 'form',
+  layout: Layout,
+  remember: 'form',
   data() {
     return {
-      sending: false,
       templates: [
         {
           template: 'Köredzés 18:45',
@@ -63,6 +78,7 @@ export default {
           length: '60',
           max_attendees: '36',
           can_attend_more: true,
+          type: 'easy',
         },
         {
           template: 'Köredzés 20:00',
@@ -72,6 +88,7 @@ export default {
           length: '60',
           max_attendees: '36',
           can_attend_more: true,
+          type: 'running',
         },
         {
           template: 'Köredzés 19:45',
@@ -81,9 +98,10 @@ export default {
           length: '60',
           max_attendees: '36',
           can_attend_more: true,
+          type: 'hard',
         },
       ],
-      form: {
+      form: this.$inertia.form({
         name: null,
         place: null,
         start_at_day: null,
@@ -92,24 +110,34 @@ export default {
         attendees: null,
         max_attendees: "32",
         can_attend_more: true,
-      }
+        type: 'easy',
+      }),
     }
   },
+  computed: {
+    overalStyling: function () {
+      return {
+        'bg-green-100': this.form.type === 'easy',
+        'border-green-500': this.form.type === 'easy',
+        'text-green-600': this.form.type === 'easy',
+
+        'bg-orange-100': this.form.type === 'running',
+        'border-orange-500': this.form.type === 'running',
+        'text-orange-600': this.form.type === 'running',
+
+        'bg-red-100': this.form.type === 'hard',
+        'border-red-500': this.form.type === 'hard',
+        'text-red-600': this.form.type === 'hard',
+
+        'bg-indigo-100': this.form.type === 'other',
+        'border-indigo-500': this.form.type === 'other',
+        'text-indigo-600': this.form.type === 'other',
+      }
+    },
+  },
   methods: {
-    submit() {
-      this.sending = true
-
-      var data = new FormData()
-      data.append('name', this.form.name || '')
-      data.append('place', this.form.place || '')
-      data.append('start_at_day', this.form.start_at_day || '')
-      data.append('start_at_time', this.form.start_at_time || '')
-      data.append('length', this.form.length || '')
-      data.append('max_attendees', this.form.max_attendees || '')
-      data.append('can_attend_more', this.form.can_attend_more || '')
-
-      this.$inertia.post(this.route('trainings.store'), data)
-        .then(() => this.sending = false)
+    store() {
+      this.form.post(this.route('trainings.store'))
     },
     setTemplate(template) {
       this.form.name = template.name
@@ -118,6 +146,7 @@ export default {
       this.form.length = template.length
       this.form.max_attendees = template.max_attendees
       this.form.can_attend_more = template.can_attend_more
+      this.form.type = template.type
     }
   },
 }

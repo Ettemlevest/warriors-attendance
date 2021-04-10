@@ -6,17 +6,19 @@ use App\Http\Requests\UserCreationRequest;
 use App\Http\Requests\UserDestroyRequest;
 use App\Http\Requests\UserRestoreRequest;
 use App\Http\Requests\UserUpdateRequest;
-use App\User;
-use Inertia\Inertia;
+use App\Models\Training;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Request;
+use Inertia\Inertia;
 
-final class UsersController extends Controller
+class UsersController extends Controller
 {
     public function index()
     {
-        $query = User::orderByName()->filter(Request::only('search', 'role', 'trashed'));
+        $query = User::orderBy('name')->filter(Request::only('search', 'role', 'trashed'));
 
         if (! Auth::user()->owner) {
             $query->where('id', Auth::user()->id);
@@ -25,7 +27,8 @@ final class UsersController extends Controller
         return Inertia::render('Users/Index', [
             'filters' => Request::all('search', 'role', 'trashed'),
             'users' => $query->paginate()
-                ->transform(function ($user) {
+                ->withQueryString()
+                ->through(function ($user) {
                     return [
                         'id' => $user->id,
                         'name' => $user->name,
@@ -88,6 +91,15 @@ final class UsersController extends Controller
                 'safety_person' => $user->safety_person,
                 'safety_phone' => $user->safety_phone,
                 'deleted_at' => $user->deleted_at,
+                'stats' => [
+                    'attended_this_year' => $user->trainings()
+                        ->whereYear('start_at', Carbon::now()->year)
+                        ->wherePivot('attended', 1)
+                        ->count(),
+                    'trainings_this_year' => Training::whereYear('start_at', Carbon::now()->year)->count(),
+                    'attended' => $user->trainings()->wherePivot('attended', 1)->count(),
+                    'trainings' => Training::all()->count(),
+                ],
             ],
         ]);
     }

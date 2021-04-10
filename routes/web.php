@@ -51,6 +51,7 @@ Route::post('trainings', [TrainingController::class, 'store'])->name('trainings.
 Route::get('trainings/{training}/edit', [TrainingController::class, 'edit'])->name('trainings.edit')->middleware('auth');
 Route::put('trainings/{training}', [TrainingController::class, 'update'])->name('trainings.update')->middleware('auth');
 Route::delete('trainings/{training}', [TrainingController::class, 'destroy'])->name('trainings.destroy')->middleware('auth');
+// Route::get('trainings/{training}/attend', [TrainingController::class, 'attend'])->name('trainings.external_attend')->middleware('auth');
 Route::post('trainings/{training}/attend', [TrainingController::class, 'attend'])->name('trainings.attend')->middleware('auth');
 Route::delete('trainings/{training}/withdraw', [TrainingController::class, 'withdraw'])->name('trainings.withdraw')->middleware('auth');
 Route::post('trainings/{training}/attendee/{attendee}/confirm', [TrainingController::class, 'confirmAttendance'])->name('trainings.attendance.confirm')->middleware('auth');

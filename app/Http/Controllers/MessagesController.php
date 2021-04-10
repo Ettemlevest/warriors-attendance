@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Message;
+use App\Models\Message;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
@@ -19,7 +19,8 @@ class MessagesController extends Controller
             'filters' => Request::all('search'),
             'messages' => Message::orderBy('showed_from', 'desc')
                 ->paginate()
-                ->transform(function ($message) {
+                ->withQueryString()
+                ->through(function ($message) {
                     return [
                         'id' => $message->id,
                         'title' => $message->title,
