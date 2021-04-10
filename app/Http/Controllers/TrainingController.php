@@ -19,15 +19,16 @@ final class TrainingController extends Controller
     public function index()
     {
         return Inertia::render('Trainings/Index', [
-            'filters' => Request::all('search', 'start_at', 'attendance'),
+            'filters' => Request::all('search', 'start_at', 'attendance', 'type'),
             'trainings' => Training::orderBy('start_at', 'desc')
-                    ->filter(Request::all('search', 'start_at', 'attendance'))
+                    ->filter(Request::all('search', 'start_at', 'attendance', 'type'))
                     ->with('attendees')
                     ->paginate()
                     ->withQueryString()
                     ->through(function ($training) {
                         return [
                             'id' => $training->id,
+                            'type' => $training->type,
                             'name' => $training->name,
                             'place' => $training->place,
                             'start_at' => $training->start_at->format('Y-m-d H:i'),
@@ -46,6 +47,7 @@ final class TrainingController extends Controller
         return Inertia::render('Trainings/View', [
             'training' => [
                 'id' => $training->id,
+                'type' => $training->type,
                 'name' => $training->name,
                 'place' => $training->place,
                 'start_at' => $training->start_at,
@@ -53,7 +55,7 @@ final class TrainingController extends Controller
                 'start_at_time' => $training->start_at->format('H:i'),
                 'diff' => $training->start_at->diffForHumans(),
                 'length' => $training->length,
-                'attendees' => AttendeeResource::collection($training->attendees()->orderByPivot('created_at', 'desc')->get()),
+                'attendees' => AttendeeResource::collection($training->attendees()->orderBy('name')->get()),
                 'registered' => $training->attendees->contains(Auth::user()->id),
                 'max_attendees' => $training->max_attendees,
                 'can_attend_more' => (bool)$training->can_attend_more,
@@ -83,13 +85,14 @@ final class TrainingController extends Controller
         return Inertia::render('Trainings/Edit', [
             'training' => [
                 'id' => $training->id,
+                'type' => $training->type,
                 'name' => $training->name,
                 'place' => $training->place,
                 'start_at' => $training->start_at,
                 'start_at_day' => $training->start_at->format('Y-m-d'),
                 'start_at_time' => $training->start_at->format('H:i'),
                 'length' => $training->length,
-                'attendees' => AttendeeResource::collection($training->attendees()->orderByPivot('created_at', 'desc')->get()),
+                'attendees' => AttendeeResource::collection($training->attendees()->orderBy('name')->get()),
                 'max_attendees' => $training->max_attendees,
                 'can_attend_more' => (bool)$training->can_attend_more,
                 'can_attend_from' => $training->start_at->addDays(-7),
@@ -211,6 +214,7 @@ final class TrainingController extends Controller
     {
         return [
             'name' => $inputs['name'],
+            'type' => $inputs['type'],
             'place' => $inputs['place'],
             'start_at' => $inputs['start_at_day'] .' '. $inputs['start_at_time'] .':00',
             'length' => $inputs['length'],

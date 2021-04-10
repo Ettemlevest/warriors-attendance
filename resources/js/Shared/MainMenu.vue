@@ -18,13 +18,13 @@
         <div :class="isUrl('albums') ? 'text-black font-bold' : 'text-gray-700 group-hover:text-black'">Képek</div>
       </inertia-link>
     </div>
-    <div class="mb-4">
+    <div v-if="$page.props.auth.user.owner" class="mb-4">
       <inertia-link class="flex items-center group py-3" :href="route('messages')">
         <icon name="chat-bubble-dots" class="w-4 h-4 mr-2" :class="isUrl('messages') ? 'fill-black' : 'fill-gray-700 group-hover:fill-black'" />
         <div :class="isUrl('messages') ? 'text-black font-bold' : 'text-gray-700 group-hover:text-black'">Üzenetek</div>
       </inertia-link>
     </div>
-    <div class="mb-4">
+    <div v-if="$page.props.auth.user.owner" class="mb-4">
       <inertia-link class="flex items-center group py-3" :href="route('users')">
         <icon name="users" class="w-4 h-4 mr-2" :class="isUrl('users') ? 'fill-black' : 'fill-gray-700 group-hover:fill-black'" />
         <div :class="isUrl('users') ? 'text-black font-bold' : 'text-gray-700 group-hover:text-black'">Warriorok</div>

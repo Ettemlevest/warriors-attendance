@@ -4,6 +4,7 @@ import PortalVue from 'portal-vue'
 import { App, plugin } from '@inertiajs/inertia-vue'
 import { InertiaProgress } from '@inertiajs/progress/src'
 import VueSilentbox from 'vue-silentbox'
+import VCalendar from 'v-calendar'
 
 Vue.config.productionTip = false
 Vue.mixin({ methods: { route: window.route } })
@@ -11,6 +12,7 @@ Vue.use(plugin)
 Vue.use(PortalVue)
 Vue.use(VueMeta)
 Vue.use(VueSilentbox)
+Vue.use(VCalendar)
 
 InertiaProgress.init()
 

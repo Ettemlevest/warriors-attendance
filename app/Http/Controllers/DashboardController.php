@@ -32,14 +32,17 @@ class DashboardController extends Controller
                     $query->orWhere('showed_to', '>=', Carbon::now());
                 })
                 ->first(),
-            'trainings' => Training::where('start_at', '>=', Carbon::now())
-                    ->where('start_at', '<=', Carbon::now()->addDays(7))
+            'trainings' => Training::whereBetween('start_at', [
+                                        Carbon::now()->firstOfMonth(),
+                                        Carbon::now()->next('month')->lastOfMonth()
+                                    ])
                     ->orderBy('start_at', 'asc')
                     ->with('attendees')
                     ->get()
                     ->transform(function ($training) {
                         return [
                             'id' => $training->id,
+                            'type' => $training->type,
                             'name' => $training->name,
                             'place' => $training->place,
                             'start_at' => $training->start_at,
@@ -50,6 +53,7 @@ class DashboardController extends Controller
                             'registered' => $training->attendees->contains(Auth::user()->id),
                             'max_attendees' => (int) $training->max_attendees,
                             'can_attend_more' => $training->can_attend_more,
+                            'can_attend_from' => $training->start_at->addDays(-7),
                         ];
                 }),
         ]);

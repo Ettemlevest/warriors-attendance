@@ -18,6 +18,14 @@
           <option value="attended">Jelentkeztem</option>
           <option value="not_attended">Még nem jelentkeztem</option>
         </select>
+        <label class="mt-4 block text-gray-700">Típus:</label>
+        <select v-model="form.type" class="mt-1 w-full form-select">
+          <option :value="null" />
+          <option value="easy">Felzárkóztató</option>
+          <option value="running">Futó</option>
+          <option value="hard">Haladó</option>
+          <option value="other">Egyéb</option>
+        </select>
       </search-filter>
       <inertia-link v-if="$page.props.auth.user.owner" class="btn-indigo" :href="route('trainings.create')">
         <span>Létrehozás</span>
@@ -34,8 +42,11 @@
         <tr v-for="training in trainings.data" :key="training.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t truncate" :class="{ 'italic': limitExceeded(training.attendees, training.max_attendees), 'text-red-600': limitExceeded(training.attendees, training.max_attendees) }">
             <inertia-link class="px-6 py-4 block items-center focus:text-indigo" :href="route($page.props.auth.user.owner ? 'trainings.edit' : 'trainings.view', training.id)">
-              <div class="leading-normal text-lg">{{ training.name }}</div>
-              <div class="text-gray-600 text-sm italic flex items-center"><icon name="location" class="flex w-4 h-4 fill-current text-gray-500 mr-1" /> {{ training.place }}</div>
+              <div class="leading-normal text-lg flex items-center">
+                <icon :name="training.type" class="h-6 w-6 fill-current mr-2" />
+                {{ training.name }}
+              </div>
+              <div class="mt-1 ml-3 text-gray-600 text-sm italic flex items-center"><icon name="location" class="flex w-4 h-4 fill-current text-gray-500 mr-1" /> {{ training.place }}</div>
             </inertia-link>
           </td>
           <td class="border-t truncate" :class="{ 'italic': limitExceeded(training.attendees, training.max_attendees), 'text-red-600': limitExceeded(training.attendees, training.max_attendees) }">
@@ -99,6 +110,7 @@ export default {
         search: this.filters.search,
         start_at: this.filters.start_at,
         attendance: this.filters.attendance,
+        type: this.filters.type,
       },
     }
   },

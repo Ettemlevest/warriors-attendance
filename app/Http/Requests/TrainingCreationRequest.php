@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\Rule;
 
 class TrainingCreationRequest extends FormRequest
 {
@@ -31,6 +31,7 @@ class TrainingCreationRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'type' => ['required', Rule::in(['easy', 'running', 'hard', 'other'])],
             'place' => ['required', 'string', 'max:255'],
             'start_at_day' => ['required', 'date_format:Y-m-d'],
             'start_at_time' => ['required', 'date_format:H:i'],

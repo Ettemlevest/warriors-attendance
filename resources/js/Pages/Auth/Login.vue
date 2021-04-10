@@ -10,7 +10,7 @@
           <text-input v-model="form.password" :error="form.errors.password" class="mt-6" label="Jelszó" type="password" />
           <label class="mt-6 select-none flex items-center" for="remember">
             <input id="remember" v-model="form.remember" class="mr-1" type="checkbox" />
-            <span class="text-sm">Remember Me</span>
+            <span class="text-sm">Belépve maradok</span>
           </label>
         </div>
         <div class="px-10 py-4 bg-gray-100 border-t border-gray-100 flex justify-between items-center">

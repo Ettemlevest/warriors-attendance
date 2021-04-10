@@ -42,6 +42,8 @@ final class Training extends Model
                     ->orWhere('place', 'like', '%'.$search.'%')
                     ->orWhereRaw('CAST(start_at AS VARCHAR) LIKE ?', '%'.$search.'%');
             });
+        })->when($filters['type'] ?? null, function ($query, $type) {
+            $query->where('type', $type);
         })->when($filters['start_at'] ?? null, function ($query, $start_at) {
             if ($start_at === 'future') {
                 $query->where('start_at', '>=', Carbon::now());

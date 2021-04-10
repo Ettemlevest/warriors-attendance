@@ -8,7 +8,7 @@
       <div class="px-8 py-4">
         <button
           v-for="template in templates"
-          :key="template"
+          :key="template.template"
           class="btn-indigo inline-block rounded-full px-4 py-2 text-sm font-semibold m-2"
           @click="setTemplate(template)"
         >
@@ -18,6 +18,20 @@
 
       <form @submit.prevent="store">
         <div class="px-8 py-4 -mr-6 -mb-8 flex flex-wrap">
+          <select-input v-model="form.type" :error="form.errors.type" class="pr-6 pb-8 w-full lg:w-1/2" label="Típus">
+            <option value="easy">Felzárkóztató edzés</option>
+            <option value="running">Futó edzés</option>
+            <option value="hard">Haladó edzés</option>
+            <option value="other">Egyéb</option>
+          </select-input>
+          <div class="pr-6 pb-8 w-full lg:w-1/2">
+            <label class="form-label">Minta:</label>
+            <div class="flex items-center border rounded-md shadow italic px-4 py-1" :class="overalStyling">
+              <icon :name="form.type" class="w-8 h-8 mr-4 fill-current" />
+              {{ form.name || 'Minta edzés' }}
+            </div>
+          </div>
+
           <text-input v-model="form.name" :error="form.errors.name" class="pr-6 pb-8 w-full lg:w-1/2" label="Edzés neve" autofocus />
           <text-input v-model="form.place" :error="form.errors.place" class="pr-6 pb-8 w-full lg:w-1/2" label="Helyszín" />
           <text-input v-model="form.start_at_day" :error="form.errors.start_at_day" class="pr-6 pb-8 w-full lg:w-1/2" label="Kezdés (dátum)" type="date" timezone="Europe/Budapest" />
@@ -40,6 +54,7 @@ import LoadingButton from '@/Shared/LoadingButton'
 import SelectInput from '@/Shared/SelectInput'
 import TextInput from '@/Shared/TextInput'
 import CheckboxInput from '@/Shared/CheckboxInput'
+import Icon from '@/Shared/Icon'
 
 export default {
   metaInfo: { title: 'Edzés hozzáadása' },
@@ -48,6 +63,7 @@ export default {
     SelectInput,
     TextInput,
     CheckboxInput,
+    Icon,
   },
   layout: Layout,
   remember: 'form',
@@ -62,6 +78,7 @@ export default {
           length: '60',
           max_attendees: '36',
           can_attend_more: true,
+          type: 'easy',
         },
         {
           template: 'Köredzés 20:00',
@@ -71,6 +88,7 @@ export default {
           length: '60',
           max_attendees: '36',
           can_attend_more: true,
+          type: 'running',
         },
         {
           template: 'Köredzés 19:45',
@@ -80,6 +98,7 @@ export default {
           length: '60',
           max_attendees: '36',
           can_attend_more: true,
+          type: 'hard',
         },
       ],
       form: this.$inertia.form({
@@ -91,8 +110,30 @@ export default {
         attendees: null,
         max_attendees: "32",
         can_attend_more: true,
+        type: 'easy',
       }),
     }
+  },
+  computed: {
+    overalStyling: function () {
+      return {
+        'bg-green-100': this.form.type === 'easy',
+        'border-green-500': this.form.type === 'easy',
+        'text-green-600': this.form.type === 'easy',
+
+        'bg-orange-100': this.form.type === 'running',
+        'border-orange-500': this.form.type === 'running',
+        'text-orange-600': this.form.type === 'running',
+
+        'bg-red-100': this.form.type === 'hard',
+        'border-red-500': this.form.type === 'hard',
+        'text-red-600': this.form.type === 'hard',
+
+        'bg-indigo-100': this.form.type === 'other',
+        'border-indigo-500': this.form.type === 'other',
+        'text-indigo-600': this.form.type === 'other',
+      }
+    },
   },
   methods: {
     store() {
@@ -105,6 +146,7 @@ export default {
       this.form.length = template.length
       this.form.max_attendees = template.max_attendees
       this.form.can_attend_more = template.can_attend_more
+      this.form.type = template.type
     }
   },
 }

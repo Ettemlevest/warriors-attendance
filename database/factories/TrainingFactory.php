@@ -7,6 +7,7 @@ $examples = [
     'places' => ['Sportcsarnok', 'Focipálya', 'Horgos Rezidencia', 'Telki'],
     'times' => ['18:00:00', '19:00:00', '18:45:00', '20:00:00', '09:00:00'],
     'length' => [60, 90, 120],
+    'type' => ['easy', 'running', 'hard', 'other'],
 ];
 
 $factory->define(App\Models\Training::class, function (Faker $faker) use ($examples) {
@@ -19,6 +20,7 @@ $factory->define(App\Models\Training::class, function (Faker $faker) use ($examp
         'length' => $faker->randomElement($examples['length']),
         'max_attendees' => $faker->numberBetween(2, 15),
         'can_attend_more' => $faker->boolean(),
+        'type' => $faker->randomElement($examples['type']),
     ];
 });
 

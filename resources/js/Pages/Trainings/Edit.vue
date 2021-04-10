@@ -10,6 +10,13 @@
     <div class="bg-white rounded-md shadow overflow-hidden max-w">
       <form @submit.prevent="update">
         <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
+          <select-input v-model="form.type" :error="form.errors.type" class="pr-6 pb-8 w-full" label="Típus">
+            <option value="easy">Felzárkóztató edzés</option>
+            <option value="running">Futó edzés</option>
+            <option value="hard">Haladó edzés</option>
+            <option value="other">Egyéb</option>
+          </select-input>
+
           <text-input v-model="form.name" :error="form.errors.name" class="pr-6 pb-8 w-full lg:w-1/2" label="Edzés neve" />
           <text-input v-model="form.place" :error="form.errors.place" class="pr-6 pb-8 w-full lg:w-1/2" label="Helyszín" />
           <text-input v-model="form.start_at_day" :error="form.errors.start_at_day" class="pr-6 pb-8 w-full lg:w-1/2" label="Kezdés (dátum)" type="date" timezone="Europe/Budapest" />
@@ -17,6 +24,11 @@
           <text-input v-model="form.length" :error="form.errors.length" class="pr-6 pb-8 w-full lg:w-1/2" label="Időtartam (perc)" type="number" />
           <text-input v-model="form.max_attendees" :error="form.errors.max_attendees" class="pr-6 pb-8 w-full lg:w-1/2" label="Max. létszám" type="number" />
           <checkbox-input v-model="form.can_attend_more" :error="form.errors.can_attend_more" class="pr-6 pb-8 w-full lg:w-1/2" label="Maximális létszám túlléphető" :checked="form.can_attend_more" />
+
+          <!-- <div class="pr-6 pb-8 w-full">
+            <label class="form-label" for="url-helper">Link a jelentkezéshez:</label>
+            <input id="url-helper" ref="input" class="form-input italic" type="text" :value="attendURL" readonly="readonly" />
+          </div> -->
         </div>
         <div class="px-8 py-4 bg-gray-100 border-t border-gray-300 flex items-center">
           <button v-if="training.start_at > new Date().toISOString()" class="text-red-500 hover:underline tracking-widest" tabindex="-1" type="button" @click="destroy">Törlés</button>
@@ -96,7 +108,13 @@ export default {
         attendees: this.training.attendees,
         max_attendees: this.training.max_attendees.toString(),
         can_attend_more: this.training.can_attend_more,
+        type: this.training.type,
       }),
+    }
+  },
+  computed: {
+    attendURL: function () {
+      return this.route('trainings.attend', this.training.id)
     }
   },
   methods: {
