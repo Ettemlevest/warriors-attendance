@@ -146,7 +146,7 @@ export default {
     },
     reachedMaxAttendees(training) {
       return training.max_attendees != 0
-          && (training.attendees?.length ?? 0 >= training.max_attendees)
+          && (training.attendees.length >= training.max_attendees)
     },
   }
 }
