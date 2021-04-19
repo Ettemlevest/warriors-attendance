@@ -36,8 +36,8 @@
         </div>
       </form>
     </div>
-    <div class="bg-white rounded shadow overflow-hidden max-w mt-8">
-      <table class="w-full">
+    <div class="bg-white rounded shadow overflow-x-auto scrolling-touch mt-8">
+      <table class="w-full whitespace-no-wrap">
         <tr class="text-left font-bold truncate">
           <th class="px-6 pt-6 pb-4 flex justify-between">
             <div>Jelentkezve</div>
@@ -47,13 +47,13 @@
           <th class="px-6 pt-6 pb-4 text-center">Részvétel</th>
         </tr>
         <tr v-for="attendee in training.attendees.data" :key="attendee.user_id" class="hover:bg-gray-100 focus-within:bg-gray-100 truncate">
-          <td :class="{ 'italic': attendee.extra, 'text-red-600': attendee.extra }" class="border-t px-6 py-4 flex items-center">
+          <td :class="{ 'italic': attendee.extra, 'text-red-600': attendee.extra }" class="border-t px-6 py-4 flex items-center truncate">
             <img v-if="attendee.photo" class="block w-8 h-8 rounded-full mr-2 -my-2" :src="attendee.photo">
             {{ attendee.name }}
             <icon v-if="attendee.extra" name="users" class="flex-shrink-0 w-3 h-3 fill-current text-gray-500 ml-4" />
             <icon v-if="attendee.attended" name="thumbs-up" class="flex-shrink-0 w-3 h-3 fill-current text-gray-500 ml-4" />
           </td>
-          <td :class="{ 'italic': attendee.extra, 'text-red-600': attendee.extra }" class="border-t text-center">
+          <td :class="{ 'italic': attendee.extra, 'text-red-600': attendee.extra }" class="border-t text-center truncate">
             {{ attendee.created_at }}
           </td>
           <td class="border-t px-4">

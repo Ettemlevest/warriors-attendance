@@ -1,8 +1,8 @@
 # Warriors attendance
 
-Attendance registration application for Kiskunlacháza Warriors based on [@reinink](https://twitter.com/reinink)'s [PingCRM](https://github.com/inertiajs/pingcrm) example application.
+Attendance registration application for Kiskunlacháza Warriors based on [@reinink](https://twitter.com/reinink)'s [PingCRM](https://github.com/inertiajs/pingcrm) demo application.
 
-![](https://raw.githubusercontent.com/Ettemlevest/warriors-attendance/master/warriors-example-screenshot.png)
+![](https://raw.githubusercontent.com/Ettemlevest/warriors-attendance/master/screenshot.png)
 
 ## Installation
 
@@ -61,22 +61,16 @@ Run database seeder:
 php artisan db:seed
 ```
 
-You're ready to go! Visit Ping CRM in your browser, and login with:
+Start php development server
+```sh
+php artisan serve
+```
+
+You're ready to go! Open link in your browser, and login with:
 
 - **Username:** johndoe@example.com
 - **Password:** secret
 
-## Running tests
+## License
 
-To run the tests, run:
-
-```sh
-phpunit
-```
-
-## TODOs
-
-- write tests
-- docblock comments
-- use API resources
-- Laravel Socialite for Google, Facebook login
+The MIT License (MIT). Please see [License File](LICENSE.md) for more information.

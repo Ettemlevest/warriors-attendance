@@ -33,7 +33,7 @@ class DashboardController extends Controller
                 })
                 ->first(),
             'trainings' => Training::whereBetween('start_at', [
-                                        Carbon::now()->firstOfMonth(),
+                                        Carbon::now(),
                                         Carbon::now()->next('month')->lastOfMonth()
                                     ])
                     ->orderBy('start_at', 'asc')
