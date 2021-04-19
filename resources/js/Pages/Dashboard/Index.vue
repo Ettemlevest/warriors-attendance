@@ -20,8 +20,8 @@
             :locale="{ id: 'hu', firstDayOfWeek: 2, masks: { title: 'YYYY MMM' } }"
           />
       </div> -->
-      <div class="mt-4 lg:m-0 w-3/4">
-        <div v-for="training in trainings" :key="training.id" class="m-4 p-6 rounded-md border-2 w-full"
+      <div class="lg:m-0 w-5/6">
+        <div v-for="training in trainings" :key="training.id" class="my-4 p-6 rounded-md border-2 w-full"
             :class="{
               'bg-green-100': training.type === 'easy',
               'border-green-300': training.type === 'easy',
