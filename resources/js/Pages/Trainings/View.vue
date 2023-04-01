@@ -54,7 +54,7 @@
       </div>
     </div>
 
-    <div class="bg-white rounded shadow overflow-hidden max-w mt-8">
+    <div v-if="training.description" class="bg-white rounded shadow overflow-hidden max-w mt-8">
       <div class="p-8">
         <h2 class="font-bold text-xl mb-4 border-b-2">Leírás</h2>
         <div class="leading-6" v-html="training.description"></div>
