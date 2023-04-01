@@ -60,6 +60,7 @@ final class TrainingController extends Controller
                 'max_attendees' => $training->max_attendees,
                 'can_attend_more' => (bool)$training->can_attend_more,
                 'can_attend_from' => $training->start_at->addDays(-7),
+                'description' => nl2br($training->description),
             ],
         ]);
     }
@@ -96,6 +97,7 @@ final class TrainingController extends Controller
                 'max_attendees' => $training->max_attendees,
                 'can_attend_more' => (bool)$training->can_attend_more,
                 'can_attend_from' => $training->start_at->addDays(-7),
+                'description' => $training->description,
             ],
         ]);
     }
@@ -220,6 +222,7 @@ final class TrainingController extends Controller
             'length' => $inputs['length'],
             'max_attendees' => $inputs['max_attendees'],
             'can_attend_more' => $inputs['can_attend_more'] == 'true' ? 1 : 0,
+            'description' => $inputs['description'] ?? '',
         ];
     }
 }

@@ -39,6 +39,8 @@
           <text-input v-model="form.length" :error="form.errors.length" class="pr-6 pb-8 w-full lg:w-1/2" label="Időtartam (perc)" type="number" />
           <text-input v-model="form.max_attendees" :error="form.errors.max_attendees" class="pr-6 pb-8 w-full lg:w-1/2" label="Max. létszám" type="number" />
           <checkbox-input v-model="form.can_attend_more" :error="form.errors.can_attend_more" class="pr-6 pb-8 w-full lg:w-1/2" label="Maximális létszám túlléphető" :checked="form.can_attend_more" />
+
+          <textarea-input v-model="form.description" :error="form.errors.description" class="w-full pb-8" label="Leírás" />
         </div>
         <div class="px-8 py-4 bg-gray-100 border-t border-gray-300 flex justify-end items-center">
           <loading-button :loading="form.processing" class="btn-indigo" type="submit">Edzés mentése</loading-button>
@@ -55,10 +57,12 @@ import SelectInput from '@/Shared/SelectInput'
 import TextInput from '@/Shared/TextInput'
 import CheckboxInput from '@/Shared/CheckboxInput'
 import Icon from '@/Shared/Icon'
+import TextareaInput from '../../Shared/TextareaInput.vue'
 
 export default {
   metaInfo: { title: 'Edzés hozzáadása' },
   components: {
+    TextareaInput,
     LoadingButton,
     SelectInput,
     TextInput,
@@ -79,6 +83,7 @@ export default {
           max_attendees: '36',
           can_attend_more: true,
           type: 'easy',
+          description: '',
         },
         {
           template: 'Köredzés 20:00',
@@ -89,6 +94,7 @@ export default {
           max_attendees: '36',
           can_attend_more: true,
           type: 'running',
+          description: '',
         },
         {
           template: 'Köredzés 19:45',
@@ -99,6 +105,7 @@ export default {
           max_attendees: '36',
           can_attend_more: true,
           type: 'hard',
+          description: '',
         },
       ],
       form: this.$inertia.form({
@@ -106,11 +113,12 @@ export default {
         place: null,
         start_at_day: null,
         start_at_time: null,
-        length: "60",
+        length: '60',
         attendees: null,
-        max_attendees: "32",
+        max_attendees: '32',
         can_attend_more: true,
         type: 'easy',
+        description: '',
       }),
     }
   },
@@ -147,7 +155,8 @@ export default {
       this.form.max_attendees = template.max_attendees
       this.form.can_attend_more = template.can_attend_more
       this.form.type = template.type
-    }
+      this.form.description = template.description
+    },
   },
 }
 </script>

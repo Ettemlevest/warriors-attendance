@@ -53,6 +53,14 @@
         </button> -->
       </div>
     </div>
+
+    <div class="bg-white rounded shadow overflow-hidden max-w mt-8">
+      <div class="p-8">
+        <h2 class="font-bold text-xl mb-4 border-b-2">Leírás</h2>
+        <div class="leading-6" v-html="training.description"></div>
+      </div>
+    </div>
+
     <div class="bg-white rounded shadow overflow-hidden max-w mt-8">
       <table class="w-full whitespace-no-wrap">
         <tr class="text-left font-bold">
@@ -99,6 +107,7 @@ export default {
         length: this.training.length,
         attendees: this.training.attendees,
         max_attendees: this.training.max_attendees,
+        description: this.training.description,
       },
     }
   },

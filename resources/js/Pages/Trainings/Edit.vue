@@ -25,6 +25,8 @@
           <text-input v-model="form.max_attendees" :error="form.errors.max_attendees" class="pr-6 pb-8 w-full lg:w-1/2" label="Max. létszám" type="number" />
           <checkbox-input v-model="form.can_attend_more" :error="form.errors.can_attend_more" class="pr-6 pb-8 w-full lg:w-1/2" label="Maximális létszám túlléphető" :checked="form.can_attend_more" />
 
+          <textarea-input v-model="form.description" :error="form.errors.description" class="w-full pb-8" label="Leírás" />
+
           <!-- <div class="pr-6 pb-8 w-full">
             <label class="form-label" for="url-helper">Link a jelentkezéshez:</label>
             <input id="url-helper" ref="input" class="form-input italic" type="text" :value="attendURL" readonly="readonly" />
@@ -80,12 +82,14 @@ import TextInput from '@/Shared/TextInput'
 import SelectInput from '@/Shared/SelectInput'
 import CheckboxInput from '@/Shared/CheckboxInput'
 import LoadingButton from '@/Shared/LoadingButton'
+import TextareaInput from '../../Shared/TextareaInput.vue'
 
 export default {
   metaInfo() {
     return { title: this.form.name }
   },
   components: {
+    TextareaInput,
     LoadingButton,
     SelectInput,
     TextInput,
@@ -109,13 +113,14 @@ export default {
         max_attendees: this.training.max_attendees.toString(),
         can_attend_more: this.training.can_attend_more,
         type: this.training.type,
+        description: this.training.description,
       }),
     }
   },
   computed: {
     attendURL: function () {
       return this.route('trainings.attend', this.training.id)
-    }
+    },
   },
   methods: {
     update() {
@@ -136,10 +141,10 @@ export default {
     rejectAttendance(user_id) {
       if (this.training.start_at < new Date().toISOString()) {
         this.$inertia.post(this.route('trainings.attendance.reject', [this.training.id, user_id]), {}, {
-          preserveScroll: true
+          preserveScroll: true,
         })
       }
-    }
+    },
   },
 }
 </script>
