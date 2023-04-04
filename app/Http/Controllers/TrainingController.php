@@ -60,7 +60,7 @@ final class TrainingController extends Controller
                 'registered' => $training->attendees->contains(Auth::user()->id),
                 'max_attendees' => $training->max_attendees,
                 'can_attend_more' => (bool)$training->can_attend_more,
-                'can_attend_from' => now(),
+                'can_attend_from' => now()->addDay(-1),
                 'description' => nl2br($training->description),
                 'comment' => $training->attendees()
                         ->wherePivot('user_id', Auth::user()->id)
@@ -100,7 +100,7 @@ final class TrainingController extends Controller
                 'attendees' => AttendeeResource::collection($training->attendees()->orderBy('name')->get()),
                 'max_attendees' => $training->max_attendees,
                 'can_attend_more' => (bool)$training->can_attend_more,
-                'can_attend_from' => now(),
+                'can_attend_from' => now()->addDay(-1),
                 'description' => $training->description,
             ],
         ]);

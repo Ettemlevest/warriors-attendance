@@ -53,7 +53,7 @@ class DashboardController extends Controller
                             'registered' => $training->attendees->contains(Auth::user()->id),
                             'max_attendees' => (int) $training->max_attendees,
                             'can_attend_more' => $training->can_attend_more,
-                            'can_attend_from' => now(),
+                            'can_attend_from' => now()->addDay(-1),
                         ];
                 }),
         ]);
