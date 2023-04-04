@@ -4,7 +4,7 @@
       <h1 class="font-bold text-3xl">
         <inertia-link class="text-gray-500 hover:text-gray-800" :href="route('trainings')">Edzések</inertia-link>
         <span class="text-gray-400 font-medium">/</span>
-        {{ form.name }}
+        {{ training.name }}
       </h1>
     </div>
     <div class="bg-white block max-w rounded-md shadow overflow-hidden">
@@ -61,6 +61,19 @@
       </div>
     </div>
 
+    <div v-if="training.registered" class="bg-white rounded shadow overflow-hidden max-w mt-8">
+      <div class="p-8">
+        <h2 class="font-bold text-xl mb-4 border-b-2">Edzés naplóm</h2>
+        <form @submit.prevent="update">
+          <textarea-input v-model="form.comment" :error="form.errors.comment" class="w-full pb-8" />
+
+          <div>
+            <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Napló mentése</loading-button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <div class="bg-white rounded shadow overflow-hidden max-w mt-8">
       <table class="w-full whitespace-no-wrap">
         <tr class="text-left font-bold">
@@ -86,32 +99,34 @@
 <script>
 import Layout from '@/Shared/Layout'
 import Icon from '@/Shared/Icon'
+import TextareaInput from "../../Shared/TextareaInput.vue";
+import LoadingButton from "../../Shared/LoadingButton.vue";
 
 export default {
   metaInfo() {
     return { title: this.form.name }
   },
   components: {
+    LoadingButton,
+    TextareaInput,
     Icon,
   },
   layout: Layout,
   props: {
     training: Object,
   },
+  remember: 'form',
   data() {
     return {
-      form: {
-        name: this.training.name,
-        place: this.training.place,
-        start_at: this.training.start_at,
-        length: this.training.length,
-        attendees: this.training.attendees,
-        max_attendees: this.training.max_attendees,
-        description: this.training.description,
-      },
+      form: this.$inertia.form({
+        comment: this.training.comment,
+      }),
     }
   },
   methods: {
+    update() {
+      this.form.put(this.route('trainings.comment', this.training.id))
+    },
     attend(training_id) {
       this.$inertia.post(this.route('trainings.attend', training_id), null)
     },

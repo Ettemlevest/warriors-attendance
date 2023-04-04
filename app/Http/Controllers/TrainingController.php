@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TrainingCommentRequest;
 use App\Http\Requests\TrainingCreationRequest;
 use App\Http\Requests\TrainingDestroyRequest;
 use App\Http\Requests\TrainingUpdateRequest;
@@ -61,6 +62,9 @@ final class TrainingController extends Controller
                 'can_attend_more' => (bool)$training->can_attend_more,
                 'can_attend_from' => $training->start_at->addDays(-7),
                 'description' => nl2br($training->description),
+                'comment' => $training->attendees()
+                        ->wherePivot('user_id', Auth::user()->id)
+                        ->first()->pivot->comment ?? '',
             ],
         ]);
     }
@@ -180,6 +184,15 @@ final class TrainingController extends Controller
         Auth::user()->trainings()->detach($training->id);
 
         return Redirect::back()->with('success', 'Sikeresen visszavontad a jelentkezésed.');
+    }
+
+    public function comment(TrainingCommentRequest $request, Training $training)
+    {
+        $training->attendees()->updateExistingPivot(Auth::user()->id, [
+            'comment' => $request->input('comment'),
+        ]);
+
+        return Redirect::back()->with('success', 'Edzés napló sikeresen mentve.');
     }
 
     public function confirmAttendance(Training $training, User $attendee)
