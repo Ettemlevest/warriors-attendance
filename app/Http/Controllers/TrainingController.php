@@ -156,16 +156,6 @@ final class TrainingController extends Controller
             $message .= ' Vállaltam a 10 burpeet beugrónak!';
         }
 
-        if (Auth::user()->trainings->count()) {
-            $last_attend_action = Auth::user()->last_attendance_date();
-            $diff_in_minutes = Carbon::now()->diffInMinutes($last_attend_action);
-
-            if ($diff_in_minutes < 10) {
-                $diff_in_minutes = 10 - $diff_in_minutes;
-                return Redirect::back()->with('error', "Nemrég jelentkeztél már egy edzésre. Próbáld újra {$diff_in_minutes} perc múlva.");
-            }
-        }
-
         Auth::user()->trainings()->attach($training->id, ['extra' => $extra]);
 
         return Redirect::back()->with('success', $message);
