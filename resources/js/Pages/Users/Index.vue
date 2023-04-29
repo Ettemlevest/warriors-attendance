@@ -15,6 +15,12 @@
           <option value="with">Töröltekkel együtt</option>
           <option value="only">Csak töröltek</option>
         </select>
+        <label class="mt-4 block text-gray-700">Telefonszám:</label>
+        <select v-model="form.phone" class="mt-1 w-full form-select">
+          <option :value="null" />
+          <option value="missing">Hiányzik</option>
+          <option value="present">Megadva</option>
+        </select>
       </search-filter>
       <inertia-link class="btn-indigo" :href="route('users.create')">
         <span>Létrehozás</span>

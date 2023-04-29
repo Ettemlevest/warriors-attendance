@@ -82,6 +82,20 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
             } elseif ($trashed === 'only') {
                 $query->onlyTrashed();
             }
+        })->when($filters['phone'] ?? null, function ($query, $phone) {
+            if ($phone === 'missing') {
+                $query->where(function ($query) {
+                    $query
+                        ->orWhere('phone', '=', '')
+                        ->orWhereNull('phone');
+                });
+            } elseif ($phone === 'present') {
+                $query->where(function ($query) {
+                    $query
+                        ->where('phone', '!=', '')
+                        ->whereNotNull('phone');
+                });
+            }
         });
     }
 

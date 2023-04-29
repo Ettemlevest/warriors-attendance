@@ -18,7 +18,7 @@ class UsersController extends Controller
 {
     public function index()
     {
-        $query = User::orderBy('name')->filter(Request::only('search', 'role', 'trashed'));
+        $query = User::orderBy('name')->filter(Request::only('search', 'role', 'trashed', 'phone'));
 
         if (! Auth::user()->owner) {
             $query->where('id', Auth::user()->id);
