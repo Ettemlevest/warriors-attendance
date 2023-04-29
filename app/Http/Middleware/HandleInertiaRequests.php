@@ -45,6 +45,7 @@ class HandleInertiaRequests extends Middleware
                         'email' => $request->user()->email,
                         'owner' => $request->user()->owner,
                         'photo' => $request->user()->photoUrl(['w' => 40, 'h' => 40, 'fit' => 'crop']),
+                        'phone_missing' => empty($request->user()->phone),
                     ] : null,
                 ];
             },

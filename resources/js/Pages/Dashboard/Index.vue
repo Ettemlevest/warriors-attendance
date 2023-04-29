@@ -3,6 +3,17 @@
     <h1 class="mb-2 font-bold text-3xl">Üdvözlünk!</h1>
     <p class="mb-8 leading-normal">Szia Warrior! Itt jelentkezhetsz a következő edzésekre.</p>
 
+    <div v-if="$page.props.auth.user.phone_missing" class="mb-8 rounded-md flex flex-col items-center max-w bg-red-100 border-2 border-red-300 text-red-700 p-4" role="alert">
+      <div class="flex items-center mb-4">
+        <icon name="exclamation" class="fill-current w-8 h-8 mr-4" />
+        <strong class="font-bold mr-1 flex-none">Hiányzó telefonszám!</strong>
+        <span class="">Add meg a telefonszámod, hogy jelentkezhess edzésekre!</span>
+      </div>
+      <div class="flex-1 align-middle">
+        <inertia-link class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold p-2 rounded tracking-wider justify-self-end" :href="route('users.edit', $page.props.auth.user.id)">Profil szerkesztése</inertia-link>
+      </div>
+    </div>
+
     <div v-if="this.message" class="mb-8 flex bg-gray-500 rounded-md max-w">
       <div class="flex items-center p-4">
         <icon name="notifications" class="hidden md:block mr-4 flex-shrink-0 w-8 h-8 fill-white" />
