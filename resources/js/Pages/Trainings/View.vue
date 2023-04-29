@@ -31,20 +31,29 @@
           </div>
         </div>
         <!-- canAttend(training) -->
-        <button v-if="training.can_attend_from < new Date().toISOString() && training.start_at > new Date().toISOString() && !training.registered && (training.max_attendees === 0 || training.attendees.data.length < training.max_attendees)" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold p-2 rounded w-full tracking-wider" @click="attend(training.id)">
+        <inertia-link
+          v-if="$page.props.auth.user.phone_missing"
+          class="block bg-indigo-600 hover:bg-indigo-700 text-white font-bold p-2 rounded w-full tracking-wider text-center"
+          :href="route('users.edit', $page.props.auth.user.id)"
+        >
+          Hiányzó telefonszám megadása
+        </inertia-link>
+
+        <button v-if="training.can_attend_from < new Date().toISOString() && training.start_at > new Date().toISOString() && !training.registered && (training.max_attendees === 0 || training.attendees.data.length < training.max_attendees) && ! $page.props.auth.user.phone_missing" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold p-2 rounded w-full tracking-wider" @click="attend(training.id)">
           Jelentkezem
         </button>
         <!-- alreadyOver(training) -->
-        <div v-if="training.can_attend_from > new Date().toISOString()" class="bg-orange-500 text-white tracking-wider p-2 rounded-md italic w-full text-center">Még nem lehet jelentkezni az edzésre! Gyere vissza 7 nappal előtte.</div>
+        <div v-if="training.can_attend_from > new Date().toISOString() && ! $page.props.auth.user.phone_missing" class="bg-orange-500 text-white tracking-wider p-2 rounded-md italic w-full text-center">Még nem lehet jelentkezni az edzésre! Gyere vissza 7 nappal előtte.</div>
         <!-- !canAttend(training) && reachedMaxAttendees(training) -->
         <div v-if="training.can_attend_from < new Date().toISOString()
         && training.start_at > new Date().toISOString()
         && !training.registered
         && training.max_attendees > 0
         && training.attendees.data.length >= training.max_attendees
+        && ! $page.props.auth.user.phone_missing
           " class="bg-orange-500 text-white tracking-wider p-2 rounded-md italic w-full text-center">Megtelt, már nem lehet jelentkezni!</div>
         <!-- canWithdraw(training) -->
-        <button v-if="training.can_attend_from < new Date().toISOString() && training.start_at > new Date().toISOString() && training.registered" class="bg-red-600 hover:bg-red-700 text-white font-bold p-2 rounded w-full tracking-wider" @click="withdraw(training.id)">
+        <button v-if="training.can_attend_from < new Date().toISOString() && training.start_at > new Date().toISOString() && training.registered && ! $page.props.auth.user.phone_missing" class="bg-red-600 hover:bg-red-700 text-white font-bold p-2 rounded w-full tracking-wider" @click="withdraw(training.id)">
           Lemondás
         </button>
         <!-- canAttend(training) && reachedMaxAttendees(training) -->

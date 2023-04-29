@@ -69,6 +69,13 @@
           </div>
 
           <!-- <div>{{ training }}</div> -->
+          <inertia-link
+            v-if="$page.props.auth.user.phone_missing"
+            class="block bg-indigo-600 hover:bg-indigo-700 text-white font-bold p-2 rounded w-full tracking-wider text-center"
+            :href="route('users.edit', $page.props.auth.user.id)"
+          >
+            Hiányzó telefonszám megadása
+          </inertia-link>
 
           <button
               v-if="canAttend(training)"
@@ -149,16 +156,19 @@ export default {
           && ! training.registered
           &&   training.can_attend_from < now
           && ! this.reachedMaxAttendees(training)
+          && ! this.$inertia.page.props.auth.user.phone_missing
     },
     canWithdraw(training) {
       const now = new Date().toISOString()
 
       return training.registered && training.start_at > now
+        && ! this.$inertia.page.props.auth.user.phone_missing
     },
     reachedMaxAttendees(training) {
       return training.max_attendees != 0
           && (training.attendees.length >= training.max_attendees)
+          && ! this.$inertia.page.props.auth.user.phone_missing
     },
-  }
+  },
 }
 </script>
