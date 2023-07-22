@@ -2,15 +2,37 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * App\Models\User
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string $password
+ * @property bool $owner
+ * @property string|null $photo_path
+ * @property string|null $size
+ * @property string|null $birth_date
+ * @property string|null $address
+ * @property string|null $phone
+ * @property string|null $remember_token
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property string|null $safety_person
+ * @property string|null $safety_phone
+ */
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +43,16 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+    ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array<string>
+     */
+    protected $appends = [
+        //        'owner',
+        'age',
     ];
 
     /**
@@ -39,7 +71,16 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
+        'owner' => 'boolean',
+        'birth_date' => 'datetime',
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function age(): Attribute
+    {
+        return Attribute::make(
+            get: fn (mixed $value, array $attributes) => $this->getAttributeValue('birth_date')?->age,
+        );
+    }
 }
