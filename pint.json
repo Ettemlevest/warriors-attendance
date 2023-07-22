@@ -1,0 +1,7 @@
+{
+  "preset": "laravel",
+  "exclude": [],
+  "rules": {
+    "nullable_type_declaration_for_default_null_value": false
+  }
+}
