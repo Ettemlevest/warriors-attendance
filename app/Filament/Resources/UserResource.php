@@ -8,12 +8,14 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TrashedFilter;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class UserResource extends Resource
 {
@@ -26,7 +28,7 @@ class UserResource extends Resource
         return $form
             ->schema([
                 Section::make('Basic user data')
-                    ->columns(2)
+                    ->columns(['lg' => 2])
                     ->schema([
                         TextInput::make('name')
                             ->required()
@@ -46,13 +48,11 @@ class UserResource extends Resource
 
                         TextInput::make('password_confirmation')
                             ->password(),
-
-                        Toggle::make('owner')->hidden(! auth()->user()->isOwner()),
                     ]),
 
                 Section::make('Additional information')
                     ->collapsible()
-                    ->columns(2)
+                    ->columns(['lg' => 2])
                     ->schema([
                         DatePicker::make('birth_date'),
 
@@ -89,13 +89,19 @@ class UserResource extends Resource
                 TextColumn::make('email')->sortable(),
             ])
             ->filters([
-                //
+                TrashedFilter::make(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ForceDeleteAction::make(),
+                Tables\Actions\RestoreAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\ForceDeleteBulkAction::make(),
+                Tables\Actions\RestoreBulkAction::make(),
             ]);
     }
 
@@ -114,5 +120,13 @@ class UserResource extends Resource
             'create' => Pages\CreateUser::route('/create'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
     }
 }
