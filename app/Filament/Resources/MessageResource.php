@@ -18,9 +18,9 @@ class MessageResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-right';
 
-    protected static ?string $modelLabel = 'Üzenet';
+    protected static ?string $modelLabel = 'üzenet';
 
-    protected static ?string $pluralModelLabel = 'Üzenetek';
+    protected static ?string $pluralModelLabel = 'üzenetek';
 
     public static function form(Form $form): Form
     {
@@ -28,14 +28,18 @@ class MessageResource extends Resource
             ->schema([
                 TextInput::make('title')
                     ->label('Cím')
+                    ->maxLength(255)
                     ->columnSpanFull(),
 
                 RichEditor::make('body')
                     ->label('Üzenet')
                     ->columnSpanFull(),
 
-                DatePicker::make('showed_from'),
-                DatePicker::make('showed_to'),
+                DatePicker::make('showed_from')
+                    ->label('Dátumtól'),
+
+                DatePicker::make('showed_to')
+                    ->label('Dátumig'),
             ]);
     }
 
@@ -63,6 +67,7 @@ class MessageResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -10,4 +10,6 @@ class Message extends Model
         'showed_from' => 'datetime',
         'showed_to' => 'datetime',
     ];
+
+    protected $guarded = [];
 }
