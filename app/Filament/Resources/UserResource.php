@@ -53,17 +53,6 @@ class UserResource extends Resource
                             ->email()
                             ->required()
                             ->maxLength(255),
-
-                        //                        TextInput::make('password')
-                        //                            ->label('Jelszó')
-                        //                            ->helperText('Only fill password when you want to change your current password.')
-                        //                            ->password()
-                        //                            ->minLength(8)
-                        //                            ->confirmed(),
-                        //
-                        //                        TextInput::make('password_confirmation')
-                        //                            ->label('Jelszó megerősítés')
-                        //                            ->password(),
                     ]),
 
                 Section::make('Információk versenyre jelentkezéshez')
@@ -112,6 +101,7 @@ class UserResource extends Resource
 
                 Section::make('Meta adatok')
                     ->columns(['lg' => 2])
+                    ->visible(fn (User $user) => $user->exists)
                     ->schema([
                         Placeholder::make('Létrehozva')
                             ->content(fn (User $user) => $user->created_at->longRelativeToNowDiffForHumans()),

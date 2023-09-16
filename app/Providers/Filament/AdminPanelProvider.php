@@ -32,6 +32,8 @@ class AdminPanelProvider extends PanelProvider
             ->emailVerification()
             ->profile()
 
+            ->sidebarCollapsibleOnDesktop()
+
             ->colors([
                 'primary' => Color::Green,
             ])
