@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -23,40 +25,57 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getModelLabel(): string
+    {
+        return __('users.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('users.plural_label');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Section::make('Basic user data')
+                Section::make('')
                     ->columns(['lg' => 2])
                     ->schema([
                         TextInput::make('name')
+                            ->label('Név')
                             ->required()
                             ->maxLength(255)
                             ->autofocus(),
 
                         TextInput::make('email')
+                            ->label('E-mail')
                             ->email()
                             ->required()
                             ->maxLength(255),
 
-                        TextInput::make('password')
-                            ->helperText('Only fill password when you want to change your current password.')
-                            ->password()
-                            ->minLength(8)
-                            ->confirmed(),
-
-                        TextInput::make('password_confirmation')
-                            ->password(),
+                        //                        TextInput::make('password')
+                        //                            ->label('Jelszó')
+                        //                            ->helperText('Only fill password when you want to change your current password.')
+                        //                            ->password()
+                        //                            ->minLength(8)
+                        //                            ->confirmed(),
+                        //
+                        //                        TextInput::make('password_confirmation')
+                        //                            ->label('Jelszó megerősítés')
+                        //                            ->password(),
                     ]),
 
-                Section::make('Additional information')
-                    ->collapsible()
+                Section::make('Információk versenyre jelentkezéshez')
                     ->columns(['lg' => 2])
                     ->schema([
-                        DatePicker::make('birth_date'),
+                        FileUpload::make('photo_path')
+                            ->label('Fénykép')
+                            ->disk('local')
+                            ->directory('users'),
 
                         Select::make('size')
+                            ->label('Póló méret')
                             ->options([
                                 'S' => 'S',
                                 'M' => 'M',
@@ -66,17 +85,39 @@ class UserResource extends Resource
                             ])
                             ->nullable(),
 
-                        TextInput::make('address')
-                            ->maxLength(255),
+                        DatePicker::make('birth_date')
+                            ->label('Születési dátum'),
 
                         TextInput::make('phone')
+                            ->label('Telefonszám')
                             ->maxLength(255),
 
+                        TextInput::make('address')
+                            ->label('Lakcím')
+                            ->columnSpanFull()
+                            ->maxLength(255),
+                    ]),
+
+                Section::make('Baleset esetén értesítendő')
+                    ->columns(2)
+                    ->schema([
                         TextInput::make('safety_person')
+                            ->label('Név')
                             ->maxLength(255),
 
                         TextInput::make('safety_phone')
+                            ->label('Telefonszám')
                             ->maxLength(255),
+                    ]),
+
+                Section::make('Meta adatok')
+                    ->columns(['lg' => 2])
+                    ->schema([
+                        Placeholder::make('Létrehozva')
+                            ->content(fn (User $user) => $user->created_at->longRelativeToNowDiffForHumans()),
+
+                        Placeholder::make('Módosítva')
+                            ->content(fn (User $user) => $user->updated_at->longRelativeToNowDiffForHumans()),
                     ]),
             ]);
     }
@@ -110,9 +151,6 @@ class UserResource extends Resource
         return [];
     }
 
-    /**
-     * @return array<string, array<string, string>>
-     */
     public static function getPages(): array
     {
         return [
