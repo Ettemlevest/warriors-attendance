@@ -23,17 +23,11 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
-    public static function getModelLabel(): string
-    {
-        return __('users.label');
-    }
+    protected static ?string $modelLabel = 'Warrior';
 
-    public static function getPluralModelLabel(): string
-    {
-        return __('users.plural_label');
-    }
+    protected static ?string $pluralModelLabel = 'Warriorok';
 
     public static function form(Form $form): Form
     {
@@ -116,8 +110,13 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->sortable(),
-                TextColumn::make('email')->sortable(),
+                TextColumn::make('name')
+                    ->label('Név')
+                    ->sortable(),
+
+                TextColumn::make('email')
+                    ->label('E-mail')
+                    ->sortable(),
             ])
             ->filters([
                 TrashedFilter::make(),
