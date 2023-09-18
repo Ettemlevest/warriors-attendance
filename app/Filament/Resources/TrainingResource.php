@@ -8,7 +8,10 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class TrainingResource extends Resource
 {
@@ -30,20 +33,82 @@ class TrainingResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $trainingTypeIconGenerationCallback = fn (Training $training) => match ($training->type) {
+            'easy' => 'heroicon-o-arrow-trending-up',
+            'running' => 'heroicon-o-sparkles',
+            'hard' => 'heroicon-o-bolt',
+            'other' => 'heroicon-o-swatch',
+            default => '',
+        };
+
         return $table
             ->columns([
+                Tables\Columns\IconColumn::make('type')
+                    ->label('Típus')
+                    ->color(fn (string $state) => match ($state) {
+                        'easy' => 'primary',
+                        'running' => 'warning',
+                        'hard' => 'danger',
+                        'other' => 'info',
+                        default => '',
+                    })
+                    ->tooltip(fn (Training $training) => match ($training->type) {
+                        'easy' => 'Felzárkóztató',
+                        'running' => 'Futó',
+                        'hard' => 'Haladó',
+                        'other' => 'Egyéb',
+                        default => 'Ismeretlen',
+                    })
+                    ->icon($trainingTypeIconGenerationCallback),
+
                 TextColumn::make('name')
                     ->label('Edzés')
+                    ->description(fn (Training $training) => $training->place)
                     ->sortable(),
 
                 TextColumn::make('start_at')
-                    ->date('Y-m-d')
                     ->label('Kezdés')
+                    ->date('Y-m-d')
+                    ->description(fn (Training $training) => $training->start_at->longRelativeToNowDiffForHumans())
+                    ->sortable(),
+
+                TextColumn::make('length')
+                    ->label('Időtartam')
+                    ->formatStateUsing(fn (Training $training): string => "{$training->length} perc")
+                    ->alignRight(),
+
+                TextColumn::make('attendees_count')
+                    ->label('Létszám')
+                    ->formatStateUsing(fn (string $state, Training $training): string => $state.' / '.($training->max_attendees !== 0 ? $training->max_attendees : '&infin;'))
+                    ->html()
+                    ->alignRight()
                     ->sortable(),
             ])
             ->defaultSort('start_at', 'desc')
             ->filters([
-                //
+                SelectFilter::make('type')
+                    ->label('Típus')
+                    ->options([
+                        'easy' => 'Felzárkóztató',
+                        'running' => 'Futó',
+                        'hard' => 'Haladó',
+                        'other' => 'Egyéb',
+                    ]),
+
+                TernaryFilter::make('is_attendee')
+                    ->label('Jelentkeztem')
+                    ->nullable()
+                    ->queries(
+                        true: fn (Builder $query) => $query->whereHas(
+                            'attendees',
+                            fn (Builder $attendeesSubQuery) => $attendeesSubQuery->where('user_id', '=', 1)
+                        ),
+                        false: fn (Builder $query) => $query->whereDoesntHave(
+                            'attendees',
+                            fn (Builder $attendeesSubQuery) => $attendeesSubQuery->where('user_id', '=', 1)
+                        ),
+                    ),
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
