@@ -62,6 +62,7 @@ class MessageResource extends Resource
                     ->date('Y-m-d')
                     ->sortable(),
             ])
+            ->defaultSort('showed_from', 'desc')
             ->filters([
                 //
             ])

@@ -118,6 +118,7 @@ class UserResource extends Resource
                     ->label('E-mail')
                     ->sortable(),
             ])
+            ->defaultSort('id', 'desc')
             ->filters([
                 TrashedFilter::make(),
             ])
