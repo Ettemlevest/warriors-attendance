@@ -22,6 +22,8 @@ class MessageResource extends Resource
 
     protected static ?string $pluralModelLabel = 'üzenetek';
 
+    protected static ?string $navigationGroup = 'Admin';
+
     public static function form(Form $form): Form
     {
         return $form
