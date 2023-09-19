@@ -30,22 +30,24 @@ class MessageResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('')->schema([
-                    TextInput::make('title')
-                        ->label('Cím')
-                        ->maxLength(255)
-                        ->columnSpanFull(),
+                Section::make('')
+                    ->columns(['lg' => 2])
+                    ->schema([
+                        TextInput::make('title')
+                            ->label('Cím')
+                            ->maxLength(255)
+                            ->columnSpanFull(),
 
-                    RichEditor::make('body')
-                        ->label('Üzenet')
-                        ->columnSpanFull(),
+                        RichEditor::make('body')
+                            ->label('Üzenet')
+                            ->columnSpanFull(),
 
-                    DatePicker::make('showed_from')
-                        ->label('Dátumtól'),
+                        DatePicker::make('showed_from')
+                            ->label('Dátumtól'),
 
-                    DatePicker::make('showed_to')
-                        ->label('Dátumig'),
-                ]),
+                        DatePicker::make('showed_to')
+                            ->label('Dátumig'),
+                    ]),
                 Section::make('Meta adatok')
                     ->columns(['lg' => 2])
                     ->visible(fn (Message $message) => $message->exists)
