@@ -100,10 +100,12 @@ class UserResource extends Resource
                     ->visible(fn (User $user) => $user->exists)
                     ->schema([
                         Placeholder::make('Létrehozva')
-                            ->content(fn (User $user) => $user->created_at->longRelativeToNowDiffForHumans()),
+                            ->content(fn (User $user) => $user->created_at)
+                            ->helperText(fn (User $user) => $user->created_at->longRelativeToNowDiffForHumans()),
 
                         Placeholder::make('Módosítva')
-                            ->content(fn (User $user) => $user->updated_at->longRelativeToNowDiffForHumans()),
+                            ->content(fn (User $user) => $user->updated_at)
+                            ->helperText(fn (User $user) => $user->updated_at->longRelativeToNowDiffForHumans()),
                     ]),
             ]);
     }
