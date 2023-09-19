@@ -4,6 +4,13 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TrainingResource\Pages;
 use App\Models\Training;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -27,7 +34,83 @@ class TrainingResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Section::make('')
+                    ->columns(['lg' => 2])
+                    ->schema([
+                        Select::make('type')
+                            ->label('Típus')
+                            ->default('easy')
+                            ->columnSpanFull()
+                            ->required()
+                            ->options([
+                                'easy' => 'Felzárkózatató edzés',
+                                'running' => 'Futó edzés',
+                                'hard' => 'Haladó edzés',
+                                'other' => 'Egyéb',
+                            ]),
+
+                        TextInput::make('name')
+                            ->label('Edzés neve')
+                            ->required()
+                            ->autofocus()
+                            ->maxLength(255),
+
+                        TextInput::make('place')
+                            ->label('Helyszín')
+                            ->required()
+                            ->datalist(
+                                Training::query()
+                                    ->select('place')
+                                    ->selectRaw('COUNT(*) as count')
+                                    ->groupBy('place')
+                                    ->orderByDesc('count')
+                                    ->having('count', '>', 5)
+                                    ->take(20)
+                                    ->pluck('place')
+                                    ->all()
+                            )
+                            ->maxLength(255),
+
+                        DateTimePicker::make('start_at')
+                            ->label('Kezdés időpontja')
+                            ->seconds(false)
+                            ->required(),
+
+                        TextInput::make('length')
+                            ->label('Időtartam')
+                            ->numeric()
+                            ->required()
+                            ->default(60)
+                            ->suffix('perc')
+                            ->suffixIcon('heroicon-o-clock'),
+
+                        TextInput::make('max_attendees')
+                            ->label('Max. létszám')
+                            ->default(32)
+                            ->suffix('fő')
+                            ->suffixIcon('heroicon-o-users'),
+
+                        Toggle::make('can_attend_more')
+                            ->label('Maximális létszám túlléphető')
+                            ->default(true),
+
+                        RichEditor::make('description')
+                            ->label('Leírás')
+                            ->columnSpanFull(),
+                    ]),
+
+                Section::make('Meta adatok')
+                    ->columns(['lg' => 2])
+                    ->visible(fn (Training $training) => $training->exists)
+                    ->schema([
+                        Placeholder::make('Létrehozva')
+                            ->content(fn (Training $training) => $training->created_at)
+                            ->helperText(fn (Training $training) => $training->created_at->longRelativeToNowDiffForHumans()),
+
+                        Placeholder::make('Módosítva')
+                            ->content(fn (Training $training) => $training->updated_at)
+                            ->helperText(fn (Training $training) => $training->updated_at->longRelativeToNowDiffForHumans()),
+                    ]),
             ]);
     }
 
