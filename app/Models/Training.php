@@ -37,6 +37,17 @@ final class Training extends Model
         'can_attend_more' => 'boolean',
     ];
 
+    protected $fillable = [
+        'type',
+        'name',
+        'place',
+        'start_at',
+        'length',
+        'max_attendees',
+        'can_attend_more',
+        'description',
+    ];
+
     public function attendees(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'trainings_attendance')

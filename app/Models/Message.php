@@ -28,5 +28,10 @@ class Message extends Model
         'showed_to' => 'datetime',
     ];
 
-    protected $guarded = [];
+    protected $fillable = [
+        'title',
+        'body',
+        'showed_from',
+        'showed_to',
+    ];
 }
