@@ -23,6 +23,11 @@ class TrainingAttendance extends Model
         'comment',
     ];
 
+    protected $with = [
+        'training',
+        'user',
+    ];
+
     public function training(): BelongsTo
     {
         return $this->belongsTo(Training::class);
