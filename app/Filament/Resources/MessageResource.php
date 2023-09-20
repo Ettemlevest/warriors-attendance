@@ -70,6 +70,7 @@ class MessageResource extends Resource
                 Tables\Columns\TextColumn::make('title')
                     ->label('Cím')
                     ->limit(50)
+                    ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('showed_from')

@@ -14,6 +14,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
@@ -92,6 +93,7 @@ class TrainingResource extends Resource
 
                         Toggle::make('can_attend_more')
                             ->label('Maximális létszám túlléphető')
+                            ->inline(false)
                             ->default(true),
 
                         RichEditor::make('description')
@@ -126,7 +128,7 @@ class TrainingResource extends Resource
 
         return $table
             ->columns([
-                Tables\Columns\IconColumn::make('type')
+                IconColumn::make('type')
                     ->label('Típus')
                     ->color(fn (string $state) => match ($state) {
                         'easy' => 'primary',
@@ -147,6 +149,7 @@ class TrainingResource extends Resource
                 TextColumn::make('name')
                     ->label('Edzés')
                     ->description(fn (Training $training) => $training->place)
+                    ->searchable()
                     ->sortable(),
 
                 TextColumn::make('start_at')

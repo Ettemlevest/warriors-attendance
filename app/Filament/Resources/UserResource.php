@@ -116,10 +116,12 @@ class UserResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->label('Név')
+                    ->searchable()
                     ->sortable(),
 
                 TextColumn::make('email')
                     ->label('E-mail')
+                    ->searchable()
                     ->sortable(),
             ])
             ->defaultSort('id', 'desc')
