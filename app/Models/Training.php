@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\Training
@@ -48,26 +49,28 @@ final class Training extends Model
         'description',
     ];
 
-    public function attendees(): BelongsToMany
+    public function attendees(): HasMany
     {
-        return $this->belongsToMany(User::class, 'trainings_attendance')
-            ->withPivot([
-                'extra',
-                'attended',
-                'comment',
-            ])
-            ->withTimestamps();
+        return $this->hasMany(TrainingAttendance::class);
     }
 
     public function hasAttendee(User $attendee): bool
     {
-        return $this->attendees()
-            ->where('user_id', '=', $attendee->id)
+        return $this->query()
+            ->whereHas(
+                'attendees',
+                fn (Builder $query) => $query->where('user_id', '=', $attendee->id)
+            )
             ->exists();
     }
 
     public function doesntHaveAttendee(User $attendee): bool
     {
-        return ! $this->hasAttendee($attendee);
+        return $this->query()
+            ->whereDoesntHave(
+                'attendees',
+                fn (Builder $query) => $query->where('user_id', '=', $attendee->id)
+            )
+            ->exists();
     }
 }
