@@ -91,7 +91,8 @@ class AttendeesRelationManager extends RelationManager
                     ->color('warning')
                     ->action(fn (TrainingAttendance $attendance) => $attendance->toggleAttendance()),
 
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->modalHeading('Jelentkezés törlése'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
