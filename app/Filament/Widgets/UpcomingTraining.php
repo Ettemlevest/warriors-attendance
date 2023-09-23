@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Training;
 use Carbon\CarbonPeriod;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -34,6 +35,7 @@ class UpcomingTraining extends BaseWidget
                     ->withCount('attendees')
                     ->whereBetween('start_at', CarbonPeriod::create('now', '+1 month')),
             )
+            ->defaultSort('start_at', 'asc')
             ->columns([
                 IconColumn::make('type')
                     ->label('Típus')
@@ -76,6 +78,21 @@ class UpcomingTraining extends BaseWidget
                     ->html()
                     ->alignRight()
                     ->sortable(),
+            ])
+            ->actions([
+                Action::make('attend')
+                    ->label('Jelentkezem')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->visible(fn (Training $training) => ! $training->hasAttendee(auth()->user()))
+                    ->action(fn (Training $training) => auth()->user()->trainingAttendances()->create(['training_id' => $training->id])),
+
+                Action::make('withdraw')
+                    ->label('Lemondom')
+                    ->icon('heroicon-o-minus-circle')
+                    ->color('warning')
+                    ->visible(fn (Training $training) => $training->hasAttendee(auth()->user()))
+                    ->action(fn (Training $training) => $training->attendees()->where('user_id', '=', auth()->id())->delete()),
             ]);
     }
 }
