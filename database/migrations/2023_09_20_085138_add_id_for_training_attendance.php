@@ -19,6 +19,8 @@ return new class extends Migration
             $table->boolean('attended')->default(false);
             $table->text('comment')->nullable();
             $table->timestamps();
+
+            $table->unique(['training_id', 'user_id']);
         });
 
         TrainingAttendance::query()->get()->each(function (TrainingAttendance $attendance) {
