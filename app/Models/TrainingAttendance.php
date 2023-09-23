@@ -18,6 +18,8 @@ class TrainingAttendance extends Model
     ];
 
     protected $fillable = [
+        'training_id',
+        'user_id',
         'extra',
         'attended',
         'comment',

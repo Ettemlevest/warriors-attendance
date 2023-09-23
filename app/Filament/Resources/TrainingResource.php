@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TrainingResource\Pages;
+use App\Filament\Resources\TrainingResource\RelationManagers\AttendeesRelationManager;
 use App\Models\Training;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Placeholder;
@@ -210,7 +211,7 @@ class TrainingResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            AttendeesRelationManager::class,
         ];
     }
 
