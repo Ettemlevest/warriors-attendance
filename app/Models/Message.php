@@ -6,6 +6,23 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
+/**
+ * App\Models\Message
+ *
+ * @property int $id
+ * @property string $title
+ * @property string|null $body
+ * @property \Illuminate\Support\Carbon|null $showed_from
+ * @property \Illuminate\Support\Carbon|null $showed_to
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|Message newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Message newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Message query()
+ *
+ * @mixin Model
+ */
 class Message extends Model
 {
     protected $casts = [
@@ -13,7 +30,12 @@ class Message extends Model
         'showed_to' => 'datetime',
     ];
 
-    protected $guarded = [];
+    protected $fillable = [
+        'title',
+        'body',
+        'showed_from',
+        'showed_to',
+    ];
 
     /**
      * @return Collection<Message>

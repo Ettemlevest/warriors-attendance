@@ -29,6 +29,8 @@ class UserResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Warriorok';
 
+    protected static ?string $navigationGroup = 'Admin';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -98,10 +100,12 @@ class UserResource extends Resource
                     ->visible(fn (User $user) => $user->exists)
                     ->schema([
                         Placeholder::make('Létrehozva')
-                            ->content(fn (User $user) => $user->created_at->longRelativeToNowDiffForHumans()),
+                            ->content(fn (User $user) => $user->created_at)
+                            ->helperText(fn (User $user) => $user->created_at->longRelativeToNowDiffForHumans()),
 
                         Placeholder::make('Módosítva')
-                            ->content(fn (User $user) => $user->updated_at->longRelativeToNowDiffForHumans()),
+                            ->content(fn (User $user) => $user->updated_at)
+                            ->helperText(fn (User $user) => $user->updated_at->longRelativeToNowDiffForHumans()),
                     ]),
             ]);
     }
@@ -112,12 +116,15 @@ class UserResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->label('Név')
+                    ->searchable()
                     ->sortable(),
 
                 TextColumn::make('email')
                     ->label('E-mail')
+                    ->searchable()
                     ->sortable(),
             ])
+            ->defaultSort('id', 'desc')
             ->filters([
                 TrashedFilter::make(),
             ])

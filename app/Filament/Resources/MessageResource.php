@@ -5,7 +5,9 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\MessageResource\Pages;
 use App\Models\Message;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -22,24 +24,42 @@ class MessageResource extends Resource
 
     protected static ?string $pluralModelLabel = 'üzenetek';
 
+    protected static ?string $navigationGroup = 'Admin';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                TextInput::make('title')
-                    ->label('Cím')
-                    ->maxLength(255)
-                    ->columnSpanFull(),
+                Section::make('')
+                    ->columns(['lg' => 2])
+                    ->schema([
+                        TextInput::make('title')
+                            ->label('Cím')
+                            ->maxLength(255)
+                            ->columnSpanFull(),
 
-                RichEditor::make('body')
-                    ->label('Üzenet')
-                    ->columnSpanFull(),
+                        RichEditor::make('body')
+                            ->label('Üzenet')
+                            ->columnSpanFull(),
 
-                DatePicker::make('showed_from')
-                    ->label('Dátumtól'),
+                        DatePicker::make('showed_from')
+                            ->label('Dátumtól'),
 
-                DatePicker::make('showed_to')
-                    ->label('Dátumig'),
+                        DatePicker::make('showed_to')
+                            ->label('Dátumig'),
+                    ]),
+                Section::make('Meta adatok')
+                    ->columns(['lg' => 2])
+                    ->visible(fn (Message $message) => $message->exists)
+                    ->schema([
+                        Placeholder::make('Létrehozva')
+                            ->content(fn (Message $message) => $message->created_at)
+                            ->helperText(fn (Message $message) => $message->created_at->longRelativeToNowDiffForHumans()),
+
+                        Placeholder::make('Módosítva')
+                            ->content(fn (Message $message) => $message->updated_at)
+                            ->helperText(fn (Message $message) => $message->updated_at->longRelativeToNowDiffForHumans()),
+                    ]),
             ]);
     }
 
@@ -50,6 +70,7 @@ class MessageResource extends Resource
                 Tables\Columns\TextColumn::make('title')
                     ->label('Cím')
                     ->limit(50)
+                    ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('showed_from')
@@ -62,6 +83,7 @@ class MessageResource extends Resource
                     ->date('Y-m-d')
                     ->sortable(),
             ])
+            ->defaultSort('showed_from', 'desc')
             ->filters([
                 //
             ])
