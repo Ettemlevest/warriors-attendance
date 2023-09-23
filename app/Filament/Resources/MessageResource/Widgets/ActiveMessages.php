@@ -12,6 +12,8 @@ class ActiveMessages extends Widget
 
     protected int|string|array $columnSpan = 'full';
 
+    protected static ?int $sort = 10;
+
     public function __construct()
     {
         $this->messages = Message::activeMessages();
