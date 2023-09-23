@@ -6,6 +6,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * App\Models\TrainingAttendance
+ *
+ * @property int $id
+ * @property int $training_id
+ * @property int $user_id
+ * @property bool $extra
+ * @property bool $attended
+ * @property string|null $comment
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Training|null $training
+ * @property-read \App\Models\User|null $user
+ */
 class TrainingAttendance extends Model
 {
     use HasFactory;
