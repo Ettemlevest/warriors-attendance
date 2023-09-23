@@ -155,7 +155,7 @@ class TrainingResource extends Resource
 
                 TextColumn::make('start_at')
                     ->label('Kezdés')
-                    ->date('Y-m-d')
+                    ->date('Y-m-d H:i')
                     ->description(fn (Training $training) => $training->start_at->longRelativeToNowDiffForHumans())
                     ->sortable(),
 

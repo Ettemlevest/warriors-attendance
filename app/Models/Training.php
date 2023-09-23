@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -56,21 +55,11 @@ final class Training extends Model
 
     public function hasAttendee(User $attendee): bool
     {
-        return $this->query()
-            ->whereHas(
-                'attendees',
-                fn (Builder $query) => $query->where('user_id', '=', $attendee->id)
-            )
-            ->exists();
+        return $this->attendees->contains('user_id', $attendee->id);
     }
 
     public function doesntHaveAttendee(User $attendee): bool
     {
-        return $this->query()
-            ->whereDoesntHave(
-                'attendees',
-                fn (Builder $query) => $query->where('user_id', '=', $attendee->id)
-            )
-            ->exists();
+        return $this->attendees->doesntContain('user_id', $attendee->id);
     }
 }
