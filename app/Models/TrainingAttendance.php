@@ -44,6 +44,13 @@ class TrainingAttendance extends Model
         'user',
     ];
 
+    public function toggleAttendance(): bool
+    {
+        return $this->update([
+            'attended' => ! $this->attended,
+        ]);
+    }
+
     public function training(): BelongsTo
     {
         return $this->belongsTo(Training::class);

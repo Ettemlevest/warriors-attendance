@@ -2,15 +2,18 @@
 
 namespace App\Filament\Resources\TrainingResource\RelationManagers;
 
+use App\Models\TrainingAttendance;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 class AttendeesRelationManager extends RelationManager
 {
@@ -74,10 +77,32 @@ class AttendeesRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make(),
             ])
             ->actions([
+                Tables\Actions\Action::make('confirm_attendance')
+                    ->label('Résztvett')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->visible(fn (TrainingAttendance $attendance) => ! $attendance->attended)
+                    ->action(fn (TrainingAttendance $attendance) => $attendance->toggleAttendance()),
+
+                Tables\Actions\Action::make('not_attended')
+                    ->label('Hiányzott')
+                    ->visible(fn (TrainingAttendance $attendance) => $attendance->attended)
+                    ->icon('heroicon-o-minus-circle')
+                    ->color('warning')
+                    ->action(fn (TrainingAttendance $attendance) => $attendance->toggleAttendance()),
+
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    BulkAction::make('bulk_attendance_confirmation')
+                        ->label('Résztvettek')
+                        ->modalSubmitActionLabel('Igen')
+                        ->requiresConfirmation()
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->action(fn (Collection $attendances) => $attendances->each->toggleAttendance()),
+
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
