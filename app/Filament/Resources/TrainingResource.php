@@ -16,6 +16,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
@@ -170,6 +171,14 @@ class TrainingResource extends Resource
                     ->html()
                     ->alignRight()
                     ->sortable(),
+
+                ImageColumn::make('attendees.user.avatar_url')
+                    ->label('')
+                    ->stacked()
+                    ->limitedRemainingText()
+                    ->limit(5)
+                    ->size(40)
+                    ->circular(),
             ])
             ->defaultSort('start_at', 'desc')
             ->filters([

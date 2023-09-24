@@ -44,6 +44,12 @@ class AttendeesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('id')
             ->columns([
+                Tables\Columns\ImageColumn::make('user.avatar_url')
+                    ->grow(false)
+                    ->label('')
+                    ->size(40)
+                    ->circular(),
+
                 TextColumn::make('user.name')
                     ->label('Név')
                     ->sortable()
@@ -55,11 +61,13 @@ class AttendeesRelationManager extends RelationManager
 
                 IconColumn::make('attended')
                     ->label('Résztvett')
+                    ->grow(false)
                     ->sortable()
                     ->boolean(),
 
                 IconColumn::make('extra')
                     ->label('Extra')
+                    ->grow(false)
                     ->sortable()
                     ->boolean(),
             ])

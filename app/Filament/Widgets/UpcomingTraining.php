@@ -6,6 +6,7 @@ use App\Models\Training;
 use Carbon\CarbonPeriod;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -78,6 +79,14 @@ class UpcomingTraining extends BaseWidget
                     ->html()
                     ->alignRight()
                     ->sortable(),
+
+                ImageColumn::make('attendees.user.avatar_url')
+                    ->label('')
+                    ->stacked()
+                    ->limit(5)
+                    ->limitedRemainingText()
+                    ->size(40)
+                    ->circular(),
             ])
             ->actions([
                 Action::make('attend')
