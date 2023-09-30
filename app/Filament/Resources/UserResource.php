@@ -13,6 +13,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
@@ -114,6 +115,13 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
+                ImageColumn::make('avatar_url')
+                    ->defaultImageUrl('/avatar.png')
+                    ->grow(false)
+                    ->label('')
+                    ->size(40)
+                    ->circular(),
+
                 TextColumn::make('name')
                     ->label('Név')
                     ->searchable()

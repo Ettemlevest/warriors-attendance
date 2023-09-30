@@ -9,6 +9,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
@@ -44,7 +45,8 @@ class AttendeesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('id')
             ->columns([
-                Tables\Columns\ImageColumn::make('user.avatar_url')
+                ImageColumn::make('user.avatar_url')
+                    ->defaultImageUrl('/avatar.png')
                     ->grow(false)
                     ->label('')
                     ->size(40)
