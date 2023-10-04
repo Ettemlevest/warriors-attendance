@@ -32,6 +32,8 @@ class TrainingResource extends Resource
 
     protected static ?string $pluralModelLabel = 'edzések';
 
+    protected static ?string $navigationGroup = 'Admin';
+
     public static function form(Form $form): Form
     {
         return $form

@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
+use App\Models\Message;
+use App\Models\Training;
+use App\Models\User;
+use App\Policies\AdminCheckingPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -13,7 +16,9 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        //
+        Message::class => AdminCheckingPolicy::class,
+        Training::class => AdminCheckingPolicy::class,
+        User::class => AdminCheckingPolicy::class,
     ];
 
     /**

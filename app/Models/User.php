@@ -55,7 +55,6 @@ class User extends Authenticatable implements FilamentUser, HasName
      * @var array<string>
      */
     protected $appends = [
-        //        'owner',
         'age',
     ];
 
@@ -101,5 +100,10 @@ class User extends Authenticatable implements FilamentUser, HasName
     public function trainingAttendances(): HasMany
     {
         return $this->hasMany(TrainingAttendance::class);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->owner === true;
     }
 }
