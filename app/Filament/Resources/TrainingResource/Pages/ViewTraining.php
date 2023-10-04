@@ -3,9 +3,7 @@
 namespace App\Filament\Resources\TrainingResource\Pages;
 
 use App\Filament\Resources\TrainingResource;
-use App\Models\Training;
-use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Form;
+use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
 
 class ViewTraining extends ViewRecord
@@ -14,15 +12,8 @@ class ViewTraining extends ViewRecord
 
     protected function getHeaderActions(): array
     {
-        return [];
-    }
-
-    public function form(Form $form): Form
-    {
-        return $form->schema([
-            Placeholder::make('name')
-                ->label('Edzés neve')
-                ->content(fn (Training $training) => $training->name),
-        ]);
+        return [
+            Actions\EditAction::make(),
+        ];
     }
 }

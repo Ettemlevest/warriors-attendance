@@ -13,6 +13,11 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Grid;
+use Filament\Infolists\Components\Group;
+use Filament\Infolists\Components\Section as InfoListSection;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
@@ -198,15 +203,81 @@ class TrainingResource extends Resource
 
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()->label(''),
+                Tables\Actions\EditAction::make()->label(''),
+                Tables\Actions\DeleteAction::make()->label(''),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        // TODO: kill this cancer
+        $trainingTypeIconGenerationCallback = fn (Training $training) => match ($training->type) {
+            'easy' => 'heroicon-o-arrow-trending-up',
+            'running' => 'heroicon-o-sparkles',
+            'hard' => 'heroicon-o-bolt',
+            'other' => 'heroicon-o-swatch',
+            default => '',
+        };
+
+        return $infolist->schema([
+            InfoListSection::make()
+                ->schema([
+                    Grid::make(2)->schema([
+                        Group::make([
+                            TextEntry::make('type')
+                                ->label('Típus')
+                                ->color(fn (string $state) => match ($state) {
+                                    'easy' => 'primary',
+                                    'running' => 'warning',
+                                    'hard' => 'danger',
+                                    'other' => 'info',
+                                    default => '',
+                                })
+                                ->formatStateUsing(fn (Training $training) => match ($training->type) {
+                                    'easy' => 'Felzárkózatató edzés',
+                                    'running' => 'Futó edzés',
+                                    'hard' => 'Haladó edzés',
+                                    'other' => 'Egyéb',
+                                    default => 'Ismeretlen',
+                                })
+                                ->icon($trainingTypeIconGenerationCallback),
+
+                            TextEntry::make('name')
+                                ->label('Edzés'),
+
+                            TextEntry::make('place')
+                                ->label('Helyszín')
+                                ->icon('heroicon-o-map-pin'),
+                        ]),
+
+                        Group::make([
+                            TextEntry::make('start_at')
+                                ->label('Kezdés időpontja'),
+
+                            TextEntry::make('length')
+                                ->label('Időtartam')
+                                ->suffix(' perc')
+                                ->icon('heroicon-o-clock'),
+                        ]),
+                    ])->inlineLabel(),
+                ]),
+
+            InfoListSection::make('Leírás')
+                ->collapsible()
+                ->schema([
+                    TextEntry::make('description')
+                        ->prose()
+                        ->html()
+                        ->hiddenLabel()
+                        ->default('-'),
+                ]),
+        ]);
     }
 
     public static function getRelations(): array
@@ -221,8 +292,8 @@ class TrainingResource extends Resource
         return [
             'index' => Pages\ListTrainings::route('/'),
             'create' => Pages\CreateTraining::route('/create'),
-            'view' => Pages\ViewTraining::route('/{record}'),
             'edit' => Pages\EditTraining::route('/{record}/edit'),
+            'view' => Pages\ViewTraining::route('/{record}'),
         ];
     }
 }

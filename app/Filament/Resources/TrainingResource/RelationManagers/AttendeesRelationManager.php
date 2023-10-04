@@ -112,6 +112,7 @@ class AttendeesRelationManager extends RelationManager
                         ->requiresConfirmation()
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
+                        ->visible(fn () => auth()->user()->isAdmin())
                         ->action(fn (Collection $attendances) => $attendances->each->toggleAttendance()),
 
                     Tables\Actions\DeleteBulkAction::make(),
