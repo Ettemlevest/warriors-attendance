@@ -94,6 +94,7 @@ class TrainingResource extends Resource
                         TextInput::make('max_attendees')
                             ->label('Max. létszám')
                             ->default(32)
+                            ->numeric()
                             ->suffix('fő')
                             ->suffixIcon('heroicon-o-users'),
 
