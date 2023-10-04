@@ -91,12 +91,12 @@ class AttendeesRelationManager extends RelationManager
                     ->label('Résztvett')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->visible(fn (TrainingAttendance $attendance) => ! $attendance->attended)
+                    ->visible(fn (TrainingAttendance $attendance) => ! $attendance->attended && auth()->user()->isAdmin())
                     ->action(fn (TrainingAttendance $attendance) => $attendance->toggleAttendance()),
 
                 Tables\Actions\Action::make('not_attended')
                     ->label('Hiányzott')
-                    ->visible(fn (TrainingAttendance $attendance) => $attendance->attended)
+                    ->visible(fn (TrainingAttendance $attendance) => $attendance->attended && auth()->user()->isAdmin())
                     ->icon('heroicon-o-minus-circle')
                     ->color('warning')
                     ->action(fn (TrainingAttendance $attendance) => $attendance->toggleAttendance()),

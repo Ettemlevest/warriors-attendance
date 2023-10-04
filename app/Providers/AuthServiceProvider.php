@@ -6,6 +6,7 @@ use App\Models\Message;
 use App\Models\Training;
 use App\Models\User;
 use App\Policies\AdminCheckingPolicy;
+use App\Policies\TrainingPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -17,7 +18,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Message::class => AdminCheckingPolicy::class,
-        Training::class => AdminCheckingPolicy::class,
+        Training::class => TrainingPolicy::class,
         User::class => AdminCheckingPolicy::class,
     ];
 

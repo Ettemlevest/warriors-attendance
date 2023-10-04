@@ -32,8 +32,6 @@ class TrainingResource extends Resource
 
     protected static ?string $pluralModelLabel = 'edzések';
 
-    protected static ?string $navigationGroup = 'Admin';
-
     public static function form(Form $form): Form
     {
         return $form
@@ -200,6 +198,7 @@ class TrainingResource extends Resource
 
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -222,6 +221,7 @@ class TrainingResource extends Resource
         return [
             'index' => Pages\ListTrainings::route('/'),
             'create' => Pages\CreateTraining::route('/create'),
+            'view' => Pages\ViewTraining::route('/{record}'),
             'edit' => Pages\EditTraining::route('/{record}/edit'),
         ];
     }
