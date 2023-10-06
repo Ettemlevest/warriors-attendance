@@ -10,6 +10,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Database\Eloquent\Builder;
@@ -121,10 +122,10 @@ class SubscriptionResource extends Resource
                     ->visible(fn (Subscription $subscription) => $subscription->expired_at === null)
                     ->action(fn (Subscription $subscription) => $subscription->update(['expired_at' => Carbon::now()])),
 
-                Tables\Actions\Action::make('_subscription')
+                Tables\Actions\Action::make('reactivate_subscription')
                     ->label('Visszaállítás')
                     ->icon('heroicon-o-arrow-path')
-                    ->color('warning')
+                    ->color('info')
                     ->visible(fn (Subscription $subscription) => $subscription->expired_at !== null)
                     ->action(fn (Subscription $subscription) => $subscription->update(['expired_at' => null])),
 
@@ -133,6 +134,22 @@ class SubscriptionResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    BulkAction::make('bulk_expire_subscription')
+                        ->label('Lejárt')
+                        ->modalSubmitActionLabel('Igen')
+                        ->requiresConfirmation()
+                        ->icon('heroicon-o-archive-box')
+                        ->color('warning')
+                        ->action(fn (Subscription $subscription) => $subscription->update(['expired_at' => Carbon::now()])),
+
+                    BulkAction::make('bulk_reactivate_subscription')
+                        ->label('Visszaállítás')
+                        ->modalSubmitActionLabel('Igen')
+                        ->requiresConfirmation()
+                        ->icon('heroicon-o-arrow-path')
+                        ->color('info')
+                        ->action(fn (Subscription $subscription) => $subscription->update(['expired_at' => null])),
+
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
