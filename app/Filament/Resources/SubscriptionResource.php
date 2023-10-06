@@ -92,6 +92,7 @@ class SubscriptionResource extends Resource
                     ->label('Lejárt')
                     ->boolean(),
             ])
+            ->defaultSort('purchased_at', 'desc')
             ->filters([
                 Tables\Filters\TernaryFilter::make('expired_at')
                     ->label('Aktív bérletek')
