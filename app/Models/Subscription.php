@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Models\Subscription
@@ -14,10 +15,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property int $plan_id
  * @property int $user_id
- * @property \Illuminate\Support\Carbon $purchased_at
- * @property \Illuminate\Support\Carbon|null $expired_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon $purchased_at
+ * @property Carbon|null $expired_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read \App\Models\Plan $plan
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TrainingAttendance> $usages
  * @property-read int|null $usages_count
@@ -46,6 +47,10 @@ class Subscription extends Model
         'user_id',
         'purchased_at',
         'expired_at',
+    ];
+
+    protected $with = [
+        'plan',
     ];
 
     protected $withCount = [
@@ -81,5 +86,28 @@ class Subscription extends Model
     public function usages(): HasMany
     {
         return $this->hasMany(TrainingAttendance::class);
+    }
+
+    public static function findLiveSubscriptionForUser(int $userId): ?Subscription
+    {
+        return self::query()
+            ->where('user_id', '=', $userId)
+            ->whereNull('expired_at')
+            ->orderBy('purchased_at')
+            ->first();
+    }
+
+    public function refreshExpiry(): void
+    {
+        $this->refresh();
+
+        $this->update([
+            'expired_at' => $this->usedUp() ? Carbon::now() : null,
+        ]);
+    }
+
+    public function usedUp(): bool
+    {
+        return $this->usages_count >= $this->plan->sessions;
     }
 }

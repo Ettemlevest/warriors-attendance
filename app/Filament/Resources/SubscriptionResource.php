@@ -77,15 +77,15 @@ class SubscriptionResource extends Resource
                     ->label('Bérlet típus')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('usages_count')
-                    ->label('Felhasználva')
-                    ->numeric()
-                    ->alignRight()
-                    ->sortable(),
-
                 Tables\Columns\TextColumn::make('purchased_at')
                     ->label('Megvásárolva')
                     ->date('Y-m-d')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('usages_count')
+                    ->label('Edzések')
+                    ->numeric()
+                    ->alignRight()
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('expired')
@@ -116,22 +116,25 @@ class SubscriptionResource extends Resource
                     ->preload(),
             ])
             ->actions([
-                Tables\Actions\Action::make('expire_subscription')
-                    ->label('Lejárt')
-                    ->icon('heroicon-o-archive-box')
-                    ->color('warning')
-                    ->visible(fn (Subscription $subscription) => $subscription->expired_at === null)
-                    ->action(fn (Subscription $subscription) => $subscription->update(['expired_at' => Carbon::now()])),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('expire_subscription')
+                        ->label('Lejárt')
+                        ->icon('heroicon-o-archive-box')
+                        ->color('warning')
+                        ->visible(fn (Subscription $subscription) => ! $subscription->expired)
+                        ->action(fn (Subscription $subscription) => $subscription->update(['expired_at' => Carbon::now()])),
 
-                Tables\Actions\Action::make('reactivate_subscription')
-                    ->label('Visszaállítás')
-                    ->icon('heroicon-o-arrow-path')
-                    ->color('info')
-                    ->visible(fn (Subscription $subscription) => $subscription->expired_at !== null)
-                    ->action(fn (Subscription $subscription) => $subscription->update(['expired_at' => null])),
+                    Tables\Actions\Action::make('reactivate_subscription')
+                        ->label('Visszaállítás')
+                        ->icon('heroicon-o-arrow-path')
+                        ->color('info')
+                        ->visible(fn (Subscription $subscription) => $subscription->expired)
+                        ->disabled(fn (Subscription $subscription) => $subscription->usedUp())
+                        ->action(fn (Subscription $subscription) => $subscription->update(['expired_at' => null])),
 
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
