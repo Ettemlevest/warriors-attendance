@@ -97,9 +97,20 @@ class User extends Authenticatable implements FilamentUser, HasName
         return $this->name;
     }
 
+    /**
+     * @return HasMany<TrainingAttendance>
+     */
     public function trainingAttendances(): HasMany
     {
         return $this->hasMany(TrainingAttendance::class);
+    }
+
+    /**
+     * @return HasMany<Subscription>
+     */
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
     }
 
     public function isAdmin(): bool

@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\Message;
+use App\Models\Plan;
+use App\Models\Subscription;
 use App\Models\Training;
 use App\Models\User;
 use App\Policies\AdminCheckingPolicy;
@@ -18,6 +20,8 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Message::class => AdminCheckingPolicy::class,
+        Plan::class => AdminCheckingPolicy::class,
+        Subscription::class => AdminCheckingPolicy::class,
         Training::class => TrainingPolicy::class,
         User::class => AdminCheckingPolicy::class,
     ];

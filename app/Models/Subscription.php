@@ -1,0 +1,85 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+/**
+ * App\Models\Subscription
+ *
+ * @property int $id
+ * @property int $plan_id
+ * @property int $user_id
+ * @property \Illuminate\Support\Carbon $purchased_at
+ * @property \Illuminate\Support\Carbon|null $expired_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Plan $plan
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TrainingAttendance> $usages
+ * @property-read int|null $usages_count
+ * @property-read \App\Models\User $user
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|Subscription newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Subscription newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Subscription query()
+ */
+class Subscription extends Model
+{
+    use HasFactory;
+
+    protected $casts = [
+        'purchased_at' => 'date',
+        'expired_at' => 'date',
+        'expired' => 'boolean',
+    ];
+
+    protected $appends = [
+        'expired',
+    ];
+
+    protected $fillable = [
+        'plan_id',
+        'user_id',
+        'purchased_at',
+        'expired_at',
+    ];
+
+    protected $withCount = [
+        'usages',
+    ];
+
+    public function expired(): Attribute
+    {
+        return Attribute::make(
+            get: fn (mixed $value, array $attributes) => $attributes['expired_at'] !== null
+        );
+    }
+
+    /**
+     * @return BelongsTo<Plan, Subscription>
+     */
+    public function plan(): BelongsTo
+    {
+        return $this->belongsTo(Plan::class);
+    }
+
+    /**
+     * @return BelongsTo<User, Subscription>
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * @return HasMany<TrainingAttendance>
+     */
+    public function usages(): HasMany
+    {
+        return $this->hasMany(TrainingAttendance::class);
+    }
+}

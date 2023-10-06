@@ -18,6 +18,8 @@ class MessageResource extends Resource
 {
     protected static ?string $model = Message::class;
 
+    protected static ?int $navigationSort = 10;
+
     protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-right';
 
     protected static ?string $modelLabel = 'üzenet';
