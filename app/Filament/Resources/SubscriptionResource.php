@@ -43,7 +43,7 @@ class SubscriptionResource extends Resource
                             ->relationship(name: 'plan', titleAttribute: 'name')
                             ->required()
                             ->searchable()
-                            ->disabled(fn (Subscription $subscription) => $subscription->usedUp())
+                            ->disabled(fn (Subscription $subscription) => $subscription->usages_count)
                             ->preload(),
 
                         Select::make('user_id')
@@ -51,7 +51,7 @@ class SubscriptionResource extends Resource
                             ->relationship(name: 'user', titleAttribute: 'name')
                             ->required()
                             ->searchable()
-                            ->disabled(fn (Subscription $subscription) => $subscription->usedUp())
+                            ->disabled(fn (Subscription $subscription) => $subscription->usages_count)
                             ->preload(),
 
                         DatePicker::make('purchased_at')
