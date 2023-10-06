@@ -38,7 +38,7 @@ class UsagesRelationManager extends RelationManager
         };
 
         return $table
-            ->recordTitleAttribute('training.name')
+            ->recordUrl(fn (TrainingAttendance $attendance) => "/trainings/{$attendance->training_id}")
             ->columns([
                 TextColumn::make('training.type'),
 
