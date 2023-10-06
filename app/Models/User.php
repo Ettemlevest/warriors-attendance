@@ -22,7 +22,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $email
  * @property string $password
  * @property bool $owner
- * @property string|null $photo_path
+ * @property string|null $avatar_url
  * @property string|null $size
  * @property string|null $birth_date
  * @property string|null $address

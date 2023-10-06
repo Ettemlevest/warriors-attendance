@@ -57,9 +57,9 @@ class UserResource extends Resource
                 Section::make('Információk versenyre jelentkezéshez')
                     ->columns(['lg' => 2])
                     ->schema([
-                        FileUpload::make('photo_path')
+                        FileUpload::make('avatar_url')
                             ->label('Fénykép')
-                            ->disk('local')
+                            ->disk('public')
                             ->directory('users'),
 
                         Select::make('size')

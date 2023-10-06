@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\EditProfile;
 use App\Filament\Resources\MessageResource\Widgets\ActiveMessages;
 use App\Filament\Widgets\UpcomingTraining;
 use Filament\Http\Middleware\Authenticate;
@@ -32,7 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->registration()
             ->passwordReset()
             ->emailVerification()
-            ->profile()
+            ->profile(EditProfile::class)
 
             ->sidebarCollapsibleOnDesktop()
 
