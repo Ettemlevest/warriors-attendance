@@ -33,6 +33,10 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Carbon|null $deleted_at
  * @property string|null $safety_person
  * @property string|null $safety_phone
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Subscription> $subscriptions
+ * @property-read int|null $subscriptions_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $trainingAttendances
+ * @property-read int|null $training_attendances_count
  */
 class User extends Authenticatable implements FilamentUser, HasName
 {
@@ -47,6 +51,13 @@ class User extends Authenticatable implements FilamentUser, HasName
         'name',
         'email',
         'password',
+        'avatar_url',
+        'size',
+        'birth_date',
+        'address',
+        'phone',
+        'safety_person',
+        'safety_phone',
     ];
 
     /**
