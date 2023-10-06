@@ -9,6 +9,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Illuminate\Support\Carbon;
 
 class UpcomingTraining extends BaseWidget
 {
@@ -85,6 +86,7 @@ class UpcomingTraining extends BaseWidget
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->visible(fn (Training $training) => ! $training->hasAttendee(auth()->user()))
+                    ->disabled(fn (Training $training) => $training->start_at->isBefore(Carbon::now()->subHour()))
                     ->action(fn (Training $training) => auth()->user()->trainingAttendances()->create(['training_id' => $training->id])),
 
                 Action::make('withdraw')
@@ -92,6 +94,7 @@ class UpcomingTraining extends BaseWidget
                     ->icon('heroicon-o-minus-circle')
                     ->color('warning')
                     ->visible(fn (Training $training) => $training->hasAttendee(auth()->user()))
+                    ->disabled(fn (Training $training) => $training->start_at->isBefore(Carbon::now()->subHour()))
                     ->action(fn (Training $training) => $training->attendees()->where('user_id', '=', auth()->id())->delete()),
             ]);
     }
