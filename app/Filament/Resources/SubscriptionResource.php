@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\SubscriptionResource\Pages;
 use App\Models\Subscription;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
@@ -24,9 +25,9 @@ class SubscriptionResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-credit-card';
 
-    protected static ?string $modelLabel = 'megvásárolt bérlet';
+    protected static ?string $modelLabel = 'bérlet';
 
-    protected static ?string $pluralModelLabel = 'megvásárolt bérletek';
+    protected static ?string $pluralModelLabel = 'bérletek';
 
     protected static ?string $navigationGroup = 'Admin';
 
@@ -41,6 +42,7 @@ class SubscriptionResource extends Resource
                             ->relationship(name: 'plan', titleAttribute: 'name')
                             ->required()
                             ->searchable()
+                            ->disabled(fn (Subscription $subscription) => $subscription->usedUp())
                             ->preload(),
 
                         Select::make('user_id')
@@ -48,12 +50,27 @@ class SubscriptionResource extends Resource
                             ->relationship(name: 'user', titleAttribute: 'name')
                             ->required()
                             ->searchable()
+                            ->disabled(fn (Subscription $subscription) => $subscription->usedUp())
                             ->preload(),
 
                         DatePicker::make('purchased_at')
                             ->label('Megvásárolva')
                             ->required()
+                            ->disabled(fn (Subscription $subscription) => $subscription->usedUp())
                             ->default(Carbon::now()),
+                    ]),
+
+                Section::make('Meta adatok')
+                    ->columns(['lg' => 2])
+                    ->visible(fn (Subscription $subscription) => $subscription->exists)
+                    ->schema([
+                        Placeholder::make('Létrehozva')
+                            ->content(fn (Subscription $subscription) => $subscription->created_at)
+                            ->helperText(fn (Subscription $subscription) => $subscription->created_at->longRelativeToNowDiffForHumans()),
+
+                        Placeholder::make('Módosítva')
+                            ->content(fn (Subscription $subscription) => $subscription->updated_at)
+                            ->helperText(fn (Subscription $subscription) => $subscription->updated_at->longRelativeToNowDiffForHumans()),
                     ]),
             ]);
     }
@@ -71,10 +88,11 @@ class SubscriptionResource extends Resource
 
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Warrior')
+                    ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('plan.name')
-                    ->label('Bérlet típus')
+                    ->label('Típus')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('purchased_at')
@@ -93,6 +111,15 @@ class SubscriptionResource extends Resource
                     ->boolean(),
             ])
             ->defaultSort('purchased_at', 'desc')
+            ->defaultGroup('user.name')
+            ->groupsInDropdownOnDesktop()
+            ->groups([
+                Tables\Grouping\Group::make('user.name')
+                    ->label('Warrior'),
+
+                Tables\Grouping\Group::make('plan.name')
+                    ->label('Bérlet típus'),
+            ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('expired_at')
                     ->label('Aktív bérletek')
@@ -107,11 +134,13 @@ class SubscriptionResource extends Resource
 
                 Tables\Filters\SelectFilter::make('user')
                     ->relationship('user', 'name')
+                    ->label('Warrior')
                     ->searchable()
                     ->preload(),
 
                 Tables\Filters\SelectFilter::make('plan')
                     ->relationship('plan', 'name')
+                    ->label('Bérlet típus')
                     ->searchable()
                     ->preload(),
             ])

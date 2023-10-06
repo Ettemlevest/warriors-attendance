@@ -23,6 +23,7 @@ use Illuminate\Support\Carbon;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TrainingAttendance> $usages
  * @property-read int|null $usages_count
  * @property-read \App\Models\User $user
+ * @property-read bool $expired
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Subscription newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Subscription newQuery()
