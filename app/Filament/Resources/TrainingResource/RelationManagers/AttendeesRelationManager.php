@@ -68,12 +68,14 @@ class AttendeesRelationManager extends RelationManager
                     ->falseIcon('heroicon-o-hand-thumb-down')
                     ->grow(false)
                     ->sortable()
+                    ->visible(fn () => auth()->user()->isAdmin())
                     ->boolean(),
 
                 IconColumn::make('extra')
                     ->label('Extra')
                     ->grow(false)
                     ->sortable()
+                    ->visible(fn () => auth()->user()->isAdmin())
                     ->boolean(),
 
                 IconColumn::make('subscription_exists')
@@ -82,20 +84,24 @@ class AttendeesRelationManager extends RelationManager
                     ->icon('heroicon-o-ticket')
                     ->grow(false)
                     ->sortable()
+                    ->visible(fn () => auth()->user()->isAdmin())
                     ->boolean(),
             ])
             ->defaultSort('user.name', 'asc')
             ->filters([
                 Filter::make('attended')
                     ->label('Résztvett')
+                    ->visible(fn () => auth()->user()->isAdmin())
                     ->query(fn (Builder $query) => $query->where('attended', '=', true)),
 
                 Filter::make('extra')
                     ->label('Extra jelentkezés')
+                    ->visible(fn () => auth()->user()->isAdmin())
                     ->query(fn (Builder $query) => $query->where('extra', '=', true)),
 
                 TernaryFilter::make('subscription_id')
                     ->label('Bérlet használat')
+                    ->visible(fn () => auth()->user()->isAdmin())
                     ->placeholder('Mindegy')
                     ->trueLabel('Csak bérletes résztvevők')
                     ->falseLabel('Bérlet nélkül résztvevők')

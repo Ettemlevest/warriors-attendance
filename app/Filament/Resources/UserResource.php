@@ -133,6 +133,12 @@ class UserResource extends Resource
                     ->label('E-mail')
                     ->searchable()
                     ->sortable(),
+
+                TextColumn::make('age')
+                    ->label('Életkor')
+                    ->suffix(' év')
+                    ->numeric()
+                    ->alignRight(),
             ])
             ->defaultSort('id', 'desc')
             ->filters([

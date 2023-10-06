@@ -13,7 +13,7 @@ use Illuminate\Support\Carbon;
 
 class UpcomingTraining extends BaseWidget
 {
-    protected static ?string $heading = 'Közelgő edzések';
+    protected static ?string $heading = 'Edzések a következő 30 napban';
 
     protected int|string|array $columnSpan = 'full';
 
