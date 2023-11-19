@@ -76,7 +76,7 @@ class TrainingAttendance extends Model
     }
 
     /**
-     * @return BelongsTo<Training>
+     * @return BelongsTo<Training, TrainingAttendance>
      */
     public function training(): BelongsTo
     {
@@ -84,7 +84,7 @@ class TrainingAttendance extends Model
     }
 
     /**
-     * @return BelongsTo<User>
+     * @return BelongsTo<User, TrainingAttendance>
      */
     public function user(): BelongsTo
     {
@@ -92,7 +92,7 @@ class TrainingAttendance extends Model
     }
 
     /**
-     * @return BelongsTo<Subscription>
+     * @return BelongsTo<Subscription, TrainingAttendance>
      */
     public function subscription(): BelongsTo
     {
