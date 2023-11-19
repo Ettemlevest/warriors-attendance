@@ -109,6 +109,10 @@ class Subscription extends Model
 
     public function usedUp(): bool
     {
-        return $this->usages_count >= $this->plan?->sessions;
+        if (! $this->exists) {
+            return false;
+        }
+
+        return $this->usages_count >= $this->plan->sessions;
     }
 }
