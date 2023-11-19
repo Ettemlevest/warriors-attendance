@@ -109,6 +109,6 @@ class Subscription extends Model
 
     public function usedUp(): bool
     {
-        return $this->usages_count >= $this->plan->sessions;
+        return $this->usages_count >= $this->plan?->sessions;
     }
 }
