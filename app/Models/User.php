@@ -136,6 +136,6 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
             return null;
         }
 
-        return 'storage/'.$this->avatar_url;
+        return '/storage/'.$this->avatar_url;
     }
 }
