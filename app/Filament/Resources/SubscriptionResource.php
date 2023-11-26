@@ -81,7 +81,7 @@ class SubscriptionResource extends Resource
         return $table
             ->columns([
                 ImageColumn::make('user.avatar_url')
-                    ->defaultImageUrl('/avatar.png')
+                    ->defaultImageUrl('/storage/avatar.png')
                     ->grow(false)
                     ->label('')
                     ->size(40)

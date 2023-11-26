@@ -118,7 +118,7 @@ class UserResource extends Resource
         return $table
             ->columns([
                 ImageColumn::make('avatar_url')
-                    ->defaultImageUrl('/avatar.png')
+                    ->defaultImageUrl('/storage/avatar.png')
                     ->grow(false)
                     ->label('')
                     ->size(40)
