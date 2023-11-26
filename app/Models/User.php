@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasAvatar;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -38,7 +39,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $trainingAttendances
  * @property-read int|null $training_attendances_count
  */
-class User extends Authenticatable implements FilamentUser, HasName
+class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
@@ -127,5 +128,14 @@ class User extends Authenticatable implements FilamentUser, HasName
     public function isAdmin(): bool
     {
         return $this->owner === true;
+    }
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        if ($this->avatar_url === null) {
+            return null;
+        }
+
+        return 'storage/'.$this->avatar_url;
     }
 }
