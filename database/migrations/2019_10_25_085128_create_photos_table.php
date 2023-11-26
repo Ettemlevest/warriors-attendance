@@ -1,17 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class CreatePhotosTable extends Migration
+return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
+    public function up(): void
     {
         Schema::create('photos', function (Blueprint $table) {
             $table->increments('id');
@@ -25,4 +20,13 @@ class CreatePhotosTable extends Migration
             $table->foreign('cover_photo_id')->references('id')->on('photos');
         });
     }
-}
+
+    public function down(): void
+    {
+        Schema::table('albums', function (Blueprint $table) {
+            $table->dropForeign('albums_cover_photo_id_foreign');
+        });
+
+        Schema::dropIfExists('photos');
+    }
+};

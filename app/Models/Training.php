@@ -2,94 +2,64 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * App\Models\Training
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $place
+ * @property \Illuminate\Support\Carbon $start_at
+ * @property int $length
+ * @property int $max_attendees
+ * @property bool $can_attend_more
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string $type
+ * @property string|null $description
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $attendees
+ * @property-read int|null $attendees_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|Training newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Training newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Training query()
+ *
+ * @mixin Model
+ */
 final class Training extends Model
 {
-    protected $dates = [
-        'start_at',
-    ];
-
     protected $casts = [
+        'start_at' => 'datetime',
         'length' => 'integer',
         'max_attendees' => 'integer',
         'can_attend_more' => 'boolean',
     ];
 
-    public function attendees()
+    protected $fillable = [
+        'type',
+        'name',
+        'place',
+        'start_at',
+        'length',
+        'max_attendees',
+        'can_attend_more',
+        'description',
+    ];
+
+    public function attendees(): HasMany
     {
-        return $this->belongsToMany(User::class, 'trainings_attendance')
-            ->withPivot(['extra', 'attended', 'comment'])
-            ->withTimestamps();
+        return $this->hasMany(TrainingAttendance::class);
     }
 
-    public function hasAttendee(User $attendee)
+    public function hasAttendee(User $attendee): bool
     {
-        return $this->attendees()->whereUserId($attendee->id)->exists();
+        return $this->attendees->contains('user_id', $attendee->id);
     }
 
-    public function doesntHaveAttendee(User $attendee)
+    public function doesntHaveAttendee(User $attendee): bool
     {
-        return $this->attendees()->whereUserId($attendee->id)->doesntExist();
-    }
-
-    public function scopeFilter($query, array $filters)
-    {
-        $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where(function ($query) use ($search) {
-                $query->where('name', 'like', '%'.$search.'%')
-                    ->orWhere('place', 'like', '%'.$search.'%')
-                    ->orWhereRaw('CAST(start_at AS VARCHAR) LIKE ?', '%'.$search.'%');
-            });
-        })->when($filters['type'] ?? null, function ($query, $type) {
-            $query->where('type', $type);
-        })->when($filters['start_at'] ?? null, function ($query, $start_at) {
-            if ($start_at === 'future') {
-                $query->where('start_at', '>=', Carbon::now());
-
-                return;
-            }
-
-            if ($start_at === 'past') {
-                $query->where('start_at', '<=', Carbon::now());
-
-                return;
-            }
-
-            if ($start_at === 'this_year') {
-                $query->whereYear('start_at', Carbon::now()->year);
-
-                return;
-            }
-
-            if ($start_at === 'next_seven_days') {
-                $query->whereBetween('start_at', [
-                    Carbon::now(),
-                    Carbon::now()->addDays(7)
-                ]);
-
-                return ;
-            }
-
-            if ($start_at === 'prev_seven_days') {
-                $query->whereBetween('start_at', [
-                    Carbon::now()->addDays(-7),
-                    Carbon::now()
-                ]);
-
-                return;
-            }
-        })->when($filters['attendance'] ?? null, function ($query, $attendance) {
-            if (in_array($attendance, ['attended', 'not_attended'])) {
-                $query->whereIn('id', function ($q) use ($attendance) {
-                    $operator = $attendance === 'attended' ? '=' : '<>';
-
-                    $q->select('training_id')
-                        ->from('trainings_attendance')
-                        ->where('user_id', $operator, Auth::user()->id);
-                });
-            }
-        });
+        return $this->attendees->doesntContain('user_id', $attendee->id);
     }
 }

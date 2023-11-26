@@ -1,67 +1,51 @@
 {
-    "name": "laravel/laravel",
+    "name": "ettemlevest/warriors-attendance",
     "type": "project",
-    "description": "The Laravel Framework.",
-    "keywords": [
-        "framework",
-        "laravel"
-    ],
+    "description": "attendance manager for KKL warriors",
+    "keywords": ["ettemlevest", "kklwarriors"],
     "license": "MIT",
     "require": {
-        "php": "^7.3|^8.0",
-        "ext-exif": "*",
-        "ext-gd": "*",
-        "facade/ignition": "^2.3.6",
-        "fideloper/proxy": "^4.2",
-        "fruitcake/laravel-cors": "^2.0",
-        "fzaninotto/faker": "^1.9.1",
-        "guzzlehttp/guzzle": "^7.0.1",
-        "inertiajs/inertia-laravel": "^0.4",
-        "laravel/framework": "^8.0",
-        "laravel/legacy-factories": "^1.0",
-        "laravel/tinker": "^2.0",
-        "laravel/ui": "^2.0",
-        "league/glide": "2.0.x-dev",
-        "mockery/mockery": "^1.3.1",
-        "nunomaduro/collision": "^5.0",
-        "phpunit/phpunit": "^9.3",
-        "reinink/remember-query-strings": "^0.1.0",
-        "tightenco/ziggy": "^1.0"
+        "php": "^8.2",
+        "filament/filament": "^v3.0.0",
+        "guzzlehttp/guzzle": "^7.8",
+        "laravel/framework": "^10.33.0",
+        "laravel/sanctum": "^3.3.2",
+        "laravel/tinker": "^2.8.2"
     },
-    "config": {
-        "optimize-autoloader": true,
-        "preferred-install": "dist",
-        "sort-packages": true
-    },
-    "extra": {
-        "laravel": {
-            "dont-discover": []
-        }
+    "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.9.2",
+        "barryvdh/laravel-ide-helper": "^2.13",
+        "fakerphp/faker": "^1.23.0",
+        "filament/upgrade": "^3.0-stable",
+        "laravel-lang/common": "^4.1.1",
+        "laravel/pint": "^1.13.6",
+        "laravel/sail": "^1.26.1",
+        "mockery/mockery": "^1.6.6",
+        "nunomaduro/collision": "^7.10.0",
+        "nunomaduro/larastan": "^2.6.4",
+        "phpunit/phpunit": "^10.4.2",
+        "spatie/laravel-ignition": "^2.3.1"
     },
     "autoload": {
         "psr-4": {
-            "App\\": "app/"
-        },
-        "classmap": [
-            "database/seeds",
-            "database/factories"
-        ]
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
     },
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/"
         }
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "scripts": {
-        "compile": [
-            "npm run prod",
-            "@php artisan migrate:fresh --seed"
-        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
+        ],
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+            "@php artisan filament:upgrade"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
@@ -69,5 +53,21 @@
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
         ]
-    }
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }

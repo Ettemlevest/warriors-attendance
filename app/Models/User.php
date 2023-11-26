@@ -2,116 +2,130 @@
 
 namespace App\Models;
 
-use League\Glide\Server;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Auth\Authenticatable;
-use Illuminate\Support\Facades\Hash;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasName;
+use Filament\Panel;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\Access\Authorizable;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
+use Laravel\Sanctum\HasApiTokens;
 
-class User extends Model implements AuthenticatableContract, AuthorizableContract
+/**
+ * App\Models\User
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string $password
+ * @property bool $owner
+ * @property string|null $avatar_url
+ * @property string|null $size
+ * @property string|null $birth_date
+ * @property string|null $address
+ * @property string|null $phone
+ * @property string|null $remember_token
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property string|null $safety_person
+ * @property string|null $safety_phone
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Subscription> $subscriptions
+ * @property-read int|null $subscriptions_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $trainingAttendances
+ * @property-read int|null $training_attendances_count
+ */
+class User extends Authenticatable implements FilamentUser, HasName
 {
-    use SoftDeletes, Authenticatable, Authorizable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
-    protected $dates = [
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'avatar_url',
+        'size',
         'birth_date',
+        'address',
+        'phone',
+        'safety_person',
+        'safety_phone',
     ];
 
-    protected $casts = [
-        'owner' => 'boolean',
-    ];
-
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array<string>
+     */
     protected $appends = [
         'age',
     ];
 
-    public function getOwnerAttribute()
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'owner' => 'boolean',
+        'birth_date' => 'datetime',
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
+
+    public function age(): Attribute
     {
-        return $this->attributes['owner'] === '1';
+        return Attribute::make(
+            get: fn (mixed $value, array $attributes) => $this->getAttributeValue('birth_date')?->age,
+        );
     }
 
-    public function getAgeAttribute()
+    public function canAccessPanel(Panel $panel): bool
     {
-        if (is_null($this->attributes['birth_date'])) {
-            return null;
-        }
-
-        return $this->birth_date->age;
+        return true;
     }
 
-    public function setPasswordAttribute($password)
+    public function getFilamentName(): string
     {
-        $this->attributes['password'] = Hash::needsRehash($password) ? Hash::make($password) : $password;
+        return $this->name;
     }
 
-    public function photoUrl(array $attributes)
+    /**
+     * @return HasMany<TrainingAttendance>
+     */
+    public function trainingAttendances(): HasMany
     {
-        if ($this->photo_path) {
-            return URL::to(App::make(Server::class)->fromPath($this->photo_path, $attributes));
-        }
+        return $this->hasMany(TrainingAttendance::class);
     }
 
-    public function scopeOrderByName($query)
+    /**
+     * @return HasMany<Subscription>
+     */
+    public function subscriptions(): HasMany
     {
-        $query->orderBy('name');
+        return $this->hasMany(Subscription::class);
     }
 
-    public function scopeWhereRole($query, $role)
+    public function isAdmin(): bool
     {
-        switch ($role) {
-            case 'user': return $query->where('owner', false);
-            case 'owner': return $query->where('owner', true);
-        }
-    }
-
-    public function scopeFilter($query, array $filters)
-    {
-        $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where(function ($query) use ($search) {
-                $query->where('name', 'like', '%'.$search.'%')
-                    ->orWhere('email', 'like', '%'.$search.'%');
-            });
-        })->when($filters['role'] ?? null, function ($query, $role) {
-            $query->whereRole($role);
-        })->when($filters['trashed'] ?? null, function ($query, $trashed) {
-            if ($trashed === 'with') {
-                $query->withTrashed();
-            } elseif ($trashed === 'only') {
-                $query->onlyTrashed();
-            }
-        })->when($filters['phone'] ?? null, function ($query, $phone) {
-            if ($phone === 'missing') {
-                $query->where(function ($query) {
-                    $query
-                        ->orWhere('phone', '=', '')
-                        ->orWhereNull('phone');
-                });
-            } elseif ($phone === 'present') {
-                $query->where(function ($query) {
-                    $query
-                        ->where('phone', '!=', '')
-                        ->whereNotNull('phone');
-                });
-            }
-        });
-    }
-
-    public function trainings()
-    {
-        return $this->belongsToMany(Training::class, 'trainings_attendance')->withTimestamps();
-    }
-
-    public function last_attendance_date()
-    {
-        if ($this->trainings->count() == 0) {
-            return false;
-        }
-
-        return $this->trainings()
-                    ->orderBy('trainings_attendance.created_at', 'desc')
-                    ->first()->pivot->created_at;
+        return $this->owner === true;
     }
 }

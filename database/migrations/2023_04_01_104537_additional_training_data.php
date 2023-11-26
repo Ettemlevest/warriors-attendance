@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AdditionalTrainingData extends Migration
+return new class extends Migration
 {
     public function up(): void
     {
@@ -16,6 +16,7 @@ class AdditionalTrainingData extends Migration
             $table->text('comment')->nullable();
         });
     }
+
     public function down(): void
     {
         Schema::table('trainings', function (Blueprint $table) {
@@ -26,4 +27,4 @@ class AdditionalTrainingData extends Migration
             $table->dropColumn('comment');
         });
     }
-}
+};
