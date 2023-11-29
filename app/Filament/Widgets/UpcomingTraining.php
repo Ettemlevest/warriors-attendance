@@ -82,6 +82,7 @@ class UpcomingTraining extends BaseWidget
                     ->sortable(),
             ])
             ->actionsPosition(ActionsPosition::BeforeColumns)
+            ->recordUrl(fn (Training $training) => route('filament.admin.resources.trainings.view', ['record' => $training->id]))
             ->actions([
                 Action::make('attend')
                     ->label('Jelentkezem')
