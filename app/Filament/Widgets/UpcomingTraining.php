@@ -7,6 +7,7 @@ use Carbon\CarbonPeriod;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Support\Carbon;
@@ -80,6 +81,7 @@ class UpcomingTraining extends BaseWidget
                     ->alignRight()
                     ->sortable(),
             ])
+            ->actionsPosition(ActionsPosition::BeforeColumns)
             ->actions([
                 Action::make('attend')
                     ->label('Jelentkezem')
