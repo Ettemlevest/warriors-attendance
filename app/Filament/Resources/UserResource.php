@@ -19,6 +19,7 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Hash;
 
 class UserResource extends Resource
 {
@@ -52,6 +53,12 @@ class UserResource extends Resource
                             ->email()
                             ->required()
                             ->maxLength(255),
+
+                        TextInput::make('password')
+                            ->label('Jelszó')
+                            ->password()
+                            ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
+                            ->dehydrated(fn (?string $state): bool => filled($state)),
                     ]),
 
                 Section::make('Információk versenyre jelentkezéshez')
