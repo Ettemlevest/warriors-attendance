@@ -88,7 +88,7 @@ class UpcomingTraining extends BaseWidget
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->visible(fn (Training $training) => ! $training->hasAttendee(auth()->user()))
-                    ->disabled(fn (Training $training) => $training->start_at->isBefore(Carbon::now()->subHour()))
+                    ->disabled(fn (Training $training) => $training->start_at->isBefore(Carbon::now()->subHour()) || $training->attendees_count >= $training->max_attendees && ! $training->can_attend_more)
                     ->action(fn (Training $training) => auth()->user()->trainingAttendances()->create(['training_id' => $training->id])),
 
                 Action::make('withdraw')
