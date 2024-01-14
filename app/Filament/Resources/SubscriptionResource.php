@@ -30,7 +30,7 @@ class SubscriptionResource extends Resource
 
     protected static ?int $navigationSort = 30;
 
-    protected static ?string $navigationIcon = 'heroicon-o-credit-card';
+    protected static ?string $navigationIcon = 'heroicon-o-ticket';
 
     protected static ?string $modelLabel = 'bérlet';
 
