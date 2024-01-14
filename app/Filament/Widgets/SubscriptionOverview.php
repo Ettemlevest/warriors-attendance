@@ -16,8 +16,11 @@ class SubscriptionOverview extends BaseWidget
         /** @var User $user */
         $user = auth()->user();
 
-        /** @var Subscription $subscription */
-        $subscription = $user->subscriptions()->latest()->first();
+        /** @var ?Subscription $subscription */
+        $subscription = $user->subscriptions()
+            ->whereNull('expired_at')
+            ->latest()
+            ->first();
 
         $startingDate = now()->subMonths(6);
         $now = now();
@@ -40,8 +43,13 @@ class SubscriptionOverview extends BaseWidget
             ->get();
 
         return [
-            Stat::make("{$subscription->plan->name} bérlet", "$subscription->usages_count felhasználva")
-                ->description("{$subscription->purchased_at->diffForHumans()} vásárolva"),
+            ...($subscription === null ? [
+                Stat::make('Nincs aktív bérlet', '-'),
+            ] : [
+                Stat::make("{$subscription->plan->name} bérlet", "$subscription->usages_count felhasználva")
+                    ->description("{$subscription->purchased_at->diffForHumans()} vásárolva"),
+            ]
+            ),
 
             Stat::make('Elmúlt 6 hónapban', $results->sum('aggregate'))
                 ->description('edzés részvétel')
