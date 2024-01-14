@@ -10,6 +10,12 @@ use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Grid;
+use Filament\Infolists\Components\Group;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\Section as InfoListSection;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\BulkAction;
@@ -30,7 +36,16 @@ class SubscriptionResource extends Resource
 
     protected static ?string $pluralModelLabel = 'bérletek';
 
-    protected static ?string $navigationGroup = 'Admin';
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        if (auth()->user()->owner !== true) {
+            $query->where('user_id', '=', auth()->id());
+        }
+
+        return $query;
+    }
 
     public static function form(Form $form): Form
     {
@@ -78,19 +93,36 @@ class SubscriptionResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $isAdmin = auth()->user()->owner === true;
+
+        if ($isAdmin) {
+            $table
+                ->defaultGroup('user.name')
+                ->groupingSettingsInDropdownOnDesktop()
+                ->groups([
+                    Tables\Grouping\Group::make('user.name')
+                        ->label('Warrior'),
+
+                    Tables\Grouping\Group::make('plan.name')
+                        ->label('Bérlet típus'),
+                ]);
+        }
+
         return $table
             ->columns([
-                ImageColumn::make('user.avatar_url')
-                    ->defaultImageUrl('/storage/avatar.png')
-                    ->grow(false)
-                    ->label('')
-                    ->size(40)
-                    ->circular(),
+                ...($isAdmin ? [
+                    ImageColumn::make('user.avatar_url')
+                        ->defaultImageUrl('/storage/avatar.png')
+                        ->grow(false)
+                        ->label('')
+                        ->size(40)
+                        ->circular(),
 
-                Tables\Columns\TextColumn::make('user.name')
-                    ->label('Warrior')
-                    ->searchable()
-                    ->sortable(),
+                    Tables\Columns\TextColumn::make('user.name')
+                        ->label('Warrior')
+                        ->searchable()
+                        ->sortable(),
+                ] : []),
 
                 Tables\Columns\TextColumn::make('plan.name')
                     ->label('Típus')
@@ -112,15 +144,6 @@ class SubscriptionResource extends Resource
                     ->boolean(),
             ])
             ->defaultSort('purchased_at', 'desc')
-            ->defaultGroup('user.name')
-            ->groupsInDropdownOnDesktop()
-            ->groups([
-                Tables\Grouping\Group::make('user.name')
-                    ->label('Warrior'),
-
-                Tables\Grouping\Group::make('plan.name')
-                    ->label('Bérlet típus'),
-            ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('expired_at')
                     ->label('Aktív bérletek')
@@ -133,11 +156,13 @@ class SubscriptionResource extends Resource
                         false: fn (Builder $query) => $query->whereNotNull('expired_at'),
                     ),
 
-                Tables\Filters\SelectFilter::make('user')
-                    ->relationship('user', 'name')
-                    ->label('Warrior')
-                    ->searchable()
-                    ->preload(),
+                ...($isAdmin ? [
+                    Tables\Filters\SelectFilter::make('user')
+                        ->relationship('user', 'name')
+                        ->label('Warrior')
+                        ->searchable()
+                        ->preload(),
+                ] : []),
 
                 Tables\Filters\SelectFilter::make('plan')
                     ->relationship('plan', 'name')
@@ -151,15 +176,16 @@ class SubscriptionResource extends Resource
                         ->label('Lejárt')
                         ->icon('heroicon-o-archive-box')
                         ->color('warning')
-                        ->visible(fn (Subscription $subscription) => ! $subscription->expired)
+                        ->visible(fn (Subscription $subscription) => $isAdmin && ! $subscription->expired)
+                        ->disabled(fn () => ! $isAdmin)
                         ->action(fn (Subscription $subscription) => $subscription->update(['expired_at' => Carbon::now()])),
 
                     Tables\Actions\Action::make('reactivate_subscription')
                         ->label('Visszaállítás')
                         ->icon('heroicon-o-arrow-path')
                         ->color('info')
-                        ->visible(fn (Subscription $subscription) => $subscription->expired)
-                        ->disabled(fn (Subscription $subscription) => $subscription->usedUp())
+                        ->visible(fn (Subscription $subscription) => $isAdmin && $subscription->expired)
+                        ->disabled(fn (Subscription $subscription) => ! $isAdmin || $subscription->usedUp())
                         ->action(fn (Subscription $subscription) => $subscription->update(['expired_at' => null])),
 
                     Tables\Actions\EditAction::make(),
@@ -174,6 +200,8 @@ class SubscriptionResource extends Resource
                         ->requiresConfirmation()
                         ->icon('heroicon-o-archive-box')
                         ->color('warning')
+                        ->visible(fn () => $isAdmin)
+                        ->disabled(fn () => ! $isAdmin)
                         ->action(fn (Subscription $subscription) => $subscription->update(['expired_at' => Carbon::now()])),
 
                     BulkAction::make('bulk_reactivate_subscription')
@@ -182,11 +210,42 @@ class SubscriptionResource extends Resource
                         ->requiresConfirmation()
                         ->icon('heroicon-o-arrow-path')
                         ->color('info')
+                        ->visible(fn () => $isAdmin)
+                        ->disabled(fn () => ! $isAdmin)
                         ->action(fn (Subscription $subscription) => $subscription->update(['expired_at' => null])),
 
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist->schema([
+            InfoListSection::make()
+                ->schema([
+                    Grid::make(2)->schema([
+                        Group::make([
+                            TextEntry::make('plan.name')
+                                ->label('Típus'),
+
+                            TextEntry::make('purchased_at')
+                                ->label('Megvásárolva')
+                                ->date('Y-m-d'),
+                        ]),
+
+                        Group::make([
+                            TextEntry::make('usages_count')
+                                ->label('Felhasznált alkalmak')
+                                ->numeric(),
+
+                            IconEntry::make('expired')
+                                ->label('Lejárt')
+                                ->boolean(),
+                        ]),
+                    ]),
+                ]),
+        ]);
     }
 
     public static function getRelations(): array
@@ -202,6 +261,7 @@ class SubscriptionResource extends Resource
             'index' => Pages\ListSubscriptions::route('/'),
             'create' => Pages\CreateSubscription::route('/create'),
             'edit' => Pages\EditSubscription::route('/{record}/edit'),
+            'view' => Pages\ViewSubscription::route('/{record}'),
         ];
     }
 }
