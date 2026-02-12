@@ -1,9 +1,9 @@
 <?php
 
 use App\Models\User;
+use Filament\Notifications\Auth\ResetPassword as ResetPasswordNotification;
 use Filament\Pages\Auth\PasswordReset\RequestPasswordReset;
 use Filament\Pages\Auth\PasswordReset\ResetPassword;
-use Filament\Notifications\Auth\ResetPassword as ResetPasswordNotification;
 use Illuminate\Support\Facades\Notification;
 
 use function Pest\Livewire\livewire;

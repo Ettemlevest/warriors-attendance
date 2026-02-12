@@ -64,7 +64,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
     /**
      * The accessors to append to the model's array form.
      *
-     * @var array<string>
+     * @var array<int, string>
      */
     protected $appends = [
         'age',

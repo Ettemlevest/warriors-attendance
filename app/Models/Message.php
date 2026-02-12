@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -25,6 +26,8 @@ use Illuminate\Support\Collection;
  */
 class Message extends Model
 {
+    use HasFactory;
+
     protected $casts = [
         'showed_from' => 'datetime',
         'showed_to' => 'datetime',

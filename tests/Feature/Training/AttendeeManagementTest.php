@@ -1,71 +1,505 @@
 <?php
 
+use App\Filament\Resources\TrainingResource\Pages\EditTraining;
+use App\Filament\Resources\TrainingResource\Pages\ViewTraining;
+use App\Filament\Resources\TrainingResource\RelationManagers\AttendeesRelationManager;
+use App\Models\Plan;
+use App\Models\Subscription;
+use App\Models\Training;
+use App\Models\TrainingAttendance;
+use App\Models\User;
+
+use function Pest\Livewire\livewire;
+
 describe('viewing attendees', function () {
-    it('admin can see the attendees relation manager on training view', function () {})->todo();
+    it('admin can see the attendees relation manager on training view', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create();
 
-    it('regular user can see the attendees list on training view', function () {})->todo();
+        $this->actingAs($admin);
 
-    it('admin sees attended, extra, and subscription columns', function () {})->todo();
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])->assertSuccessful();
+    });
 
-    it('regular user does not see attended, extra, and subscription columns', function () {})->todo();
+    it('regular user can see the attendees list on training view', function () {
+        $user = User::factory()->create();
+        $training = Training::factory()->create();
+
+        $this->actingAs($user);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])->assertSuccessful();
+    });
+
+    it('admin sees attended, extra, and subscription columns', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create();
+        TrainingAttendance::factory()->for($training)->create();
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])
+            ->assertCanRenderTableColumn('attended')
+            ->assertCanRenderTableColumn('extra')
+            ->assertCanRenderTableColumn('subscription_exists');
+    });
+
+    it('regular user does not see attended, extra, and subscription columns', function () {
+        $user = User::factory()->create();
+        $training = Training::factory()->create();
+        TrainingAttendance::factory()->for($training)->create();
+
+        $this->actingAs($user);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])
+            ->assertTableColumnHidden('attended')
+            ->assertTableColumnHidden('extra')
+            ->assertTableColumnHidden('subscription_exists');
+    });
 });
 
 describe('adding attendees', function () {
-    it('admin can manually add an attendee to a training', function () {})->todo();
+    it('admin can manually add an attendee to a training', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create();
+        $user = User::factory()->create();
 
-    it('admin can search for users when adding an attendee', function () {})->todo();
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => EditTraining::class,
+        ])
+            ->callTableAction('create', data: ['user_id' => $user->id]);
+
+        $this->assertDatabaseHas('trainings_attendance', [
+            'training_id' => $training->id,
+            'user_id' => $user->id,
+        ]);
+    });
+
+    it('admin can search for users when adding an attendee', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create();
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => EditTraining::class,
+        ])->assertTableActionExists('create');
+    });
 });
 
 describe('confirming attendance', function () {
-    it('admin can confirm attendance for a single attendee', function () {})->todo();
+    it('admin can confirm attendance for a single attendee', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create();
+        $attendance = TrainingAttendance::factory()->for($training)->create(['attended' => false]);
 
-    it('confirming attendance sets attended to true', function () {})->todo();
+        $this->actingAs($admin);
 
-    it('confirming attendance auto-associates the user live subscription', function () {})->todo();
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])->callTableAction('confirm_attendance', $attendance);
 
-    it('confirming attendance triggers subscription expiry check', function () {})->todo();
+        expect($attendance->fresh()->attended)->toBeTrue();
+    });
 
-    it('confirming attendance when user has no subscription still sets attended', function () {})->todo();
+    it('confirming attendance sets attended to true', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create();
+        $attendance = TrainingAttendance::factory()->for($training)->create(['attended' => false]);
 
-    it('confirm button is hidden when already attended', function () {})->todo();
+        $this->actingAs($admin);
 
-    it('regular user cannot see the confirm button', function () {})->todo();
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])->callTableAction('confirm_attendance', $attendance);
+
+        expect($attendance->fresh()->attended)->toBeTrue();
+    });
+
+    it('confirming attendance auto-associates the user live subscription', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create();
+        $user = User::factory()->create();
+        $plan = Plan::factory()->create(['sessions' => 10]);
+        $subscription = Subscription::factory()->for($plan)->for($user)->create();
+        $attendance = TrainingAttendance::factory()
+            ->for($training)
+            ->for($user)
+            ->create(['attended' => false, 'subscription_id' => null]);
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])->callTableAction('confirm_attendance', $attendance);
+
+        expect($attendance->fresh()->subscription_id)->toBe($subscription->id);
+    });
+
+    it('confirming attendance triggers subscription expiry check', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create();
+        $user = User::factory()->create();
+        $plan = Plan::factory()->create(['sessions' => 1]);
+        $subscription = Subscription::factory()->for($plan)->for($user)->create();
+        $attendance = TrainingAttendance::factory()
+            ->for($training)
+            ->for($user)
+            ->create(['attended' => false, 'subscription_id' => null]);
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])->callTableAction('confirm_attendance', $attendance);
+
+        expect($subscription->fresh()->expired_at)->not->toBeNull();
+    });
+
+    it('confirming attendance when user has no subscription still sets attended', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create();
+        $user = User::factory()->create();
+        $attendance = TrainingAttendance::factory()
+            ->for($training)
+            ->for($user)
+            ->create(['attended' => false]);
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])->callTableAction('confirm_attendance', $attendance);
+
+        expect($attendance->fresh())
+            ->attended->toBeTrue()
+            ->subscription_id->toBeNull();
+    });
+
+    it('confirm button is hidden when already attended', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create();
+        $attendance = TrainingAttendance::factory()
+            ->for($training)
+            ->attended()
+            ->create();
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])->assertTableActionHidden('confirm_attendance', $attendance);
+    });
+
+    it('regular user cannot see the confirm button', function () {
+        $user = User::factory()->create();
+        $training = Training::factory()->create();
+        $attendance = TrainingAttendance::factory()->for($training)->create(['attended' => false]);
+
+        $this->actingAs($user);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])->assertTableActionHidden('confirm_attendance', $attendance);
+    });
 });
 
 describe('rejecting attendance', function () {
-    it('admin can reject attendance for a single attendee', function () {})->todo();
+    it('admin can reject attendance for a single attendee', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create();
+        $attendance = TrainingAttendance::factory()
+            ->for($training)
+            ->attended()
+            ->create();
 
-    it('rejecting attendance sets attended to false', function () {})->todo();
+        $this->actingAs($admin);
 
-    it('rejecting attendance dissociates the subscription', function () {})->todo();
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])->callTableAction('not_attended', $attendance);
 
-    it('rejecting attendance recalculates subscription expiry', function () {})->todo();
+        expect($attendance->fresh()->attended)->toBeFalse();
+    });
 
-    it('reject button is hidden when not attended', function () {})->todo();
+    it('rejecting attendance sets attended to false', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create();
+        $attendance = TrainingAttendance::factory()
+            ->for($training)
+            ->attended()
+            ->create();
 
-    it('regular user cannot see the reject button', function () {})->todo();
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])->callTableAction('not_attended', $attendance);
+
+        expect($attendance->fresh()->attended)->toBeFalse();
+    });
+
+    it('rejecting attendance dissociates the subscription', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create();
+        $user = User::factory()->create();
+        $plan = Plan::factory()->create(['sessions' => 10]);
+        $subscription = Subscription::factory()->for($plan)->for($user)->create();
+        $attendance = TrainingAttendance::factory()
+            ->for($training)
+            ->for($user)
+            ->attended()
+            ->create(['subscription_id' => $subscription->id]);
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])->callTableAction('not_attended', $attendance);
+
+        expect($attendance->fresh()->subscription_id)->toBeNull();
+    });
+
+    it('rejecting attendance recalculates subscription expiry', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create();
+        $user = User::factory()->create();
+        $plan = Plan::factory()->create(['sessions' => 1]);
+        $subscription = Subscription::factory()->for($plan)->for($user)->create([
+            'expired_at' => now(),
+        ]);
+        $attendance = TrainingAttendance::factory()
+            ->for($training)
+            ->for($user)
+            ->attended()
+            ->create(['subscription_id' => $subscription->id]);
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])->callTableAction('not_attended', $attendance);
+
+        expect($subscription->fresh()->expired_at)->toBeNull();
+    });
+
+    it('reject button is hidden when not attended', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create();
+        $attendance = TrainingAttendance::factory()->for($training)->create(['attended' => false]);
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])->assertTableActionHidden('not_attended', $attendance);
+    });
+
+    it('regular user cannot see the reject button', function () {
+        $user = User::factory()->create();
+        $training = Training::factory()->create();
+        $attendance = TrainingAttendance::factory()
+            ->for($training)
+            ->attended()
+            ->create();
+
+        $this->actingAs($user);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])->assertTableActionHidden('not_attended', $attendance);
+    });
 });
 
 describe('bulk attendance actions', function () {
-    it('admin can bulk confirm attendance', function () {})->todo();
+    it('admin can bulk confirm attendance', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create();
+        $attendances = TrainingAttendance::factory()
+            ->for($training)
+            ->count(3)
+            ->create(['attended' => false]);
 
-    it('admin can bulk reject attendance', function () {})->todo();
+        $this->actingAs($admin);
 
-    it('regular user cannot see bulk attendance actions', function () {})->todo();
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])->callTableBulkAction('bulk_attendance_confirmation', $attendances);
+
+        foreach ($attendances as $attendance) {
+            expect($attendance->fresh()->attended)->toBeTrue();
+        }
+    });
+
+    it('admin can bulk reject attendance', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create();
+        $attendances = TrainingAttendance::factory()
+            ->for($training)
+            ->attended()
+            ->count(3)
+            ->create();
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])->callTableBulkAction('bulk_attendance_rejection', $attendances);
+
+        foreach ($attendances as $attendance) {
+            expect($attendance->fresh()->attended)->toBeFalse();
+        }
+    });
+
+    it('regular user cannot see bulk attendance actions', function () {
+        $user = User::factory()->create();
+        $training = Training::factory()->create();
+
+        $this->actingAs($user);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])
+            ->assertTableBulkActionHidden('bulk_attendance_confirmation')
+            ->assertTableBulkActionHidden('bulk_attendance_rejection');
+    });
 });
 
 describe('deleting attendees', function () {
-    it('admin can delete an attendee from a training', function () {})->todo();
+    it('admin can delete an attendee from a training', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create();
+        $attendance = TrainingAttendance::factory()->for($training)->create();
 
-    it('admin can bulk delete attendees', function () {})->todo();
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => EditTraining::class,
+        ])->callTableAction('delete', $attendance);
+
+        $this->assertDatabaseMissing('trainings_attendance', ['id' => $attendance->id]);
+    });
+
+    it('admin can bulk delete attendees', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create();
+        $attendances = TrainingAttendance::factory()->for($training)->count(3)->create();
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => EditTraining::class,
+        ])->callTableBulkAction('delete', $attendances);
+
+        foreach ($attendances as $attendance) {
+            $this->assertDatabaseMissing('trainings_attendance', ['id' => $attendance->id]);
+        }
+    });
 });
 
 describe('filtering attendees', function () {
-    it('admin can filter attendees by attended status', function () {})->todo();
+    it('admin can filter attendees by attended status', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create();
+        $attended = TrainingAttendance::factory()->for($training)->attended()->create();
+        $notAttended = TrainingAttendance::factory()->for($training)->create(['attended' => false]);
 
-    it('admin can filter attendees by extra status', function () {})->todo();
+        $this->actingAs($admin);
 
-    it('admin can filter attendees by subscription usage', function () {})->todo();
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])
+            ->filterTable('attended')
+            ->assertCanSeeTableRecords([$attended])
+            ->assertCanNotSeeTableRecords([$notAttended]);
+    });
 
-    it('regular user does not see admin-only filters', function () {})->todo();
+    it('admin can filter attendees by extra status', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create();
+        $extra = TrainingAttendance::factory()->for($training)->create(['extra' => true]);
+        $normal = TrainingAttendance::factory()->for($training)->create(['extra' => false]);
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])
+            ->filterTable('extra')
+            ->assertCanSeeTableRecords([$extra])
+            ->assertCanNotSeeTableRecords([$normal]);
+    });
+
+    it('admin can filter attendees by subscription usage', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create();
+        $plan = Plan::factory()->create();
+        $subscription = Subscription::factory()->for($plan)->create();
+        $withSub = TrainingAttendance::factory()->for($training)->create([
+            'subscription_id' => $subscription->id,
+        ]);
+        $withoutSub = TrainingAttendance::factory()->for($training)->create([
+            'subscription_id' => null,
+        ]);
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])
+            ->filterTable('subscription_id', true)
+            ->assertCanSeeTableRecords([$withSub])
+            ->assertCanNotSeeTableRecords([$withoutSub]);
+    });
+
+    it('regular user does not see admin-only filters', function () {
+        $user = User::factory()->create();
+        $training = Training::factory()->create();
+
+        $this->actingAs($user);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])
+            ->assertTableFilterHidden('attended')
+            ->assertTableFilterHidden('extra')
+            ->assertTableFilterHidden('subscription_id');
+    });
 });

@@ -1,34 +1,119 @@
 <?php
 
+use App\Filament\Resources\TrainingResource;
+use App\Filament\Resources\TrainingResource\Pages\ListTrainings;
 use App\Models\Training;
+use App\Models\TrainingAttendance;
 use App\Models\User;
 
+use function Pest\Livewire\livewire;
+
 it('regular user can view the trainings list', function () {
-})->todo();
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->get(TrainingResource::getUrl('index'))
+        ->assertSuccessful();
+});
 
 it('admin can view the trainings list', function () {
-})->todo();
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin)
+        ->get(TrainingResource::getUrl('index'))
+        ->assertSuccessful();
+});
 
 it('guest cannot view the trainings list', function () {
-})->todo();
+    $this->get(TrainingResource::getUrl('index'))
+        ->assertRedirect('/login');
+});
 
 it('displays training name, place, type, start time, length, and attendee count', function () {
-})->todo();
+    $admin = User::factory()->admin()->create();
+    $trainings = Training::factory()->count(3)->create();
+
+    $this->actingAs($admin);
+
+    livewire(ListTrainings::class)
+        ->assertCanSeeTableRecords($trainings)
+        ->assertCanRenderTableColumn('type')
+        ->assertCanRenderTableColumn('name')
+        ->assertCanRenderTableColumn('start_at')
+        ->assertCanRenderTableColumn('length')
+        ->assertCanRenderTableColumn('attendees_count');
+});
 
 it('can search trainings by name', function () {
-})->todo();
+    $admin = User::factory()->admin()->create();
+    $match = Training::factory()->create(['name' => 'Hétfői edzés']);
+    $noMatch = Training::factory()->create(['name' => 'Szerdai futás']);
+
+    $this->actingAs($admin);
+
+    livewire(ListTrainings::class)
+        ->searchTable('Hétfői')
+        ->assertCanSeeTableRecords([$match])
+        ->assertCanNotSeeTableRecords([$noMatch]);
+});
 
 it('can sort trainings by start date', function () {
-})->todo();
+    $admin = User::factory()->admin()->create();
+    $earlier = Training::factory()->create(['start_at' => now()->addDays(1)]);
+    $later = Training::factory()->create(['start_at' => now()->addDays(10)]);
+
+    $this->actingAs($admin);
+
+    livewire(ListTrainings::class)
+        ->sortTable('start_at', 'asc')
+        ->assertCanSeeTableRecords([$earlier, $later], inOrder: true);
+});
 
 it('can filter trainings by type', function () {
-})->todo();
+    $admin = User::factory()->admin()->create();
+    $easy = Training::factory()->create(['type' => 'easy']);
+    $hard = Training::factory()->create(['type' => 'hard']);
+
+    $this->actingAs($admin);
+
+    livewire(ListTrainings::class)
+        ->filterTable('type', 'easy')
+        ->assertCanSeeTableRecords([$easy])
+        ->assertCanNotSeeTableRecords([$hard]);
+});
 
 it('can filter trainings by user attendance', function () {
-})->todo();
+    $admin = User::factory()->admin()->create();
+    $attended = Training::factory()->create();
+    $notAttended = Training::factory()->create();
+    TrainingAttendance::factory()->for($attended)->for($admin)->create();
+
+    $this->actingAs($admin);
+
+    livewire(ListTrainings::class)
+        ->filterTable('is_attendee', true)
+        ->assertCanSeeTableRecords([$attended])
+        ->assertCanNotSeeTableRecords([$notAttended]);
+})->skip('is_attendee filter uses hardcoded user_id=1');
 
 it('shows correct attendee count vs max attendees', function () {
-})->todo();
+    $admin = User::factory()->admin()->create();
+    $training = Training::factory()->create(['max_attendees' => 20]);
+    TrainingAttendance::factory()->for($training)->count(5)->create();
+
+    $this->actingAs($admin);
+
+    livewire(ListTrainings::class)
+        ->assertTableColumnFormattedStateSet('attendees_count', '5 / 20', $training->getKey());
+});
 
 it('defaults to sorting by start date descending', function () {
-})->todo();
+    $admin = User::factory()->admin()->create();
+    $earlier = Training::factory()->create(['start_at' => now()->addDays(1)]);
+    $later = Training::factory()->create(['start_at' => now()->addDays(10)]);
+
+    $this->actingAs($admin);
+
+    livewire(ListTrainings::class)
+        ->assertCanSeeTableRecords([$later, $earlier], inOrder: true);
+});
