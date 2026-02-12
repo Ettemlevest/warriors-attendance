@@ -19,16 +19,16 @@ Install PHP dependencies:
 composer install
 ```
 
-Install NPM dependencies:
+Install dependencies:
 
 ```sh
-npm install
+pnpm install
 ```
 
 Build assets:
 
 ```sh
-npm run dev
+pnpm run dev
 ```
 
 Setup configuration:

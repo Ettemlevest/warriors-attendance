@@ -10,7 +10,7 @@ Warriors Attendance is a Laravel 10 application for managing attendance registra
 
 ```bash
 # Development
-npm run dev                    # Start Vite dev server
+pnpm run dev                   # Start Vite dev server
 php artisan serve              # Start PHP dev server
 
 # Testing
