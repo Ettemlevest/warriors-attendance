@@ -18,3 +18,8 @@ pnpm-debug.log
 /.vscode
 **/.DS_Store
 .phpstorm.meta.php
+/.claude
+/.junie
+/boost.json
+/.mcp.json
+/CLAUDE.md
