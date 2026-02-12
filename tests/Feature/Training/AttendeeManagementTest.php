@@ -1,105 +1,71 @@
 <?php
 
-use App\Models\Plan;
-use App\Models\Subscription;
-use App\Models\Training;
-use App\Models\TrainingAttendance;
-use App\Models\User;
+describe('viewing attendees', function () {
+    it('admin can see the attendees relation manager on training view', function () {})->todo();
 
-// --- Viewing attendees ---
+    it('regular user can see the attendees list on training view', function () {})->todo();
 
-it('admin can see the attendees relation manager on training view', function () {
-})->todo();
+    it('admin sees attended, extra, and subscription columns', function () {})->todo();
 
-it('regular user can see the attendees list on training view', function () {
-})->todo();
+    it('regular user does not see attended, extra, and subscription columns', function () {})->todo();
+});
 
-it('admin sees attended, extra, and subscription columns', function () {
-})->todo();
+describe('adding attendees', function () {
+    it('admin can manually add an attendee to a training', function () {})->todo();
 
-it('regular user does not see attended, extra, and subscription columns', function () {
-})->todo();
+    it('admin can search for users when adding an attendee', function () {})->todo();
+});
 
-// --- Adding attendees (admin) ---
+describe('confirming attendance', function () {
+    it('admin can confirm attendance for a single attendee', function () {})->todo();
 
-it('admin can manually add an attendee to a training', function () {
-})->todo();
+    it('confirming attendance sets attended to true', function () {})->todo();
 
-it('admin can search for users when adding an attendee', function () {
-})->todo();
+    it('confirming attendance auto-associates the user live subscription', function () {})->todo();
 
-// --- Confirming attendance ---
+    it('confirming attendance triggers subscription expiry check', function () {})->todo();
 
-it('admin can confirm attendance for a single attendee', function () {
-})->todo();
+    it('confirming attendance when user has no subscription still sets attended', function () {})->todo();
 
-it('confirming attendance sets attended to true', function () {
-})->todo();
+    it('confirm button is hidden when already attended', function () {})->todo();
 
-it('confirming attendance auto-associates the user live subscription', function () {
-})->todo();
+    it('regular user cannot see the confirm button', function () {})->todo();
+});
 
-it('confirming attendance triggers subscription expiry check', function () {
-})->todo();
+describe('rejecting attendance', function () {
+    it('admin can reject attendance for a single attendee', function () {})->todo();
 
-it('confirming attendance when user has no subscription still sets attended', function () {
-})->todo();
+    it('rejecting attendance sets attended to false', function () {})->todo();
 
-it('confirm button is hidden when already attended', function () {
-})->todo();
+    it('rejecting attendance dissociates the subscription', function () {})->todo();
 
-it('regular user cannot see the confirm button', function () {
-})->todo();
+    it('rejecting attendance recalculates subscription expiry', function () {})->todo();
 
-// --- Rejecting attendance ---
+    it('reject button is hidden when not attended', function () {})->todo();
 
-it('admin can reject attendance for a single attendee', function () {
-})->todo();
+    it('regular user cannot see the reject button', function () {})->todo();
+});
 
-it('rejecting attendance sets attended to false', function () {
-})->todo();
+describe('bulk attendance actions', function () {
+    it('admin can bulk confirm attendance', function () {})->todo();
 
-it('rejecting attendance dissociates the subscription', function () {
-})->todo();
+    it('admin can bulk reject attendance', function () {})->todo();
 
-it('rejecting attendance recalculates subscription expiry', function () {
-})->todo();
+    it('regular user cannot see bulk attendance actions', function () {})->todo();
+});
 
-it('reject button is hidden when not attended', function () {
-})->todo();
+describe('deleting attendees', function () {
+    it('admin can delete an attendee from a training', function () {})->todo();
 
-it('regular user cannot see the reject button', function () {
-})->todo();
+    it('admin can bulk delete attendees', function () {})->todo();
+});
 
-// --- Bulk attendance actions ---
+describe('filtering attendees', function () {
+    it('admin can filter attendees by attended status', function () {})->todo();
 
-it('admin can bulk confirm attendance', function () {
-})->todo();
+    it('admin can filter attendees by extra status', function () {})->todo();
 
-it('admin can bulk reject attendance', function () {
-})->todo();
+    it('admin can filter attendees by subscription usage', function () {})->todo();
 
-it('regular user cannot see bulk attendance actions', function () {
-})->todo();
-
-// --- Deleting attendees ---
-
-it('admin can delete an attendee from a training', function () {
-})->todo();
-
-it('admin can bulk delete attendees', function () {
-})->todo();
-
-// --- Filtering attendees ---
-
-it('admin can filter attendees by attended status', function () {
-})->todo();
-
-it('admin can filter attendees by extra status', function () {
-})->todo();
-
-it('admin can filter attendees by subscription usage', function () {
-})->todo();
-
-it('regular user does not see admin-only filters', function () {
-})->todo();
+    it('regular user does not see admin-only filters', function () {})->todo();
+});
