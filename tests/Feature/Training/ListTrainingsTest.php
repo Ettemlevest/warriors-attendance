@@ -82,19 +82,37 @@ it('can filter trainings by type', function () {
         ->assertCanNotSeeTableRecords([$hard]);
 });
 
-it('can filter trainings by user attendance', function () {
-    $admin = User::factory()->admin()->create();
-    $attended = Training::factory()->create();
-    $notAttended = Training::factory()->create();
-    TrainingAttendance::factory()->for($attended)->for($admin)->create();
+it('can filter trainings the current user registered for', function () {
+    $otherUser = User::factory()->create();
+    $user = User::factory()->create();
+    $mine = Training::factory()->create();
+    $theirs = Training::factory()->create();
+    TrainingAttendance::factory()->for($mine)->for($user)->create();
+    TrainingAttendance::factory()->for($theirs)->for($otherUser)->create();
 
-    $this->actingAs($admin);
+    $this->actingAs($user);
 
     livewire(ListTrainings::class)
         ->filterTable('is_attendee', true)
-        ->assertCanSeeTableRecords([$attended])
-        ->assertCanNotSeeTableRecords([$notAttended]);
-})->skip('is_attendee filter uses hardcoded user_id=1');
+        ->assertCanSeeTableRecords([$mine])
+        ->assertCanNotSeeTableRecords([$theirs]);
+});
+
+it('can filter trainings the current user did not register for', function () {
+    $otherUser = User::factory()->create();
+    $user = User::factory()->create();
+    $mine = Training::factory()->create();
+    $theirs = Training::factory()->create();
+    TrainingAttendance::factory()->for($mine)->for($user)->create();
+    TrainingAttendance::factory()->for($theirs)->for($otherUser)->create();
+
+    $this->actingAs($user);
+
+    livewire(ListTrainings::class)
+        ->filterTable('is_attendee', false)
+        ->assertCanSeeTableRecords([$theirs])
+        ->assertCanNotSeeTableRecords([$mine]);
+});
 
 it('shows correct attendee count vs max attendees', function () {
     $admin = User::factory()->admin()->create();

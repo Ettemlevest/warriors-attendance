@@ -164,11 +164,11 @@ class TrainingResource extends Resource
                     ->queries(
                         true: fn (Builder $query) => $query->whereHas(
                             'attendees',
-                            fn (Builder $attendeesSubQuery) => $attendeesSubQuery->where('user_id', '=', 1)
+                            fn (Builder $attendeesSubQuery) => $attendeesSubQuery->where('user_id', '=', auth()->id())
                         ),
                         false: fn (Builder $query) => $query->whereDoesntHave(
                             'attendees',
-                            fn (Builder $attendeesSubQuery) => $attendeesSubQuery->where('user_id', '=', 1)
+                            fn (Builder $attendeesSubQuery) => $attendeesSubQuery->where('user_id', '=', auth()->id())
                         ),
                     ),
             ])
