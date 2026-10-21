@@ -41,14 +41,20 @@ class SubscriptionOverview extends BaseWidget
     {
         $firstMonth = now()->startOfMonth()->subMonths(5);
 
-        $months = collect(range(0, 5))
-            ->mapWithKeys(fn (int $offset) => [$firstMonth->copy()->addMonths($offset)->format('Y-m') => 0]);
-
+        /** @var array<string, int> $registrations */
         $registrations = $user->trainingAttendances()
             ->where('created_at', '>=', $firstMonth)
             ->pluck('created_at')
-            ->countBy(fn (Carbon $createdAt) => $createdAt->format('Y-m'));
+            ->countBy(fn (Carbon $createdAt) => $createdAt->format('Y-m'))
+            ->all();
 
-        return $months->merge($registrations->only($months->keys()));
+        $perMonth = [];
+
+        for ($offset = 0; $offset < 6; $offset++) {
+            $month = $firstMonth->copy()->addMonths($offset)->format('Y-m');
+            $perMonth[$month] = $registrations[$month] ?? 0;
+        }
+
+        return collect($perMonth);
     }
 }

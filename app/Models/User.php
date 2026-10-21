@@ -12,6 +12,7 @@ use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -40,9 +41,9 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Carbon|null $deleted_at
  * @property string|null $safety_person
  * @property string|null $safety_phone
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Subscription> $subscriptions
+ * @property-read Collection<int, Subscription> $subscriptions
  * @property-read int|null $subscriptions_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $trainingAttendances
+ * @property-read Collection<int, User> $trainingAttendances
  * @property-read int|null $training_attendances_count
  */
 #[ObservedBy(UserObserver::class)]
@@ -53,7 +54,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'name',
@@ -71,7 +72,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
     /**
      * The accessors to append to the model's array form.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $appends = [
         'age',
@@ -80,7 +81,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'password',
@@ -99,7 +100,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
         'password' => 'hashed',
     ];
 
-    public function age(): Attribute
+    protected function age(): Attribute
     {
         return Attribute::make(
             get: fn (mixed $value, array $attributes) => $this->getAttributeValue('birth_date')?->age,
@@ -125,7 +126,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
     }
 
     /**
-     * @return HasMany<TrainingAttendance>
+     * @return HasMany<TrainingAttendance, $this>
      */
     public function trainingAttendances(): HasMany
     {
@@ -133,7 +134,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
     }
 
     /**
-     * @return HasMany<Subscription>
+     * @return HasMany<Subscription, $this>
      */
     public function subscriptions(): HasMany
     {
