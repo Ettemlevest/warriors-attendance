@@ -8,6 +8,7 @@ use App\Models\Subscription;
 use App\Models\Training;
 use App\Models\TrainingAttendance;
 use App\Models\User;
+use Filament\Tables\Columns\IconColumn;
 
 use function Pest\Livewire\livewire;
 
@@ -88,4 +89,22 @@ it('usages list shows training type, name, place, start time, and length', funct
         ->assertCanRenderTableColumn('training.name')
         ->assertCanRenderTableColumn('training.start_at')
         ->assertCanRenderTableColumn('training.length');
+});
+
+it('usages list renders the training type as an icon column', function () {
+    $admin = User::factory()->admin()->create();
+    $plan = Plan::factory()->create();
+    $subscription = Subscription::factory()->for($plan)->create();
+    TrainingAttendance::factory()
+        ->for(Training::factory()->create(['type' => 'easy']))
+        ->create(['subscription_id' => $subscription->id]);
+
+    $this->actingAs($admin);
+
+    $table = livewire(UsagesRelationManager::class, [
+        'ownerRecord' => $subscription,
+        'pageClass' => ViewSubscription::class,
+    ])->instance()->getTable();
+
+    expect($table->getColumn('training.type'))->toBeInstanceOf(IconColumn::class);
 });

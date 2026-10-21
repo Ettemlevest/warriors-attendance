@@ -40,8 +40,6 @@ class UsagesRelationManager extends RelationManager
         return $table
             ->recordUrl(fn (TrainingAttendance $attendance) => "/trainings/{$attendance->training_id}")
             ->columns([
-                TextColumn::make('training.type'),
-
                 IconColumn::make('training.type')
                     ->label('Típus')
                     ->grow(false)
