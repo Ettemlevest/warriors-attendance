@@ -2,6 +2,7 @@
 
 use App\Filament\Resources\TrainingResource\Pages\ListTrainings;
 use App\Models\Training;
+use App\Models\TrainingAttendance;
 use App\Models\User;
 
 use function Pest\Livewire\livewire;
@@ -49,4 +50,16 @@ it('regular user cannot bulk delete trainings', function () {
 
     livewire(ListTrainings::class)
         ->assertTableBulkActionHidden('delete');
+});
+
+it('deleting a training removes its attendance rows', function () {
+    $admin = User::factory()->admin()->create();
+    $training = Training::factory()->create();
+    $attendance = TrainingAttendance::factory()->for($training)->create();
+
+    $this->actingAs($admin);
+
+    livewire(ListTrainings::class)->callTableAction('delete', $training);
+
+    $this->assertDatabaseMissing('trainings_attendance', ['id' => $attendance->id]);
 });

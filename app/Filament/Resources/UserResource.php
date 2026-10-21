@@ -19,6 +19,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
@@ -29,6 +30,7 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
@@ -46,6 +48,21 @@ class UserResource extends Resource
     protected static ?string $pluralModelLabel = 'Warriorok';
 
     protected static string|\UnitEnum|null $navigationGroup = 'Admin';
+
+    public static function cancelForceDeletionWhenSubscribed(User $user, Action $action): void
+    {
+        if ($user->subscriptions()->doesntExist()) {
+            return;
+        }
+
+        Notification::make()
+            ->title('A Warrior nem törölhető véglegesen')
+            ->body('Bérletek tartoznak hozzá. Töröld előbb a bérleteit, vagy hagyd archiválva.')
+            ->danger()
+            ->send();
+
+        $action->cancel();
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -177,12 +194,23 @@ class UserResource extends Resource
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),
-                ForceDeleteAction::make(),
+                ForceDeleteAction::make()
+                    ->before(fn (User $record, Action $action) => static::cancelForceDeletionWhenSubscribed($record, $action)),
                 RestoreAction::make(),
             ])
             ->toolbarActions([
                 DeleteBulkAction::make(),
-                ForceDeleteBulkAction::make(),
+                ForceDeleteBulkAction::make()
+                    ->before(function (Collection $users, Action $action): void {
+                        /** @var Collection<int, User> $users */
+                        $subscribed = $users->first(fn (User $user) => $user->subscriptions()->exists());
+
+                        if ($subscribed === null) {
+                            return;
+                        }
+
+                        static::cancelForceDeletionWhenSubscribed($subscribed, $action);
+                    }),
                 RestoreBulkAction::make(),
             ]);
     }

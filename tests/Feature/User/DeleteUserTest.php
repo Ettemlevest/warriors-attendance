@@ -3,6 +3,8 @@
 use App\Filament\Resources\UserResource;
 use App\Filament\Resources\UserResource\Pages\EditUser;
 use App\Filament\Resources\UserResource\Pages\ListUsers;
+use App\Models\Subscription;
+use App\Models\TrainingAttendance;
 use App\Models\User;
 
 use function Pest\Livewire\livewire;
@@ -94,4 +96,51 @@ it('admin can bulk restore users', function () {
     foreach ($users as $user) {
         expect($user->fresh()->deleted_at)->toBeNull();
     }
+});
+
+it('force deleting a user removes their attendance rows', function () {
+    $admin = User::factory()->admin()->create();
+    $user = User::factory()->create(['deleted_at' => now()]);
+    $attendance = TrainingAttendance::factory()->for($user)->create();
+
+    $this->actingAs($admin);
+
+    livewire(ListUsers::class)
+        ->filterTable('trashed', true)
+        ->callTableAction('forceDelete', $user);
+
+    $this->assertModelMissing($user);
+    $this->assertDatabaseMissing('trainings_attendance', ['id' => $attendance->id]);
+});
+
+it('refuses to force delete a user who has subscriptions', function () {
+    $admin = User::factory()->admin()->create();
+    $user = User::factory()->create(['deleted_at' => now()]);
+    Subscription::factory()->for($user)->create();
+
+    $this->actingAs($admin);
+
+    livewire(ListUsers::class)
+        ->filterTable('trashed', true)
+        ->callTableAction('forceDelete', $user)
+        ->assertNotified('A Warrior nem törölhető véglegesen');
+
+    $this->assertDatabaseHas('users', ['id' => $user->id]);
+});
+
+it('refuses bulk force delete when any selected user has subscriptions', function () {
+    $admin = User::factory()->admin()->create();
+    $subscribed = User::factory()->create(['deleted_at' => now()]);
+    $plain = User::factory()->create(['deleted_at' => now()]);
+    Subscription::factory()->for($subscribed)->create();
+
+    $this->actingAs($admin);
+
+    livewire(ListUsers::class)
+        ->filterTable('trashed', true)
+        ->callTableBulkAction('forceDelete', [$subscribed, $plain])
+        ->assertNotified('A Warrior nem törölhető véglegesen');
+
+    $this->assertDatabaseHas('users', ['id' => $subscribed->id]);
+    $this->assertDatabaseHas('users', ['id' => $plain->id]);
 });
