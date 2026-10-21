@@ -86,7 +86,11 @@ class SubscriptionResource extends Resource
                             ->relationship(
                                 name: 'plan',
                                 titleAttribute: 'name',
-                                modifyQueryUsing: fn (EloquentBuilder $query) => $query->whereNull('deleted_at'),
+                                modifyQueryUsing: fn (EloquentBuilder $query, ?Subscription $record) => $query->where(
+                                    fn (EloquentBuilder $query) => $query
+                                        ->whereNull('deleted_at')
+                                        ->when($record?->plan_id, fn (EloquentBuilder $query, int $planId) => $query->orWhere('id', $planId)),
+                                ),
                             )
                             ->required()
                             ->searchable()

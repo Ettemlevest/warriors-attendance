@@ -6,6 +6,7 @@ use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\TrainingAttendance;
 use App\Models\User;
+use Filament\Forms\Components\Select;
 
 use function Pest\Livewire\livewire;
 
@@ -118,4 +119,30 @@ it('deletes a subscription without usages from the edit page', function () {
         ->callAction('delete');
 
     $this->assertDatabaseMissing('subscriptions', ['id' => $subscription->id]);
+});
+
+it('keeps a soft-deleted plan selectable on the subscription that uses it', function () {
+    $admin = User::factory()->admin()->create();
+    $plan = Plan::factory()->create(['name' => 'Törölt terv']);
+    $otherTrashed = Plan::factory()->create(['name' => 'Másik törölt']);
+    $live = Plan::factory()->create(['name' => 'Aktív terv']);
+    $subscription = Subscription::factory()->for($plan)->create();
+    $plan->delete();
+    $otherTrashed->delete();
+
+    $this->actingAs($admin);
+
+    livewire(EditSubscription::class, ['record' => $subscription->getRouteKey()])
+        ->assertFormSet(['plan_id' => $plan->id])
+        ->assertFormFieldExists('plan_id', function (Select $field) use ($plan, $otherTrashed, $live): bool {
+            $options = $field->getOptions();
+
+            return array_key_exists($plan->id, $options)
+                && array_key_exists($live->id, $options)
+                && ! array_key_exists($otherTrashed->id, $options);
+        })
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($subscription->fresh()->plan_id)->toBe($plan->id);
 });
