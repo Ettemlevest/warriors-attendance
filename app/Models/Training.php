@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property TrainingType $type
  * @property string|null $description
- * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $attendees
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, TrainingAttendance> $attendees
  * @property-read int|null $attendees_count
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Training newModelQuery()
