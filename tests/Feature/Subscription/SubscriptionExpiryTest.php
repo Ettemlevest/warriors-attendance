@@ -137,3 +137,33 @@ it('usedUp returns false when usages are below plan sessions', function () {
 
     expect($subscription->fresh()->usedUp())->toBeFalse();
 });
+
+it('confirming an attendance that already has a subscription keeps it and refreshes its expiry', function () {
+    $plan = Plan::factory()->create(['sessions' => 1]);
+    $user = User::factory()->create();
+    $subscription = Subscription::factory()->for($plan)->for($user)->create();
+    $attendance = TrainingAttendance::factory()->for($user)->create([
+        'subscription_id' => $subscription->id,
+        'attended' => false,
+    ]);
+
+    $attendance->confirmAttendance();
+
+    expect($attendance->fresh()->attended)->toBeTrue()
+        ->and($attendance->fresh()->subscription_id)->toBe($subscription->id)
+        ->and($subscription->fresh()->expired_at)->not->toBeNull();
+});
+
+it('confirming an already confirmed attendance is idempotent', function () {
+    $plan = Plan::factory()->create(['sessions' => 5]);
+    $user = User::factory()->create();
+    $subscription = Subscription::factory()->for($plan)->for($user)->create();
+    $attendance = TrainingAttendance::factory()->for($user)->create();
+    $attendance->confirmAttendance();
+
+    $attendance->confirmAttendance();
+
+    expect($attendance->fresh()->subscription_id)->toBe($subscription->id)
+        ->and($subscription->fresh()->usages_count)->toBe(1)
+        ->and($subscription->fresh()->expired_at)->toBeNull();
+});

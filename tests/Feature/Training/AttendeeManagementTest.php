@@ -503,3 +503,32 @@ describe('filtering attendees', function () {
             ->assertTableFilterHidden('subscription_id');
     });
 });
+
+describe('bulk confirming a mix of confirmed and pending attendees', function () {
+    it('succeeds and links the pending attendee to their live subscription', function () {
+        $admin = User::factory()->admin()->create();
+        $plan = Plan::factory()->create(['sessions' => 10]);
+        $confirmedUser = User::factory()->create();
+        $pendingUser = User::factory()->create();
+        $confirmedSubscription = Subscription::factory()->for($plan)->for($confirmedUser)->create();
+        $pendingSubscription = Subscription::factory()->for($plan)->for($pendingUser)->create();
+        $training = Training::factory()->create();
+        $confirmed = TrainingAttendance::factory()->for($training)->for($confirmedUser)->create([
+            'subscription_id' => $confirmedSubscription->id,
+            'attended' => true,
+        ]);
+        $pending = TrainingAttendance::factory()->for($training)->for($pendingUser)->create();
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => EditTraining::class,
+        ])->callTableBulkAction('bulk_attendance_confirmation', [$confirmed->getKey(), $pending->getKey()]);
+
+        expect($confirmed->fresh()->attended)->toBeTrue()
+            ->and($confirmed->fresh()->subscription_id)->toBe($confirmedSubscription->id)
+            ->and($pending->fresh()->attended)->toBeTrue()
+            ->and($pending->fresh()->subscription_id)->toBe($pendingSubscription->id);
+    });
+});

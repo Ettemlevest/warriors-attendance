@@ -50,16 +50,14 @@ class TrainingAttendance extends Model
     public function confirmAttendance(): void
     {
         if ($this->subscription === null) {
-            $liveSubscription = Subscription::findLiveSubscriptionForUser($this->user_id);
-
-            $this->subscription()->associate($liveSubscription);
+            $this->subscription()->associate(Subscription::findLiveSubscriptionForUser($this->user_id));
         }
 
         $this->update([
             'attended' => true,
         ]);
 
-        $liveSubscription?->refreshExpiry();
+        $this->subscription?->refreshExpiry();
     }
 
     public function rejectAttendance(): void
