@@ -2,8 +2,6 @@
 
 Attendance and subscription management for the Kiskunlacháza Warriors. Members register for trainings from a dashboard, admins confirm who showed up, and confirmed sessions are counted against the member's subscription. The whole application is a [Filament](https://filamentphp.com) v4 panel on Laravel 12, with a Hungarian UI. It started out from [@reinink](https://twitter.com/reinink)'s [PingCRM](https://github.com/inertiajs/pingcrm) demo.
 
-![](https://raw.githubusercontent.com/Ettemlevest/warriors-attendance/master/screenshot.png)
-
 ## Requirements
 
 - PHP 8.2 or newer with the usual Laravel extensions and GD
