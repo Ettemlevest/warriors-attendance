@@ -7,6 +7,7 @@ use App\Models\Message;
 use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\Training;
+use App\Models\TrainingAttendance;
 use App\Models\User;
 
 use function Pest\Livewire\livewire;
@@ -95,7 +96,7 @@ it('shows subscription overview with active subscription stats', function () {
 
     livewire(SubscriptionOverview::class)
         ->assertSee('Havi bérlet');
-})->skip(fn () => config('database.default') === 'sqlite', 'SubscriptionOverview uses MySQL-specific DATE_FORMAT');
+});
 
 it('shows "no active subscription" when user has no subscription', function () {
     $user = User::factory()->create();
@@ -104,7 +105,7 @@ it('shows "no active subscription" when user has no subscription', function () {
 
     livewire(SubscriptionOverview::class)
         ->assertSee('Nincs aktív bérlet');
-})->skip(fn () => config('database.default') === 'sqlite', 'SubscriptionOverview uses MySQL-specific DATE_FORMAT');
+});
 
 it('shows 6-month attendance chart', function () {
     $user = User::factory()->create();
@@ -113,7 +114,7 @@ it('shows 6-month attendance chart', function () {
 
     livewire(SubscriptionOverview::class)
         ->assertSee('Elmúlt 6 hónapban');
-})->skip(fn () => config('database.default') === 'sqlite', 'SubscriptionOverview uses MySQL-specific DATE_FORMAT');
+});
 
 it('shows a message that has no date range', function () {
     $user = User::factory()->create();
@@ -178,4 +179,42 @@ it('lists trainings up to 30 days ahead and not beyond', function () {
     livewire(UpcomingTraining::class)
         ->assertCanSeeTableRecords([$inside])
         ->assertCanNotSeeTableRecords([$outside]);
+});
+
+it('counts the current user registrations per month for six months regardless of confirmation', function () {
+    $user = User::factory()->create();
+    TrainingAttendance::factory()->for($user)->count(2)->create(['created_at' => now()->startOfMonth()->subMonths(2)->addDays(3)]);
+    TrainingAttendance::factory()->for($user)->attended()->create(['created_at' => now()->startOfMonth()->subMonth()->addDays(3)]);
+    TrainingAttendance::factory()->for($user)->create(['created_at' => now()->startOfMonth()->subMonths(8)]);
+    TrainingAttendance::factory()->create(['created_at' => now()]);
+
+    $this->actingAs($user);
+
+    $stats = (fn () => $this->getStats())->call(livewire(SubscriptionOverview::class)->instance());
+
+    expect($stats[1]->getValue())->toBe(3)
+        ->and($stats[1]->getChart())->toBe([0, 0, 0, 2, 1, 0]);
+});
+
+it('shows the oldest active subscription, which is the one confirmations consume', function () {
+    $user = User::factory()->create();
+    Subscription::factory()->for(Plan::factory()->create(['name' => 'Régi']))->for($user)->create(['purchased_at' => now()->subMonths(2)]);
+    Subscription::factory()->for(Plan::factory()->create(['name' => 'Új']))->for($user)->create(['purchased_at' => now()]);
+
+    $this->actingAs($user);
+
+    livewire(SubscriptionOverview::class)
+        ->assertSee('Régi bérlet')
+        ->assertDontSee('Új bérlet');
+});
+
+it('ignores expired subscriptions in the overview', function () {
+    $user = User::factory()->create();
+    Subscription::factory()->for(Plan::factory()->create(['name' => 'Lejárt']))->for($user)->expired()->create();
+
+    $this->actingAs($user);
+
+    livewire(SubscriptionOverview::class)
+        ->assertSee('Nincs aktív bérlet')
+        ->assertDontSee('Lejárt bérlet');
 });
