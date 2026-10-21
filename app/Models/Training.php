@@ -68,6 +68,11 @@ final class Training extends Model
         return $this->attendees->doesntContain('user_id', $attendee->id);
     }
 
+    public function isOpenForRegistration(): bool
+    {
+        return $this->start_at->isAfter(now()->subHour());
+    }
+
     public function hasUnlimitedCapacity(): bool
     {
         return $this->max_attendees === 0;

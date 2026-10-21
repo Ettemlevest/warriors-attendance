@@ -147,3 +147,35 @@ it('hides a message with only an end date once that date has passed', function (
         ->assertSee('Még látható')
         ->assertDontSee('Már lejárt');
 });
+
+it('lists a training that started within the last hour with its actions enabled', function () {
+    $user = User::factory()->create();
+    $training = Training::factory()->create(['start_at' => now()->subMinutes(30)]);
+
+    $this->actingAs($user);
+
+    livewire(UpcomingTraining::class)
+        ->assertCanSeeTableRecords([$training])
+        ->assertTableActionEnabled('attend', $training);
+});
+
+it('does not list a training that started more than an hour ago', function () {
+    $user = User::factory()->create();
+    $training = Training::factory()->create(['start_at' => now()->subHours(2)]);
+
+    $this->actingAs($user);
+
+    livewire(UpcomingTraining::class)->assertCanNotSeeTableRecords([$training]);
+});
+
+it('lists trainings up to 30 days ahead and not beyond', function () {
+    $user = User::factory()->create();
+    $inside = Training::factory()->create(['start_at' => now()->addDays(29)]);
+    $outside = Training::factory()->create(['start_at' => now()->addDays(31)]);
+
+    $this->actingAs($user);
+
+    livewire(UpcomingTraining::class)
+        ->assertCanSeeTableRecords([$inside])
+        ->assertCanNotSeeTableRecords([$outside]);
+});

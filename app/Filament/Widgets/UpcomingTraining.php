@@ -4,14 +4,12 @@ namespace App\Filament\Widgets;
 
 use App\Enums\TrainingType;
 use App\Models\Training;
-use Carbon\CarbonPeriod;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
-use Illuminate\Support\Carbon;
 
 class UpcomingTraining extends BaseWidget
 {
@@ -27,7 +25,7 @@ class UpcomingTraining extends BaseWidget
             ->query(
                 Training::query()
                     ->withCount('attendees')
-                    ->whereBetween('start_at', CarbonPeriod::create('now', '+1 month')),
+                    ->whereBetween('start_at', [now()->subHour(), now()->addDays(30)]),
             )
             ->defaultSort('start_at', 'asc')
             ->columns([
@@ -67,7 +65,7 @@ class UpcomingTraining extends BaseWidget
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->visible(fn (Training $training) => ! $training->hasAttendee(auth()->user()))
-                    ->disabled(fn (Training $training) => $training->start_at->isBefore(Carbon::now()->subHour()) || ! $training->canAcceptRegistration())
+                    ->disabled(fn (Training $training) => ! $training->isOpenForRegistration() || ! $training->canAcceptRegistration())
                     ->action(fn (Training $training) => $training->registerAttendee(auth()->user())),
 
                 Action::make('withdraw')
@@ -75,7 +73,7 @@ class UpcomingTraining extends BaseWidget
                     ->icon('heroicon-o-minus-circle')
                     ->color('warning')
                     ->visible(fn (Training $training) => $training->hasAttendee(auth()->user()))
-                    ->disabled(fn (Training $training) => $training->start_at->isBefore(Carbon::now()->subHour()))
+                    ->disabled(fn (Training $training) => ! $training->isOpenForRegistration())
                     ->action(fn (Training $training) => $training->attendees()->where('user_id', '=', auth()->id())->delete()),
             ]);
     }
