@@ -5,8 +5,10 @@ namespace App\Filament\Resources\TrainingResource\RelationManagers;
 use App\Models\Training;
 use App\Models\TrainingAttendance;
 use App\Models\User;
+use Filament\Actions\MountableAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Actions\BulkAction;
@@ -28,6 +30,14 @@ class AttendeesRelationManager extends RelationManager
     protected static ?string $pluralModelLabel = 'jelentkezések';
 
     protected static ?string $title = 'Jelentkezők';
+
+    protected function training(): Training
+    {
+        /** @var Training $training */
+        $training = $this->getOwnerRecord();
+
+        return $training;
+    }
 
     public function form(Form $form): Form
     {
@@ -114,19 +124,14 @@ class AttendeesRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
-                    ->using(function (array $data): TrainingAttendance {
-                        /** @var Training $training */
-                        $training = $this->getOwnerRecord();
-
-                        return $training->registerAttendee(User::findOrFail($data['user_id']));
-                    }),
+                    ->using(fn (array $data): TrainingAttendance => $this->training()->registerAttendee(User::findOrFail($data['user_id']))),
             ])
             ->actions([
                 Tables\Actions\Action::make('confirm_attendance')
                     ->label('Résztvett')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->visible(fn (TrainingAttendance $attendance) => ! $attendance->attended && auth()->user()->isAdmin())
+                    ->visible(fn (TrainingAttendance $attendance) => ! $attendance->attended && auth()->user()->isAdmin() && $this->training()->hasEnded())
                     ->action(fn (TrainingAttendance $attendance) => $attendance->confirmAttendance()),
 
                 Tables\Actions\Action::make('not_attended')
@@ -137,7 +142,8 @@ class AttendeesRelationManager extends RelationManager
                     ->action(fn (TrainingAttendance $attendance) => $attendance->rejectAttendance()),
 
                 Tables\Actions\DeleteAction::make()
-                    ->modalHeading('Jelentkezés törlése'),
+                    ->modalHeading('Jelentkezés törlése')
+                    ->hidden(fn (TrainingAttendance $attendance) => $attendance->attended),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -147,7 +153,7 @@ class AttendeesRelationManager extends RelationManager
                         ->requiresConfirmation()
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
-                        ->visible(fn () => auth()->user()->isAdmin())
+                        ->visible(fn () => auth()->user()->isAdmin() && $this->training()->hasEnded())
                         ->action(fn (Collection $attendances) => $attendances->each->confirmAttendance()),
 
                     BulkAction::make('bulk_attendance_rejection')
@@ -159,7 +165,20 @@ class AttendeesRelationManager extends RelationManager
                         ->visible(fn () => auth()->user()->isAdmin())
                         ->action(fn (Collection $attendances) => $attendances->each->rejectAttendance()),
 
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->before(function (Collection $attendances, MountableAction $action): void {
+                            if ($attendances->doesntContain('attended', true)) {
+                                return;
+                            }
+
+                            Notification::make()
+                                ->title('Megerősített részvétel nem törölhető')
+                                ->body('Előbb jelöld hiányzónak, utána törölhető a jelentkezés.')
+                                ->danger()
+                                ->send();
+
+                            $action->cancel();
+                        }),
                 ]),
             ]);
     }

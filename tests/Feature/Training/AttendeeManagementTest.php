@@ -105,7 +105,7 @@ describe('adding attendees', function () {
 describe('confirming attendance', function () {
     it('admin can confirm attendance for a single attendee', function () {
         $admin = User::factory()->admin()->create();
-        $training = Training::factory()->create();
+        $training = Training::factory()->past()->create();
         $attendance = TrainingAttendance::factory()->for($training)->create(['attended' => false]);
 
         $this->actingAs($admin);
@@ -120,7 +120,7 @@ describe('confirming attendance', function () {
 
     it('confirming attendance sets attended to true', function () {
         $admin = User::factory()->admin()->create();
-        $training = Training::factory()->create();
+        $training = Training::factory()->past()->create();
         $attendance = TrainingAttendance::factory()->for($training)->create(['attended' => false]);
 
         $this->actingAs($admin);
@@ -135,7 +135,7 @@ describe('confirming attendance', function () {
 
     it('confirming attendance auto-associates the user live subscription', function () {
         $admin = User::factory()->admin()->create();
-        $training = Training::factory()->create();
+        $training = Training::factory()->past()->create();
         $user = User::factory()->create();
         $plan = Plan::factory()->create(['sessions' => 10]);
         $subscription = Subscription::factory()->for($plan)->for($user)->create();
@@ -156,7 +156,7 @@ describe('confirming attendance', function () {
 
     it('confirming attendance triggers subscription expiry check', function () {
         $admin = User::factory()->admin()->create();
-        $training = Training::factory()->create();
+        $training = Training::factory()->past()->create();
         $user = User::factory()->create();
         $plan = Plan::factory()->create(['sessions' => 1]);
         $subscription = Subscription::factory()->for($plan)->for($user)->create();
@@ -177,7 +177,7 @@ describe('confirming attendance', function () {
 
     it('confirming attendance when user has no subscription still sets attended', function () {
         $admin = User::factory()->admin()->create();
-        $training = Training::factory()->create();
+        $training = Training::factory()->past()->create();
         $user = User::factory()->create();
         $attendance = TrainingAttendance::factory()
             ->for($training)
@@ -198,7 +198,7 @@ describe('confirming attendance', function () {
 
     it('confirm button is hidden when already attended', function () {
         $admin = User::factory()->admin()->create();
-        $training = Training::factory()->create();
+        $training = Training::factory()->past()->create();
         $attendance = TrainingAttendance::factory()
             ->for($training)
             ->attended()
@@ -214,7 +214,7 @@ describe('confirming attendance', function () {
 
     it('regular user cannot see the confirm button', function () {
         $user = User::factory()->create();
-        $training = Training::factory()->create();
+        $training = Training::factory()->past()->create();
         $attendance = TrainingAttendance::factory()->for($training)->create(['attended' => false]);
 
         $this->actingAs($user);
@@ -342,7 +342,7 @@ describe('rejecting attendance', function () {
 describe('bulk attendance actions', function () {
     it('admin can bulk confirm attendance', function () {
         $admin = User::factory()->admin()->create();
-        $training = Training::factory()->create();
+        $training = Training::factory()->past()->create();
         $attendances = TrainingAttendance::factory()
             ->for($training)
             ->count(3)
@@ -383,7 +383,7 @@ describe('bulk attendance actions', function () {
 
     it('regular user cannot see bulk attendance actions', function () {
         $user = User::factory()->create();
-        $training = Training::factory()->create();
+        $training = Training::factory()->past()->create();
 
         $this->actingAs($user);
 
@@ -512,7 +512,7 @@ describe('bulk confirming a mix of confirmed and pending attendees', function ()
         $pendingUser = User::factory()->create();
         $confirmedSubscription = Subscription::factory()->for($plan)->for($confirmedUser)->create();
         $pendingSubscription = Subscription::factory()->for($plan)->for($pendingUser)->create();
-        $training = Training::factory()->create();
+        $training = Training::factory()->past()->create();
         $confirmed = TrainingAttendance::factory()->for($training)->for($confirmedUser)->create([
             'subscription_id' => $confirmedSubscription->id,
             'attended' => true,
@@ -570,5 +570,119 @@ describe('capacity when adding attendees', function () {
             'user_id' => $user->id,
             'extra' => false,
         ]);
+    });
+});
+
+describe('confirmation timing', function () {
+    it('hides the confirm actions before the training has started', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create(['start_at' => now()->addDay()]);
+        $attendance = TrainingAttendance::factory()->for($training)->create();
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])
+            ->assertTableActionHidden('confirm_attendance', $attendance)
+            ->assertTableBulkActionHidden('bulk_attendance_confirmation');
+    });
+
+    it('hides the confirm actions while the training is in progress', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create(['start_at' => now()->subMinutes(30), 'length' => 60]);
+        $attendance = TrainingAttendance::factory()->for($training)->create();
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])
+            ->assertTableActionHidden('confirm_attendance', $attendance)
+            ->assertTableBulkActionHidden('bulk_attendance_confirmation');
+    });
+
+    it('shows the confirm actions once the training has ended', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create(['start_at' => now()->subHours(2), 'length' => 60]);
+        $attendance = TrainingAttendance::factory()->for($training)->create();
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])
+            ->assertTableActionVisible('confirm_attendance', $attendance)
+            ->assertTableBulkActionVisible('bulk_attendance_confirmation');
+    });
+
+    it('keeps the reject action available for confirmed rows', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->past()->create();
+        $attendance = TrainingAttendance::factory()->for($training)->attended()->create();
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => ViewTraining::class,
+        ])->assertTableActionVisible('not_attended', $attendance);
+    });
+});
+
+describe('deleting confirmed attendees', function () {
+    it('hides the delete action for a confirmed attendance', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->past()->create();
+        $confirmed = TrainingAttendance::factory()->for($training)->attended()->create();
+        $pending = TrainingAttendance::factory()->for($training)->create();
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => EditTraining::class,
+        ])
+            ->assertTableActionHidden('delete', $confirmed)
+            ->assertTableActionVisible('delete', $pending);
+    });
+
+    it('refuses bulk delete when a confirmed attendance is selected', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->past()->create();
+        $confirmed = TrainingAttendance::factory()->for($training)->attended()->create();
+        $pending = TrainingAttendance::factory()->for($training)->create();
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => EditTraining::class,
+        ])
+            ->callTableBulkAction('delete', [$confirmed->getKey(), $pending->getKey()])
+            ->assertNotified('Megerősített részvétel nem törölhető');
+
+        $this->assertDatabaseHas('trainings_attendance', ['id' => $confirmed->id]);
+        $this->assertDatabaseHas('trainings_attendance', ['id' => $pending->id]);
+    });
+
+    it('bulk deletes pending attendances when none of them is confirmed', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->past()->create();
+        $first = TrainingAttendance::factory()->for($training)->create();
+        $second = TrainingAttendance::factory()->for($training)->create();
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => EditTraining::class,
+        ])->callTableBulkAction('delete', [$first->getKey(), $second->getKey()]);
+
+        $this->assertDatabaseMissing('trainings_attendance', ['id' => $first->id]);
+        $this->assertDatabaseMissing('trainings_attendance', ['id' => $second->id]);
     });
 });

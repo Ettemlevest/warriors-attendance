@@ -190,3 +190,13 @@ it('never flags a registration as extra on an unlimited training', function () {
         'extra' => false,
     ]);
 });
+
+it('user cannot withdraw from a confirmed attendance', function () {
+    $user = User::factory()->create();
+    $training = Training::factory()->create(['start_at' => now()->addDays(3)]);
+    TrainingAttendance::factory()->for($training)->for($user)->attended()->create();
+
+    $this->actingAs($user);
+
+    livewire(UpcomingTraining::class)->assertTableActionDisabled('withdraw', $training);
+});

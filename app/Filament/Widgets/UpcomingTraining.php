@@ -73,7 +73,7 @@ class UpcomingTraining extends BaseWidget
                     ->icon('heroicon-o-minus-circle')
                     ->color('warning')
                     ->visible(fn (Training $training) => $training->hasAttendee(auth()->user()))
-                    ->disabled(fn (Training $training) => ! $training->isOpenForRegistration())
+                    ->disabled(fn (Training $training) => ! $training->isOpenForRegistration() || $training->attendanceOf(auth()->user())?->attended)
                     ->action(fn (Training $training) => $training->attendees()->where('user_id', '=', auth()->id())->delete()),
             ]);
     }

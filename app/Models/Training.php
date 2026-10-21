@@ -68,6 +68,16 @@ final class Training extends Model
         return $this->attendees->doesntContain('user_id', $attendee->id);
     }
 
+    public function attendanceOf(User $user): ?TrainingAttendance
+    {
+        return $this->attendees->firstWhere('user_id', $user->id);
+    }
+
+    public function hasEnded(): bool
+    {
+        return $this->start_at->copy()->addMinutes($this->length)->isPast();
+    }
+
     public function isOpenForRegistration(): bool
     {
         return $this->start_at->isAfter(now()->subHour());
