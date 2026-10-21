@@ -87,6 +87,14 @@ final class Training extends Model
         return $this->registeredAttendeesCount() >= $this->max_attendees;
     }
 
+    public function registerAttendee(User $user): TrainingAttendance
+    {
+        return $this->attendees()->create([
+            'user_id' => $user->id,
+            'extra' => $this->isFull(),
+        ]);
+    }
+
     public function canAcceptRegistration(): bool
     {
         if (! $this->isFull()) {

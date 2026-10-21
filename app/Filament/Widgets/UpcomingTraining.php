@@ -68,7 +68,7 @@ class UpcomingTraining extends BaseWidget
                     ->color('success')
                     ->visible(fn (Training $training) => ! $training->hasAttendee(auth()->user()))
                     ->disabled(fn (Training $training) => $training->start_at->isBefore(Carbon::now()->subHour()) || ! $training->canAcceptRegistration())
-                    ->action(fn (Training $training) => auth()->user()->trainingAttendances()->create(['training_id' => $training->id])),
+                    ->action(fn (Training $training) => $training->registerAttendee(auth()->user())),
 
                 Action::make('withdraw')
                     ->label('Lemondom')

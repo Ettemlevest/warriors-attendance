@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\TrainingResource\RelationManagers;
 
+use App\Models\Training;
 use App\Models\TrainingAttendance;
+use App\Models\User;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -111,7 +113,13 @@ class AttendeesRelationManager extends RelationManager
                     ),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()
+                    ->using(function (array $data): TrainingAttendance {
+                        /** @var Training $training */
+                        $training = $this->getOwnerRecord();
+
+                        return $training->registerAttendee(User::findOrFail($data['user_id']));
+                    }),
             ])
             ->actions([
                 Tables\Actions\Action::make('confirm_attendance')

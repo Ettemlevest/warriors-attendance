@@ -532,3 +532,43 @@ describe('bulk confirming a mix of confirmed and pending attendees', function ()
             ->and($pending->fresh()->subscription_id)->toBe($pendingSubscription->id);
     });
 });
+
+describe('capacity when adding attendees', function () {
+    it('admin added attendee is flagged extra when the training is at capacity', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->full()->create(['can_attend_more' => true]);
+        $user = User::factory()->create();
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => EditTraining::class,
+        ])->callTableAction('create', data: ['user_id' => $user->id]);
+
+        $this->assertDatabaseHas('trainings_attendance', [
+            'training_id' => $training->id,
+            'user_id' => $user->id,
+            'extra' => true,
+        ]);
+    });
+
+    it('admin added attendee is not flagged extra below capacity', function () {
+        $admin = User::factory()->admin()->create();
+        $training = Training::factory()->create(['max_attendees' => 5]);
+        $user = User::factory()->create();
+
+        $this->actingAs($admin);
+
+        livewire(AttendeesRelationManager::class, [
+            'ownerRecord' => $training,
+            'pageClass' => EditTraining::class,
+        ])->callTableAction('create', data: ['user_id' => $user->id]);
+
+        $this->assertDatabaseHas('trainings_attendance', [
+            'training_id' => $training->id,
+            'user_id' => $user->id,
+            'extra' => false,
+        ]);
+    });
+});

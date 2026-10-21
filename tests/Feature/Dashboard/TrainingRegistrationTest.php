@@ -141,3 +141,52 @@ it('user can register for an unlimited training even when overflow is disabled',
         'user_id' => $user->id,
     ]);
 });
+
+it('flags a registration as extra when the training is already at capacity', function () {
+    $user = User::factory()->create();
+    $training = Training::factory()->full()->create([
+        'start_at' => now()->addDays(3),
+        'can_attend_more' => true,
+    ]);
+
+    $this->actingAs($user);
+
+    livewire(UpcomingTraining::class)->callTableAction('attend', $training);
+
+    $this->assertDatabaseHas('trainings_attendance', [
+        'training_id' => $training->id,
+        'user_id' => $user->id,
+        'extra' => true,
+    ]);
+});
+
+it('does not flag a registration as extra below capacity', function () {
+    $user = User::factory()->create();
+    $training = Training::factory()->create(['start_at' => now()->addDays(3), 'max_attendees' => 5]);
+
+    $this->actingAs($user);
+
+    livewire(UpcomingTraining::class)->callTableAction('attend', $training);
+
+    $this->assertDatabaseHas('trainings_attendance', [
+        'training_id' => $training->id,
+        'user_id' => $user->id,
+        'extra' => false,
+    ]);
+});
+
+it('never flags a registration as extra on an unlimited training', function () {
+    $user = User::factory()->create();
+    $training = Training::factory()->unlimited()->create(['start_at' => now()->addDays(3)]);
+    TrainingAttendance::factory()->for($training)->count(2)->create();
+
+    $this->actingAs($user);
+
+    livewire(UpcomingTraining::class)->callTableAction('attend', $training);
+
+    $this->assertDatabaseHas('trainings_attendance', [
+        'training_id' => $training->id,
+        'user_id' => $user->id,
+        'extra' => false,
+    ]);
+});
