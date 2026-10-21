@@ -215,9 +215,12 @@ class SubscriptionResource extends Resource
                         ->visible(fn () => $isAdmin)
                         ->disabled(fn () => ! $isAdmin)
                         ->deselectRecordsAfterCompletion()
-                        ->action(fn (Collection $subscriptions) => $subscriptions
-                            ->reject(fn (Subscription $subscription) => $subscription->usedUp())
-                            ->each(fn (Subscription $subscription) => $subscription->update(['expired_at' => null]))),
+                        ->action(function (Collection $subscriptions): void {
+                            /** @var Collection<int, Subscription> $subscriptions */
+                            $subscriptions
+                                ->reject(fn (Subscription $subscription) => $subscription->usedUp())
+                                ->each(fn (Subscription $subscription) => $subscription->update(['expired_at' => null]));
+                        }),
 
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
