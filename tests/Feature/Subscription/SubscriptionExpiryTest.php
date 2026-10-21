@@ -167,3 +167,17 @@ it('confirming an already confirmed attendance is idempotent', function () {
         ->and($subscription->fresh()->usages_count)->toBe(1)
         ->and($subscription->fresh()->expired_at)->toBeNull();
 });
+
+it('keeps confirming attendance and expiring when the plan was soft-deleted', function () {
+    $plan = Plan::factory()->create(['sessions' => 1]);
+    $user = User::factory()->create();
+    $subscription = Subscription::factory()->for($plan)->for($user)->create();
+    $attendance = TrainingAttendance::factory()->for($user)->create();
+    $plan->delete();
+
+    $attendance->confirmAttendance();
+
+    expect($attendance->fresh()->subscription_id)->toBe($subscription->id)
+        ->and($subscription->fresh()->plan->name)->toBe($plan->name)
+        ->and($subscription->fresh()->expired_at)->not->toBeNull();
+});

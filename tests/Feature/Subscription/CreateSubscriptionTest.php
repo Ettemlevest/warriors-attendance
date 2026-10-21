@@ -4,6 +4,7 @@ use App\Filament\Resources\SubscriptionResource;
 use App\Filament\Resources\SubscriptionResource\Pages\CreateSubscription;
 use App\Models\Plan;
 use App\Models\User;
+use Filament\Forms\Components\Select;
 
 use function Pest\Livewire\livewire;
 
@@ -112,4 +113,17 @@ it('admin can search for users when creating', function () {
 
     livewire(CreateSubscription::class)
         ->assertFormFieldExists('user_id');
+});
+
+it('does not offer soft-deleted plans', function () {
+    $admin = User::factory()->admin()->create();
+    $active = Plan::factory()->create(['name' => 'Aktív terv']);
+    $deleted = Plan::factory()->create(['name' => 'Törölt terv']);
+    $deleted->delete();
+
+    $this->actingAs($admin);
+
+    livewire(CreateSubscription::class)
+        ->assertFormFieldExists('plan_id', fn (Select $field): bool => array_key_exists($active->id, $field->getOptions())
+            && ! array_key_exists($deleted->id, $field->getOptions()));
 });

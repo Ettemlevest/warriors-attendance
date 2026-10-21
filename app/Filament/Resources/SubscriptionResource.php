@@ -24,6 +24,7 @@ use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 
@@ -73,7 +74,11 @@ class SubscriptionResource extends Resource
                     ->schema([
                         Select::make('plan_id')
                             ->label('Bérlet típus')
-                            ->relationship(name: 'plan', titleAttribute: 'name')
+                            ->relationship(
+                                name: 'plan',
+                                titleAttribute: 'name',
+                                modifyQueryUsing: fn (EloquentBuilder $query) => $query->withoutTrashed(),
+                            )
                             ->required()
                             ->searchable()
                             ->disabled(fn (Subscription $subscription) => $subscription->usages_count)

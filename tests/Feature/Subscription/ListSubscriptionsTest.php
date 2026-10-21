@@ -159,3 +159,16 @@ it('defaults to sorting by purchase date descending', function () {
     livewire(ListSubscriptions::class)
         ->assertCanSeeTableRecords([$newer, $older], inOrder: true);
 });
+
+it('shows the plan name of a soft-deleted plan', function () {
+    $admin = User::factory()->admin()->create();
+    $plan = Plan::factory()->create(['name' => 'Törölt terv']);
+    $subscription = Subscription::factory()->for($plan)->create();
+    $plan->delete();
+
+    $this->actingAs($admin);
+
+    livewire(ListSubscriptions::class)
+        ->assertCanSeeTableRecords([$subscription])
+        ->assertSee('Törölt terv');
+});
