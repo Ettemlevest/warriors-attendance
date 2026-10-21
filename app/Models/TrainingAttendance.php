@@ -50,6 +50,10 @@ class TrainingAttendance extends Model
 
     public function confirmAttendance(): void
     {
+        if ($this->attended && $this->subscription !== null) {
+            return;
+        }
+
         if ($this->subscription === null) {
             $this->subscription()->associate(Subscription::findLiveSubscriptionForUser($this->user_id));
         }
@@ -64,6 +68,7 @@ class TrainingAttendance extends Model
     public function rejectAttendance(): void
     {
         $subscription = $this->subscription;
+        $wasUsedUp = $subscription?->refresh()->usedUp() ?? false;
 
         $this->subscription()->dissociate();
 
@@ -71,7 +76,9 @@ class TrainingAttendance extends Model
             'attended' => false,
         ]);
 
-        $subscription?->refreshExpiry();
+        if ($wasUsedUp) {
+            $subscription->refreshExpiry();
+        }
     }
 
     /**

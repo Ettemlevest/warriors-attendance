@@ -686,3 +686,26 @@ describe('deleting confirmed attendees', function () {
         $this->assertDatabaseMissing('trainings_attendance', ['id' => $second->id]);
     });
 });
+
+it('bulk confirming a selection with an already confirmed row keeps a manually expired subscription expired', function () {
+    $admin = User::factory()->admin()->create();
+    $training = Training::factory()->past()->create();
+    $plan = Plan::factory()->create(['sessions' => 10]);
+    $member = User::factory()->create();
+    $subscription = Subscription::factory()->for($plan)->for($member)->create();
+    $confirmed = TrainingAttendance::factory()->for($training)->for($member)->create();
+    $confirmed->confirmAttendance();
+    $subscription->update(['expired_at' => now()->subDay()]);
+    $pending = TrainingAttendance::factory()->for($training)->create();
+
+    $this->actingAs($admin);
+
+    livewire(AttendeesRelationManager::class, [
+        'ownerRecord' => $training,
+        'pageClass' => ViewTraining::class,
+    ])->callTableBulkAction('bulk_attendance_confirmation', [$confirmed, $pending]);
+
+    expect($pending->fresh()->attended)->toBeTrue()
+        ->and($confirmed->fresh()->subscription_id)->toBe($subscription->id)
+        ->and($subscription->fresh()->expired_at)->not->toBeNull();
+});

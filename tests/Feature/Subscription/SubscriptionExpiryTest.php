@@ -181,3 +181,34 @@ it('keeps confirming attendance and expiring when the plan was soft-deleted', fu
         ->and($subscription->fresh()->plan->name)->toBe($plan->name)
         ->and($subscription->fresh()->expired_at)->not->toBeNull();
 });
+
+it('re-confirming an attendance does not reactivate a manually expired subscription', function () {
+    $plan = Plan::factory()->create(['sessions' => 10]);
+    $user = User::factory()->create();
+    $subscription = Subscription::factory()->for($plan)->for($user)->create();
+    $attendance = TrainingAttendance::factory()->for($user)->create();
+    $attendance->confirmAttendance();
+    $subscription->update(['expired_at' => now()->subDay()]);
+
+    $attendance->fresh()->confirmAttendance();
+
+    expect($attendance->fresh()->subscription_id)->toBe($subscription->id)
+        ->and($subscription->fresh()->expired_at)->not->toBeNull()
+        ->and($subscription->fresh()->usages_count)->toBe(1);
+});
+
+it('rejecting an attendance keeps a manually expired subscription expired', function () {
+    $plan = Plan::factory()->create(['sessions' => 10]);
+    $user = User::factory()->create();
+    $subscription = Subscription::factory()->for($plan)->for($user)->create();
+    $attendance = TrainingAttendance::factory()->for($user)->create();
+    $attendance->confirmAttendance();
+    $subscription->update(['expired_at' => now()->subDay()]);
+
+    $attendance->fresh()->rejectAttendance();
+
+    expect($attendance->fresh()->attended)->toBeFalse()
+        ->and($attendance->fresh()->subscription_id)->toBeNull()
+        ->and($subscription->fresh()->expired_at)->not->toBeNull()
+        ->and($subscription->fresh()->usages_count)->toBe(0);
+});
