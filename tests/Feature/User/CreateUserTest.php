@@ -3,8 +3,10 @@
 use App\Filament\Resources\UserResource;
 use App\Filament\Resources\UserResource\Pages\CreateUser;
 use App\Models\User;
+use Filament\Notifications\Auth\VerifyEmail;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 
 use function Pest\Livewire\livewire;
 
@@ -193,4 +195,21 @@ it('fills in a generated password that passes validation', function () {
 
 it('database refuses a user without a password', function () {
     expect(fn () => User::factory()->create(['password' => null]))->toThrow(QueryException::class);
+});
+
+it('creates the user unverified and sends the verification mail', function () {
+    Notification::fake();
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin);
+
+    livewire(CreateUser::class)
+        ->fillForm(['name' => 'Új Warrior', 'email' => 'uj@example.com', 'password' => 'secret123'])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $user = User::query()->where('email', 'uj@example.com')->firstOrFail();
+
+    expect($user->hasVerifiedEmail())->toBeFalse();
+    Notification::assertSentTo($user, VerifyEmail::class);
 });

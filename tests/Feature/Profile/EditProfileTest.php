@@ -2,7 +2,9 @@
 
 use App\Filament\Pages\EditProfile;
 use App\Models\User;
+use Filament\Notifications\Auth\VerifyEmail;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 
 use function Pest\Livewire\livewire;
 
@@ -133,4 +135,34 @@ it('user can set their address', function () {
         ->assertHasNoFormErrors();
 
     expect($user->fresh()->address)->toBe('Budapest, Fő utca 1.');
+});
+
+it('resets verification and sends a new mail when the user changes their email', function () {
+    Notification::fake();
+    $user = User::factory()->create();
+
+    $this->actingAs($user);
+
+    livewire(EditProfile::class)
+        ->fillForm(['email' => 'uj@example.com'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($user->fresh()->hasVerifiedEmail())->toBeFalse();
+    Notification::assertSentTo($user, VerifyEmail::class);
+});
+
+it('keeps verification when the profile is saved with the same email', function () {
+    Notification::fake();
+    $user = User::factory()->create();
+
+    $this->actingAs($user);
+
+    livewire(EditProfile::class)
+        ->fillForm(['name' => 'Más Név'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($user->fresh()->hasVerifiedEmail())->toBeTrue();
+    Notification::assertNothingSent();
 });

@@ -2,10 +2,15 @@
 
 namespace App\Models;
 
+use App\Observers\UserObserver;
+use Filament\Facades\Filament;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Models\Contracts\HasName;
+use Filament\Notifications\Auth\VerifyEmail;
 use Filament\Panel;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -28,6 +33,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $birth_date
  * @property string|null $address
  * @property string|null $phone
+ * @property Carbon|null $email_verified_at
  * @property string|null $remember_token
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -39,7 +45,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $trainingAttendances
  * @property-read int|null $training_attendances_count
  */
-class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
+#[ObservedBy(UserObserver::class)]
+class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
@@ -97,6 +104,14 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
         return Attribute::make(
             get: fn (mixed $value, array $attributes) => $this->getAttributeValue('birth_date')?->age,
         );
+    }
+
+    public function sendEmailVerificationNotification(): void
+    {
+        $notification = app(VerifyEmail::class);
+        $notification->url = Filament::getDefaultPanel()->getVerifyEmailUrl($this);
+
+        $this->notify($notification);
     }
 
     public function canAccessPanel(Panel $panel): bool
