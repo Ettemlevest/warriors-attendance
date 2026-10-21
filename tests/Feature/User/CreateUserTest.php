@@ -3,6 +3,7 @@
 use App\Filament\Resources\UserResource;
 use App\Filament\Resources\UserResource\Pages\CreateUser;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Hash;
 
 use function Pest\Livewire\livewire;
@@ -80,6 +81,7 @@ it('admin can set user profile fields: avatar, size, birth date, phone, address'
         ->fillForm([
             'name' => 'Kiss Péter',
             'email' => 'peter@example.com',
+            'password' => 'secret123',
             'size' => 'L',
             'birth_date' => '1990-05-15',
             'phone' => '+36301234567',
@@ -105,6 +107,7 @@ it('admin can set safety contact fields', function () {
         ->fillForm([
             'name' => 'Kiss Péter',
             'email' => 'peter@example.com',
+            'password' => 'secret123',
             'safety_person' => 'Kiss Éva',
             'safety_phone' => '+36309876543',
         ])
@@ -146,4 +149,48 @@ it('rejects an email that another user already uses', function () {
         ->fillForm(['name' => 'Új Warrior', 'email' => $existing->email, 'password' => 'secret123'])
         ->call('create')
         ->assertHasFormErrors(['email' => 'unique']);
+});
+
+it('requires a password when creating a user', function () {
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin);
+
+    livewire(CreateUser::class)
+        ->fillForm(['name' => 'Új Warrior', 'email' => 'uj@example.com', 'password' => null])
+        ->call('create')
+        ->assertHasFormErrors(['password' => 'required']);
+});
+
+it('rejects a weak password when creating a user', function () {
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin);
+
+    livewire(CreateUser::class)
+        ->fillForm(['name' => 'Új Warrior', 'email' => 'uj@example.com', 'password' => 'rövid'])
+        ->call('create')
+        ->assertHasFormErrors(['password']);
+});
+
+it('fills in a generated password that passes validation', function () {
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin);
+
+    $component = livewire(CreateUser::class)
+        ->fillForm(['name' => 'Új Warrior', 'email' => 'uj@example.com'])
+        ->callFormComponentAction('password', 'generatePassword');
+
+    $generated = $component->get('data.password');
+
+    expect($generated)->toBeString()->toHaveLength(16);
+
+    $component->call('create')->assertHasNoFormErrors();
+
+    expect(Hash::check($generated, User::query()->where('email', 'uj@example.com')->firstOrFail()->password))->toBeTrue();
+});
+
+it('database refuses a user without a password', function () {
+    expect(fn () => User::factory()->create(['password' => null]))->toThrow(QueryException::class);
 });

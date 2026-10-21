@@ -150,3 +150,27 @@ it('accepts saving a user with their own unchanged email', function () {
 
     expect($user->fresh()->name)->toBe('Más Név');
 });
+
+it('rejects a weak password when editing a user', function () {
+    $admin = User::factory()->admin()->create();
+    $user = User::factory()->create();
+
+    $this->actingAs($admin);
+
+    livewire(EditUser::class, ['record' => $user->getRouteKey()])
+        ->fillForm(['password' => 'rövid'])
+        ->call('save')
+        ->assertHasFormErrors(['password']);
+});
+
+it('offers the password generator when editing a user', function () {
+    $admin = User::factory()->admin()->create();
+    $user = User::factory()->create();
+
+    $this->actingAs($admin);
+
+    $component = livewire(EditUser::class, ['record' => $user->getRouteKey()])
+        ->callFormComponentAction('password', 'generatePassword');
+
+    expect($component->get('data.password'))->toBeString()->toHaveLength(16);
+});

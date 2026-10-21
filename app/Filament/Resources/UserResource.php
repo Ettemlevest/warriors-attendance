@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
@@ -11,6 +12,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
@@ -20,6 +22,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password;
 
 class UserResource extends Resource
 {
@@ -58,8 +62,17 @@ class UserResource extends Resource
                         TextInput::make('password')
                             ->label('Jelszó')
                             ->password()
+                            ->revealable()
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->rule(Password::default(), fn (?string $state): bool => filled($state))
                             ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
-                            ->dehydrated(fn (?string $state): bool => filled($state)),
+                            ->dehydrated(fn (?string $state): bool => filled($state))
+                            ->suffixAction(
+                                Action::make('generatePassword')
+                                    ->label('Jelszó generálása')
+                                    ->icon('heroicon-o-key')
+                                    ->action(fn (Set $set) => $set('password', Str::password(16))),
+                            ),
                     ]),
 
                 Section::make('Információk versenyre jelentkezéshez')
