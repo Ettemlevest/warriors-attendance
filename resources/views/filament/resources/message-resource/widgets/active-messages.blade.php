@@ -6,7 +6,7 @@
 
                 @if($message->body)
                     <div style="padding: 0.75rem 0;">
-                        {!! $message->body !!}
+                        {!! str($message->body)->sanitizeHtml() !!}
                     </div>
                 @endif
 

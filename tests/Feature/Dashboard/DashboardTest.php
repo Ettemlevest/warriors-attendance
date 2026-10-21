@@ -218,3 +218,21 @@ it('ignores expired subscriptions in the overview', function () {
         ->assertSee('Nincs aktív bérlet')
         ->assertDontSee('Lejárt bérlet');
 });
+
+it('strips scripts and event handlers from message bodies before rendering', function () {
+    $user = User::factory()->create();
+    Message::factory()->create([
+        'title' => 'Formázott közlemény',
+        'body' => '<p>Fontos <strong>infó</strong></p><script>alert(1)</script><img src="x" onerror="alert(1)">',
+        'showed_from' => now()->subDay(),
+        'showed_to' => now()->addDay(),
+    ]);
+
+    $this->actingAs($user);
+
+    livewire(ActiveMessages::class)
+        ->assertSee('Formázott közlemény')
+        ->assertSee('<p>Fontos <strong>infó</strong></p>', false)
+        ->assertDontSee('<script>', false)
+        ->assertDontSee('onerror', false);
+});
