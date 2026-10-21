@@ -266,3 +266,37 @@ it('offers the four training types with their labels', function () {
             'other' => 'Egyéb',
         ]);
 });
+
+it('requires max attendees', function () {
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin);
+
+    livewire(CreateTraining::class)
+        ->fillForm([
+            'name' => 'Edzés',
+            'place' => 'Pálya',
+            'start_at' => now()->addDay(),
+            'length' => 60,
+            'max_attendees' => null,
+        ])
+        ->call('create')
+        ->assertHasFormErrors(['max_attendees' => 'required']);
+});
+
+it('rejects a negative max attendees', function () {
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin);
+
+    livewire(CreateTraining::class)
+        ->fillForm([
+            'name' => 'Edzés',
+            'place' => 'Pálya',
+            'start_at' => now()->addDay(),
+            'length' => 60,
+            'max_attendees' => -1,
+        ])
+        ->call('create')
+        ->assertHasFormErrors(['max_attendees' => 'min']);
+});

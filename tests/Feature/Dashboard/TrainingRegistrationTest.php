@@ -121,3 +121,23 @@ it('dashboard training links to the training view page', function () {
     livewire(UpcomingTraining::class)
         ->assertTableActionExists('attend');
 });
+
+it('user can register for an unlimited training even when overflow is disabled', function () {
+    $user = User::factory()->create();
+    $training = Training::factory()->unlimited()->create([
+        'start_at' => now()->addDays(3),
+        'can_attend_more' => false,
+    ]);
+    TrainingAttendance::factory()->for($training)->create();
+
+    $this->actingAs($user);
+
+    livewire(UpcomingTraining::class)
+        ->assertTableActionEnabled('attend', $training->getKey())
+        ->callTableAction('attend', $training);
+
+    $this->assertDatabaseHas('trainings_attendance', [
+        'training_id' => $training->id,
+        'user_id' => $user->id,
+    ]);
+});

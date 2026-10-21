@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Training;
+use App\Models\TrainingAttendance;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -29,12 +31,21 @@ class TrainingFactory extends Factory
         ]);
     }
 
-    public function full(): static
+    public function unlimited(): static
     {
         return $this->state(fn () => [
             'max_attendees' => 0,
-            'can_attend_more' => false,
         ]);
+    }
+
+    public function full(): static
+    {
+        return $this
+            ->state(fn () => [
+                'max_attendees' => 1,
+                'can_attend_more' => false,
+            ])
+            ->afterCreating(fn (Training $training) => TrainingAttendance::factory()->for($training)->create());
     }
 
     public function withOverflow(): static

@@ -54,7 +54,7 @@ class UpcomingTraining extends BaseWidget
 
                 TextColumn::make('attendees_count')
                     ->label('Létszám')
-                    ->formatStateUsing(fn (string $state, Training $training): string => $state.' / '.($training->max_attendees !== 0 ? $training->max_attendees : '&infin;'))
+                    ->formatStateUsing(fn (string $state, Training $training): string => $state.' / '.($training->hasUnlimitedCapacity() ? '&infin;' : $training->max_attendees))
                     ->html()
                     ->alignRight()
                     ->sortable(),
@@ -67,7 +67,7 @@ class UpcomingTraining extends BaseWidget
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->visible(fn (Training $training) => ! $training->hasAttendee(auth()->user()))
-                    ->disabled(fn (Training $training) => $training->start_at->isBefore(Carbon::now()->subHour()) || $training->attendees_count >= $training->max_attendees && ! $training->can_attend_more)
+                    ->disabled(fn (Training $training) => $training->start_at->isBefore(Carbon::now()->subHour()) || ! $training->canAcceptRegistration())
                     ->action(fn (Training $training) => auth()->user()->trainingAttendances()->create(['training_id' => $training->id])),
 
                 Action::make('withdraw')

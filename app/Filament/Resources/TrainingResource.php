@@ -90,8 +90,11 @@ class TrainingResource extends Resource
 
                         TextInput::make('max_attendees')
                             ->label('Max. létszám')
+                            ->helperText('0 esetén nincs létszámkorlát')
                             ->default(32)
+                            ->required()
                             ->numeric()
+                            ->minValue(0)
                             ->suffix('fő')
                             ->suffixIcon('heroicon-o-users'),
 
@@ -147,7 +150,7 @@ class TrainingResource extends Resource
 
                 TextColumn::make('attendees_count')
                     ->label('Létszám')
-                    ->formatStateUsing(fn (string $state, Training $training): string => $state.' / '.($training->max_attendees !== 0 ? $training->max_attendees : '&infin;'))
+                    ->formatStateUsing(fn (string $state, Training $training): string => $state.' / '.($training->hasUnlimitedCapacity() ? '&infin;' : $training->max_attendees))
                     ->html()
                     ->alignRight()
                     ->sortable(),

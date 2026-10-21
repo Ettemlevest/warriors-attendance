@@ -67,4 +67,32 @@ final class Training extends Model
     {
         return $this->attendees->doesntContain('user_id', $attendee->id);
     }
+
+    public function hasUnlimitedCapacity(): bool
+    {
+        return $this->max_attendees === 0;
+    }
+
+    public function registeredAttendeesCount(): int
+    {
+        return $this->attendees_count ?? $this->attendees()->count();
+    }
+
+    public function isFull(): bool
+    {
+        if ($this->hasUnlimitedCapacity()) {
+            return false;
+        }
+
+        return $this->registeredAttendeesCount() >= $this->max_attendees;
+    }
+
+    public function canAcceptRegistration(): bool
+    {
+        if (! $this->isFull()) {
+            return true;
+        }
+
+        return $this->can_attend_more;
+    }
 }
