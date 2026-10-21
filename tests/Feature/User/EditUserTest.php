@@ -3,7 +3,6 @@
 use App\Filament\Resources\UserResource;
 use App\Filament\Resources\UserResource\Pages\EditUser;
 use App\Models\User;
-use Filament\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 
@@ -177,7 +176,7 @@ it('offers the password generator when editing a user', function () {
     expect($component->get('data.password'))->toBeString()->toHaveLength(16);
 });
 
-it('resets verification and sends a new mail when an admin changes the email', function () {
+it('sends no mail when an admin changes a user email', function () {
     Notification::fake();
     $admin = User::factory()->admin()->create();
     $user = User::factory()->create();
@@ -189,22 +188,6 @@ it('resets verification and sends a new mail when an admin changes the email', f
         ->call('save')
         ->assertHasNoFormErrors();
 
-    expect($user->fresh()->hasVerifiedEmail())->toBeFalse();
-    Notification::assertSentTo($user, VerifyEmail::class);
-});
-
-it('keeps verification when an admin saves a user with the same email', function () {
-    Notification::fake();
-    $admin = User::factory()->admin()->create();
-    $user = User::factory()->create();
-
-    $this->actingAs($admin);
-
-    livewire(EditUser::class, ['record' => $user->getRouteKey()])
-        ->fillForm(['name' => 'Más Név'])
-        ->call('save')
-        ->assertHasNoFormErrors();
-
-    expect($user->fresh()->hasVerifiedEmail())->toBeTrue();
+    expect($user->fresh()->email)->toBe('uj@example.com');
     Notification::assertNothingSent();
 });

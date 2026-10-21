@@ -32,7 +32,6 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->registration()
             ->passwordReset()
-            ->emailVerification()
             ->profile(EditProfile::class)
 
             ->sidebarCollapsibleOnDesktop()

@@ -28,6 +28,23 @@ it('can register a new user', function () {
     ]);
 });
 
+it('lets a freshly registered user use the application right away', function () {
+    livewire(Register::class)
+        ->fillForm([
+            'name' => 'Új Warrior',
+            'email' => 'uj@example.com',
+            'password' => 'password123',
+            'passwordConfirmation' => 'password123',
+        ])
+        ->call('register')
+        ->assertHasNoFormErrors()
+        ->assertRedirect('/');
+
+    $this->assertAuthenticated();
+    $this->get('/')->assertSuccessful();
+    $this->get('/trainings')->assertSuccessful();
+});
+
 it('cannot register with an existing email', function () {
     $user = User::factory()->create();
 

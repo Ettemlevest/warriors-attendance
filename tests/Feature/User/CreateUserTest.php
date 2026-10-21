@@ -3,7 +3,6 @@
 use App\Filament\Resources\UserResource;
 use App\Filament\Resources\UserResource\Pages\CreateUser;
 use App\Models\User;
-use Filament\Auth\Notifications\VerifyEmail;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
@@ -197,7 +196,7 @@ it('database refuses a user without a password', function () {
     expect(fn () => User::factory()->create(['password' => null]))->toThrow(QueryException::class);
 });
 
-it('creates the user unverified and sends the verification mail', function () {
+it('sends no mail when an admin creates a user', function () {
     Notification::fake();
     $admin = User::factory()->admin()->create();
 
@@ -208,8 +207,6 @@ it('creates the user unverified and sends the verification mail', function () {
         ->call('create')
         ->assertHasNoFormErrors();
 
-    $user = User::query()->where('email', 'uj@example.com')->firstOrFail();
-
-    expect($user->hasVerifiedEmail())->toBeFalse();
-    Notification::assertSentTo($user, VerifyEmail::class);
+    $this->assertDatabaseHas(User::class, ['email' => 'uj@example.com']);
+    Notification::assertNothingSent();
 });
