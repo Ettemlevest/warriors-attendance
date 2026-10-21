@@ -115,10 +115,10 @@ final class Training extends Model
 
     public function registerAttendee(User $user): TrainingAttendance
     {
-        return $this->attendees()->create([
-            'user_id' => $user->id,
-            'extra' => $this->isFull(),
-        ]);
+        return $this->attendees()->firstOrCreate(
+            ['user_id' => $user->id],
+            ['extra' => $this->isFull()],
+        );
     }
 
     public function canAcceptRegistration(): bool

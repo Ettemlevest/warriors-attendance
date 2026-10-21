@@ -2,6 +2,7 @@
 
 use App\Models\Training;
 use App\Models\TrainingAttendance;
+use App\Models\User;
 
 it('treats zero max attendees as unlimited capacity', function () {
     $training = Training::factory()->unlimited()->create(['can_attend_more' => false]);
@@ -42,4 +43,16 @@ it('uses the eager loaded attendees count when present', function () {
 
     expect($loaded->registeredAttendeesCount())->toBe(1)
         ->and($loaded->isFull())->toBeTrue();
+});
+
+it('returns the existing registration instead of creating a duplicate', function () {
+    $training = Training::factory()->create(['max_attendees' => 1]);
+    $user = User::factory()->create();
+
+    $first = $training->registerAttendee($user);
+    $second = $training->registerAttendee($user);
+
+    expect($second->id)->toBe($first->id)
+        ->and($second->extra)->toBeFalse()
+        ->and(TrainingAttendance::query()->where('training_id', $training->id)->count())->toBe(1);
 });

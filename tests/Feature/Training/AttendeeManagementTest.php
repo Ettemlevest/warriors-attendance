@@ -709,3 +709,20 @@ it('bulk confirming a selection with an already confirmed row keeps a manually e
         ->and($confirmed->fresh()->subscription_id)->toBe($subscription->id)
         ->and($subscription->fresh()->expired_at)->not->toBeNull();
 });
+
+it('refuses to add a user who is already registered for the training', function () {
+    $admin = User::factory()->admin()->create();
+    $training = Training::factory()->create();
+    $attendance = TrainingAttendance::factory()->for($training)->create();
+
+    $this->actingAs($admin);
+
+    livewire(AttendeesRelationManager::class, [
+        'ownerRecord' => $training,
+        'pageClass' => EditTraining::class,
+    ])
+        ->callTableAction('create', data: ['user_id' => $attendance->user_id])
+        ->assertHasTableActionErrors(['user_id']);
+
+    expect(TrainingAttendance::query()->where('training_id', $training->id)->count())->toBe(1);
+});

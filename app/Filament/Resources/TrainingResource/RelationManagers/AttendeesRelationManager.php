@@ -48,7 +48,11 @@ class AttendeesRelationManager extends RelationManager
             ->components([
                 Select::make('user_id')
                     ->label('Név')
-                    ->relationship('user', 'name')
+                    ->relationship(
+                        name: 'user',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn (Builder $query) => $query->whereNotIn('id', $this->training()->attendees()->select('user_id')),
+                    )
                     ->searchable()
                     ->preload()
                     ->autofocus()
