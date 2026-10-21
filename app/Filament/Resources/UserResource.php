@@ -106,7 +106,9 @@ class UserResource extends Resource
                         FileUpload::make('avatar_url')
                             ->label('Fénykép')
                             ->disk('public')
-                            ->directory('users'),
+                            ->directory('users')
+                            ->image()
+                            ->maxSize(2048),
 
                         Select::make('size')
                             ->label('Póló méret')

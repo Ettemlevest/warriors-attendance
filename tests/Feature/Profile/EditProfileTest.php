@@ -2,8 +2,10 @@
 
 use App\Filament\Pages\EditProfile;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 
 use function Pest\Livewire\livewire;
 
@@ -76,12 +78,35 @@ it('user can set safety contact person and phone', function () {
 });
 
 it('user can upload an avatar photo', function () {
+    Storage::fake('public');
     $user = User::factory()->create();
 
     $this->actingAs($user);
 
     livewire(EditProfile::class)
-        ->assertFormFieldExists('avatar_url');
+        ->fillForm(['avatar_url' => UploadedFile::fake()->image('avatar.jpg')])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    $avatar = $user->fresh()->avatar_url;
+
+    expect($avatar)->toStartWith('users/');
+    Storage::disk('public')->assertExists($avatar);
+});
+
+it('user cannot upload a non-image file as avatar', function () {
+    Storage::fake('public');
+    $user = User::factory()->create(['avatar_url' => null]);
+
+    $this->actingAs($user);
+
+    livewire(EditProfile::class)
+        ->fillForm(['avatar_url' => UploadedFile::fake()->create('shell.php', 10, 'application/x-php')])
+        ->call('save')
+        ->assertHasFormErrors(['avatar_url']);
+
+    expect($user->fresh()->avatar_url)->toBeNull();
+    Storage::disk('public')->assertDirectoryEmpty('users');
 });
 
 it('user can set their t-shirt size', function () {

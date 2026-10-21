@@ -4,8 +4,10 @@ use App\Filament\Resources\UserResource;
 use App\Filament\Resources\UserResource\Pages\CreateUser;
 use App\Models\User;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 
 use function Pest\Livewire\livewire;
 
@@ -209,4 +211,46 @@ it('sends no mail when an admin creates a user', function () {
 
     $this->assertDatabaseHas(User::class, ['email' => 'uj@example.com']);
     Notification::assertNothingSent();
+});
+
+it('admin can upload an image as the avatar', function () {
+    Storage::fake('public');
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin);
+
+    livewire(CreateUser::class)
+        ->fillForm([
+            'name' => 'Kiss Péter',
+            'email' => 'peter@example.com',
+            'password' => 'secret123',
+            'avatar_url' => UploadedFile::fake()->image('avatar.png'),
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $avatar = User::query()->where('email', 'peter@example.com')->firstOrFail()->avatar_url;
+
+    expect($avatar)->toStartWith('users/');
+    Storage::disk('public')->assertExists($avatar);
+});
+
+it('admin cannot upload a non-image file as the avatar', function () {
+    Storage::fake('public');
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin);
+
+    livewire(CreateUser::class)
+        ->fillForm([
+            'name' => 'Kiss Péter',
+            'email' => 'peter@example.com',
+            'password' => 'secret123',
+            'avatar_url' => UploadedFile::fake()->create('shell.php', 10, 'application/x-php'),
+        ])
+        ->call('create')
+        ->assertHasFormErrors(['avatar_url']);
+
+    $this->assertDatabaseMissing(User::class, ['email' => 'peter@example.com']);
+    Storage::disk('public')->assertDirectoryEmpty('users');
 });
