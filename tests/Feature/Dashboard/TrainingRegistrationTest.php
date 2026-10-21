@@ -38,17 +38,17 @@ it('user can withdraw from a training via dashboard', function () {
     ]);
 });
 
-it('user cannot register for a training that already started', function () {
+it('does not offer registration for a training that started more than an hour ago', function () {
     $user = User::factory()->create();
     $training = Training::factory()->create(['start_at' => now()->subHours(2)]);
 
     $this->actingAs($user);
 
     livewire(UpcomingTraining::class)
-        ->assertTableActionDisabled('attend', $training);
+        ->assertCanNotSeeTableRecords([$training]);
 });
 
-it('user cannot withdraw from a training that already started', function () {
+it('does not offer withdrawal for a training that started more than an hour ago', function () {
     $user = User::factory()->create();
     $training = Training::factory()->create(['start_at' => now()->subHours(2)]);
     TrainingAttendance::factory()->for($training)->for($user)->create();
@@ -56,7 +56,7 @@ it('user cannot withdraw from a training that already started', function () {
     $this->actingAs($user);
 
     livewire(UpcomingTraining::class)
-        ->assertTableActionDisabled('withdraw', $training);
+        ->assertCanNotSeeTableRecords([$training]);
 });
 
 it('user cannot register for a full training when overflow is disabled', function () {

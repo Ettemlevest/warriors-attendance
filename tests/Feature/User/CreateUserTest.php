@@ -3,7 +3,7 @@
 use App\Filament\Resources\UserResource;
 use App\Filament\Resources\UserResource\Pages\CreateUser;
 use App\Models\User;
-use Filament\Notifications\Auth\VerifyEmail;
+use Filament\Auth\Notifications\VerifyEmail;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;

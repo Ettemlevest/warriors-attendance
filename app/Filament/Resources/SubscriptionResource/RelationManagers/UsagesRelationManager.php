@@ -4,9 +4,9 @@ namespace App\Filament\Resources\SubscriptionResource\RelationManagers;
 
 use App\Enums\TrainingType;
 use App\Models\TrainingAttendance;
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Forms\Components\Select;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -17,11 +17,11 @@ class UsagesRelationManager extends RelationManager
 
     protected static ?string $title = 'Felhasznált alkalmak';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('subscription')
+        return $schema
+            ->components([
+                Select::make('subscription')
                     ->relationship('subscription', 'plan.name')
                     ->required(),
             ]);

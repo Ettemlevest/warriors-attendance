@@ -1,10 +1,10 @@
 <?php
 
 use App\Models\User;
+use Filament\Auth\Notifications\VerifyEmail;
+use Filament\Auth\Pages\EmailVerification\EmailVerificationPrompt;
+use Filament\Auth\Pages\Register;
 use Filament\Facades\Filament;
-use Filament\Notifications\Auth\VerifyEmail;
-use Filament\Pages\Auth\EmailVerification\EmailVerificationPrompt;
-use Filament\Pages\Auth\Register;
 use Illuminate\Support\Facades\Notification;
 
 use function Pest\Livewire\livewire;

@@ -1,9 +1,9 @@
 <?php
 
 use App\Models\User;
-use Filament\Notifications\Auth\ResetPassword as ResetPasswordNotification;
-use Filament\Pages\Auth\PasswordReset\RequestPasswordReset;
-use Filament\Pages\Auth\PasswordReset\ResetPassword;
+use Filament\Auth\Notifications\ResetPassword;
+use Filament\Auth\Pages\PasswordReset\RequestPasswordReset;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 
 use function Pest\Livewire\livewire;
@@ -26,7 +26,7 @@ it('can request a password reset link', function () {
         ->assertHasNoFormErrors()
         ->assertNotified();
 
-    Notification::assertSentTo($user, ResetPasswordNotification::class);
+    Notification::assertSentTo($user, ResetPassword::class);
 });
 
 it('can reset password with valid token', function () {
@@ -40,8 +40,8 @@ it('can reset password with valid token', function () {
         ])
         ->call('request');
 
-    Notification::assertSentTo($user, ResetPasswordNotification::class, function ($notification) use ($user) {
-        livewire(ResetPassword::class, [
+    Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
+        livewire(Filament\Auth\Pages\PasswordReset\ResetPassword::class, [
             'email' => $user->email,
             'token' => $notification->token,
         ])
@@ -57,6 +57,6 @@ it('can reset password with valid token', function () {
     });
 
     $this->assertTrue(
-        \Illuminate\Support\Facades\Hash::check('new-password', $user->fresh()->password)
+        Hash::check('new-password', $user->fresh()->password)
     );
 });

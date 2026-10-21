@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -26,9 +27,9 @@ use Illuminate\Support\Carbon;
  * @property-read User $user
  * @property-read bool $expired
  *
- * @method static \Illuminate\Database\Eloquent\Builder|Subscription newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Subscription newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Subscription query()
+ * @method static Builder|Subscription newModelQuery()
+ * @method static Builder|Subscription newQuery()
+ * @method static Builder|Subscription query()
  */
 class Subscription extends Model
 {

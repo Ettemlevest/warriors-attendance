@@ -3,7 +3,7 @@
 use App\Filament\Resources\UserResource;
 use App\Filament\Resources\UserResource\Pages\EditUser;
 use App\Models\User;
-use Filament\Notifications\Auth\VerifyEmail;
+use Filament\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 

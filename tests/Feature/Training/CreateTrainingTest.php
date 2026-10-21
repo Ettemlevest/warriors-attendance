@@ -1,7 +1,9 @@
 <?php
 
+use App\Enums\TrainingType;
 use App\Filament\Resources\TrainingResource;
 use App\Filament\Resources\TrainingResource\Pages\CreateTraining;
+use App\Models\Training;
 use App\Models\User;
 use Filament\Forms\Components\Select;
 
@@ -223,7 +225,7 @@ it('defaults type to "easy"', function () {
 
     livewire(CreateTraining::class)
         ->assertFormFieldExists('type')
-        ->assertFormSet(['type' => 'easy']);
+        ->assertFormSet(['type' => TrainingType::Easy]);
 });
 
 it('defaults length to 60 minutes', function () {
@@ -299,4 +301,24 @@ it('rejects a negative max attendees', function () {
         ])
         ->call('create')
         ->assertHasFormErrors(['max_attendees' => 'min']);
+});
+
+it('stores no description when the editor is left empty', function () {
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin);
+
+    livewire(CreateTraining::class)
+        ->fillForm([
+            'name' => 'Edzés',
+            'place' => 'Pálya',
+            'start_at' => now()->addDay(),
+            'length' => 60,
+            'max_attendees' => 10,
+            'description' => '<p></p>',
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    expect(Training::query()->where('name', 'Edzés')->firstOrFail()->description)->toBeNull();
 });

@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\User;
-use Filament\Pages\Auth\Login;
+use Filament\Auth\Pages\Login;
 
 use function Pest\Livewire\livewire;
 

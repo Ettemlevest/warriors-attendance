@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,10 +23,10 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, Subscription> $subscriptions
  * @property-read int|null $subscriptions_count
  *
- * @method static \Illuminate\Database\Eloquent\Builder|Plan newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Plan newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Plan onlyTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder|Plan query()
+ * @method static Builder|Plan newModelQuery()
+ * @method static Builder|Plan newQuery()
+ * @method static Builder|Plan onlyTrashed()
+ * @method static Builder|Plan query()
  */
 class Plan extends Model
 {

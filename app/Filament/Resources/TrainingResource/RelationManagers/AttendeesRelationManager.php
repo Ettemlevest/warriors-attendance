@@ -5,13 +5,16 @@ namespace App\Filament\Resources\TrainingResource\RelationManagers;
 use App\Models\Training;
 use App\Models\TrainingAttendance;
 use App\Models\User;
-use Filament\Actions\MountableAction;
+use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
-use Filament\Tables\Actions\BulkAction;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -39,10 +42,10 @@ class AttendeesRelationManager extends RelationManager
         return $training;
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Select::make('user_id')
                     ->label('Név')
                     ->relationship('user', 'name')
@@ -59,6 +62,7 @@ class AttendeesRelationManager extends RelationManager
             ->recordTitleAttribute('id')
             ->columns([
                 ImageColumn::make('user.avatar_url')
+                    ->disk('public')
                     ->defaultImageUrl('/storage/avatar.png')
                     ->grow(false)
                     ->label('')
@@ -123,30 +127,30 @@ class AttendeesRelationManager extends RelationManager
                     ),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->using(fn (array $data): TrainingAttendance => $this->training()->registerAttendee(User::findOrFail($data['user_id']))),
             ])
-            ->actions([
-                Tables\Actions\Action::make('confirm_attendance')
+            ->recordActions([
+                Action::make('confirm_attendance')
                     ->label('Résztvett')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->visible(fn (TrainingAttendance $attendance) => ! $attendance->attended && auth()->user()->isAdmin() && $this->training()->hasEnded())
                     ->action(fn (TrainingAttendance $attendance) => $attendance->confirmAttendance()),
 
-                Tables\Actions\Action::make('not_attended')
+                Action::make('not_attended')
                     ->label('Hiányzott')
                     ->visible(fn (TrainingAttendance $attendance) => $attendance->attended && auth()->user()->isAdmin())
                     ->icon('heroicon-o-minus-circle')
                     ->color('warning')
                     ->action(fn (TrainingAttendance $attendance) => $attendance->rejectAttendance()),
 
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->modalHeading('Jelentkezés törlése')
                     ->hidden(fn (TrainingAttendance $attendance) => $attendance->attended),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+            ->toolbarActions([
+                BulkActionGroup::make([
                     BulkAction::make('bulk_attendance_confirmation')
                         ->label('Résztvettek')
                         ->modalSubmitActionLabel('Igen')
@@ -165,8 +169,8 @@ class AttendeesRelationManager extends RelationManager
                         ->visible(fn () => auth()->user()->isAdmin())
                         ->action(fn (Collection $attendances) => $attendances->each->rejectAttendance()),
 
-                    Tables\Actions\DeleteBulkAction::make()
-                        ->before(function (Collection $attendances, MountableAction $action): void {
+                    DeleteBulkAction::make()
+                        ->before(function (Collection $attendances, Action $action): void {
                             if ($attendances->doesntContain('attended', true)) {
                                 return;
                             }

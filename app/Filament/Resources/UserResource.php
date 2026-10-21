@@ -2,19 +2,27 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
+use App\Filament\Resources\UserResource\Pages\CreateUser;
+use App\Filament\Resources\UserResource\Pages\EditUser;
+use App\Filament\Resources\UserResource\Pages\ListUsers;
 use App\Models\User;
-use Filament\Forms\Components\Actions\Action;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
@@ -31,18 +39,18 @@ class UserResource extends Resource
 
     protected static ?int $navigationSort = 100;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
 
     protected static ?string $modelLabel = 'Warrior';
 
     protected static ?string $pluralModelLabel = 'Warriorok';
 
-    protected static ?string $navigationGroup = 'Admin';
+    protected static string|\UnitEnum|null $navigationGroup = 'Admin';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make('')
                     ->columns(['lg' => 2])
                     ->schema([
@@ -121,15 +129,15 @@ class UserResource extends Resource
 
                 Section::make('Meta adatok')
                     ->columns(['lg' => 2])
-                    ->visible(fn (User $user) => $user->exists)
+                    ->hiddenOn('create')
                     ->schema([
                         Placeholder::make('Létrehozva')
-                            ->content(fn (User $user) => $user->created_at)
-                            ->helperText(fn (User $user) => $user->created_at->longRelativeToNowDiffForHumans()),
+                            ->content(fn (?User $record) => $record?->created_at)
+                            ->helperText(fn (?User $record) => $record?->created_at?->longRelativeToNowDiffForHumans()),
 
                         Placeholder::make('Módosítva')
-                            ->content(fn (User $user) => $user->updated_at)
-                            ->helperText(fn (User $user) => $user->updated_at->longRelativeToNowDiffForHumans()),
+                            ->content(fn (?User $record) => $record?->updated_at)
+                            ->helperText(fn (?User $record) => $record?->updated_at?->longRelativeToNowDiffForHumans()),
                     ]),
             ]);
     }
@@ -139,6 +147,7 @@ class UserResource extends Resource
         return $table
             ->columns([
                 ImageColumn::make('avatar_url')
+                    ->disk('public')
                     ->defaultImageUrl('/storage/avatar.png')
                     ->grow(false)
                     ->label('')
@@ -165,16 +174,16 @@ class UserResource extends Resource
             ->filters([
                 TrashedFilter::make(),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ForceDeleteAction::make(),
-                Tables\Actions\RestoreAction::make(),
+            ->recordActions([
+                EditAction::make(),
+                DeleteAction::make(),
+                ForceDeleteAction::make(),
+                RestoreAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
-                Tables\Actions\ForceDeleteBulkAction::make(),
-                Tables\Actions\RestoreBulkAction::make(),
+            ->toolbarActions([
+                DeleteBulkAction::make(),
+                ForceDeleteBulkAction::make(),
+                RestoreBulkAction::make(),
             ]);
     }
 
@@ -186,9 +195,9 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => ListUsers::route('/'),
+            'create' => CreateUser::route('/create'),
+            'edit' => EditUser::route('/{record}/edit'),
         ];
     }
 

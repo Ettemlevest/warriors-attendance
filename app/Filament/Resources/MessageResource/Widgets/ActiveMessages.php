@@ -14,10 +14,10 @@ class ActiveMessages extends Widget
 
     protected static ?int $sort = 10;
 
-    public function __construct()
+    public function mount(): void
     {
         $this->messages = Message::activeMessages();
     }
 
-    protected static string $view = 'filament.resources.message-resource.widgets.active-messages';
+    protected string $view = 'filament.resources.message-resource.widgets.active-messages';
 }

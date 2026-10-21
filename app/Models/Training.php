@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\TrainingType;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -26,9 +27,9 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, TrainingAttendance> $attendees
  * @property-read int|null $attendees_count
  *
- * @method static \Illuminate\Database\Eloquent\Builder|Training newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Training newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Training query()
+ * @method static Builder|Training newModelQuery()
+ * @method static Builder|Training newQuery()
+ * @method static Builder|Training query()
  *
  * @mixin Model
  */

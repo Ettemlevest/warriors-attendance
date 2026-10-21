@@ -4,10 +4,10 @@ namespace App\Filament\Widgets;
 
 use App\Enums\TrainingType;
 use App\Models\Training;
-use Filament\Tables\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Enums\ActionsPosition;
+use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 
@@ -57,9 +57,9 @@ class UpcomingTraining extends BaseWidget
                     ->alignRight()
                     ->sortable(),
             ])
-            ->actionsPosition(ActionsPosition::BeforeColumns)
+            ->recordActionsPosition(RecordActionsPosition::BeforeColumns)
             ->recordUrl(fn (Training $training) => route('filament.admin.resources.trainings.view', ['record' => $training->id]))
-            ->actions([
+            ->recordActions([
                 Action::make('attend')
                     ->label('Jelentkezem')
                     ->icon('heroicon-o-check-circle')

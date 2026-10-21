@@ -3,25 +3,30 @@
 namespace App\Filament\Resources;
 
 use App\Enums\TrainingType;
-use App\Filament\Resources\TrainingResource\Pages;
+use App\Filament\Resources\TrainingResource\Pages\CreateTraining;
+use App\Filament\Resources\TrainingResource\Pages\EditTraining;
+use App\Filament\Resources\TrainingResource\Pages\ListTrainings;
+use App\Filament\Resources\TrainingResource\Pages\ViewTraining;
 use App\Filament\Resources\TrainingResource\RelationManagers\AttendeesRelationManager;
 use App\Models\Training;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
-use Filament\Infolists\Components\Grid;
-use Filament\Infolists\Components\Group;
-use Filament\Infolists\Components\Section as InfoListSection;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Actions\ActionGroup;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -33,22 +38,22 @@ class TrainingResource extends Resource
 {
     protected static ?string $model = Training::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
     protected static ?string $modelLabel = 'edzés';
 
     protected static ?string $pluralModelLabel = 'edzések';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make('')
                     ->columns(['lg' => 2])
                     ->schema([
                         Select::make('type')
                             ->label('Típus')
-                            ->default(TrainingType::Easy->value)
+                            ->default(TrainingType::Easy)
                             ->columnSpanFull()
                             ->required()
                             ->options(TrainingType::class),
@@ -110,15 +115,15 @@ class TrainingResource extends Resource
 
                 Section::make('Meta adatok')
                     ->columns(['lg' => 2])
-                    ->visible(fn (Training $training) => $training->exists)
+                    ->hiddenOn('create')
                     ->schema([
                         Placeholder::make('Létrehozva')
-                            ->content(fn (Training $training) => $training->created_at)
-                            ->helperText(fn (Training $training) => $training->created_at->longRelativeToNowDiffForHumans()),
+                            ->content(fn (?Training $record) => $record?->created_at)
+                            ->helperText(fn (?Training $record) => $record?->created_at?->longRelativeToNowDiffForHumans()),
 
                         Placeholder::make('Módosítva')
-                            ->content(fn (Training $training) => $training->updated_at)
-                            ->helperText(fn (Training $training) => $training->updated_at->longRelativeToNowDiffForHumans()),
+                            ->content(fn (?Training $record) => $record?->updated_at)
+                            ->helperText(fn (?Training $record) => $record?->updated_at?->longRelativeToNowDiffForHumans()),
                     ]),
             ]);
     }
@@ -175,24 +180,24 @@ class TrainingResource extends Resource
                         ),
                     ),
             ])
-            ->actions([
+            ->recordActions([
                 ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
+                    ViewAction::make(),
+                    EditAction::make(),
+                    DeleteAction::make(),
                 ]),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist->schema([
-            InfoListSection::make()
+        return $schema->components([
+            Section::make()
                 ->schema([
                     Grid::make(2)->schema([
                         Group::make([
@@ -219,7 +224,7 @@ class TrainingResource extends Resource
                     ])->inlineLabel(),
                 ]),
 
-            InfoListSection::make('Leírás')
+            Section::make('Leírás')
                 ->collapsible()
                 ->schema([
                     TextEntry::make('description')
@@ -241,10 +246,10 @@ class TrainingResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTrainings::route('/'),
-            'create' => Pages\CreateTraining::route('/create'),
-            'edit' => Pages\EditTraining::route('/{record}/edit'),
-            'view' => Pages\ViewTraining::route('/{record}'),
+            'index' => ListTrainings::route('/'),
+            'create' => CreateTraining::route('/create'),
+            'edit' => EditTraining::route('/{record}/edit'),
+            'view' => ViewTraining::route('/{record}'),
         ];
     }
 }

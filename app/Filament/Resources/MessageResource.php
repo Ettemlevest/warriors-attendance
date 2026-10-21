@@ -2,16 +2,22 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\MessageResource\Pages;
+use App\Filament\Resources\MessageResource\Pages\CreateMessage;
+use App\Filament\Resources\MessageResource\Pages\EditMessage;
+use App\Filament\Resources\MessageResource\Pages\ListMessages;
 use App\Models\Message;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 class MessageResource extends Resource
@@ -20,18 +26,18 @@ class MessageResource extends Resource
 
     protected static ?int $navigationSort = 10;
 
-    protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-right';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chat-bubble-left-right';
 
     protected static ?string $modelLabel = 'üzenet';
 
     protected static ?string $pluralModelLabel = 'üzenetek';
 
-    protected static ?string $navigationGroup = 'Admin';
+    protected static string|\UnitEnum|null $navigationGroup = 'Admin';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make('')
                     ->columns(['lg' => 2])
                     ->schema([
@@ -53,15 +59,15 @@ class MessageResource extends Resource
                     ]),
                 Section::make('Meta adatok')
                     ->columns(['lg' => 2])
-                    ->visible(fn (Message $message) => $message->exists)
+                    ->hiddenOn('create')
                     ->schema([
                         Placeholder::make('Létrehozva')
-                            ->content(fn (Message $message) => $message->created_at)
-                            ->helperText(fn (Message $message) => $message->created_at->longRelativeToNowDiffForHumans()),
+                            ->content(fn (?Message $record) => $record?->created_at)
+                            ->helperText(fn (?Message $record) => $record?->created_at?->longRelativeToNowDiffForHumans()),
 
                         Placeholder::make('Módosítva')
-                            ->content(fn (Message $message) => $message->updated_at)
-                            ->helperText(fn (Message $message) => $message->updated_at->longRelativeToNowDiffForHumans()),
+                            ->content(fn (?Message $record) => $record?->updated_at)
+                            ->helperText(fn (?Message $record) => $record?->updated_at?->longRelativeToNowDiffForHumans()),
                     ]),
             ]);
     }
@@ -70,18 +76,18 @@ class MessageResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title')
+                TextColumn::make('title')
                     ->label('Cím')
                     ->limit(50)
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('showed_from')
+                TextColumn::make('showed_from')
                     ->label('Dátumtól')
                     ->date('Y-m-d')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('showed_to')
+                TextColumn::make('showed_to')
                     ->label('Dátumig')
                     ->date('Y-m-d')
                     ->sortable(),
@@ -90,13 +96,13 @@ class MessageResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+            ->recordActions([
+                EditAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -111,9 +117,9 @@ class MessageResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListMessages::route('/'),
-            'create' => Pages\CreateMessage::route('/create'),
-            'edit' => Pages\EditMessage::route('/{record}/edit'),
+            'index' => ListMessages::route('/'),
+            'create' => CreateMessage::route('/create'),
+            'edit' => EditMessage::route('/{record}/edit'),
         ];
     }
 }

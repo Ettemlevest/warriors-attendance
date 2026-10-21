@@ -3,18 +3,17 @@
 namespace App\Filament\Pages;
 
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Pages\Auth\EditProfile as BasicEditProfile;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Schema;
 
-class EditProfile extends BasicEditProfile
+class EditProfile extends \Filament\Auth\Pages\EditProfile
 {
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             $this->getNameFormComponent(),
             $this->getEmailFormComponent(),
 
