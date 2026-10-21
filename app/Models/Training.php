@@ -79,6 +79,11 @@ final class Training extends Model
         return $this->attendees->firstWhere('user_id', $user->id);
     }
 
+    public function hasConfirmedAttendances(): bool
+    {
+        return $this->attendees()->where('attended', true)->exists();
+    }
+
     public function hasEnded(): bool
     {
         return $this->start_at->copy()->addMinutes($this->length)->isPast();

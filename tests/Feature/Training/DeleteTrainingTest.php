@@ -1,5 +1,6 @@
 <?php
 
+use App\Filament\Resources\TrainingResource\Pages\EditTraining;
 use App\Filament\Resources\TrainingResource\Pages\ListTrainings;
 use App\Models\Training;
 use App\Models\TrainingAttendance;
@@ -62,4 +63,49 @@ it('deleting a training removes its attendance rows', function () {
     livewire(ListTrainings::class)->callTableAction('delete', $training);
 
     $this->assertDatabaseMissing('trainings_attendance', ['id' => $attendance->id]);
+});
+
+it('admin cannot delete a training that has a confirmed attendance', function () {
+    $admin = User::factory()->admin()->create();
+    $training = Training::factory()->past()->create();
+    $attendance = TrainingAttendance::factory()->for($training)->attended()->create();
+
+    $this->actingAs($admin);
+
+    livewire(ListTrainings::class)
+        ->callTableAction('delete', $training)
+        ->assertNotified('Az edzés nem törölhető');
+
+    $this->assertDatabaseHas('trainings', ['id' => $training->id]);
+    $this->assertDatabaseHas('trainings_attendance', ['id' => $attendance->id]);
+});
+
+it('admin cannot delete a training with a confirmed attendance from the edit page', function () {
+    $admin = User::factory()->admin()->create();
+    $training = Training::factory()->past()->create();
+    TrainingAttendance::factory()->for($training)->attended()->create();
+
+    $this->actingAs($admin);
+
+    livewire(EditTraining::class, ['record' => $training->getRouteKey()])
+        ->callAction('delete')
+        ->assertNotified('Az edzés nem törölhető');
+
+    $this->assertDatabaseHas('trainings', ['id' => $training->id]);
+});
+
+it('refuses bulk delete when a selected training has a confirmed attendance', function () {
+    $admin = User::factory()->admin()->create();
+    $pending = Training::factory()->create();
+    $confirmed = Training::factory()->past()->create();
+    TrainingAttendance::factory()->for($confirmed)->attended()->create();
+
+    $this->actingAs($admin);
+
+    livewire(ListTrainings::class)
+        ->callTableBulkAction('delete', [$pending, $confirmed])
+        ->assertNotified('Az edzés nem törölhető');
+
+    $this->assertDatabaseHas('trainings', ['id' => $pending->id]);
+    $this->assertDatabaseHas('trainings', ['id' => $confirmed->id]);
 });

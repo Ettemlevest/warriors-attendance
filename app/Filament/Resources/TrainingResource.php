@@ -9,6 +9,7 @@ use App\Filament\Resources\TrainingResource\Pages\ListTrainings;
 use App\Filament\Resources\TrainingResource\Pages\ViewTraining;
 use App\Filament\Resources\TrainingResource\RelationManagers\AttendeesRelationManager;
 use App\Models\Training;
+use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -22,6 +23,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
@@ -33,6 +35,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class TrainingResource extends Resource
 {
@@ -43,6 +46,21 @@ class TrainingResource extends Resource
     protected static ?string $modelLabel = 'edzés';
 
     protected static ?string $pluralModelLabel = 'edzések';
+
+    public static function cancelDeletionWhenAttended(Training $training, Action $action): void
+    {
+        if (! $training->hasConfirmedAttendances()) {
+            return;
+        }
+
+        Notification::make()
+            ->title('Az edzés nem törölhető')
+            ->body('Vannak megerősített résztvevői. Előbb jelöld őket hiányzónak.')
+            ->danger()
+            ->send();
+
+        $action->cancel();
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -184,12 +202,25 @@ class TrainingResource extends Resource
                 ActionGroup::make([
                     ViewAction::make(),
                     EditAction::make(),
-                    DeleteAction::make(),
+                    DeleteAction::make()
+                        ->before(fn (Training $training, Action $action) => static::cancelDeletionWhenAttended($training, $action)),
                 ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->before(function (Collection $trainings, Action $action): void {
+                            $attended = Training::query()
+                                ->whereKey($trainings->modelKeys())
+                                ->whereHas('attendees', fn (Builder $query) => $query->where('attended', true))
+                                ->first();
+
+                            if ($attended === null) {
+                                return;
+                            }
+
+                            static::cancelDeletionWhenAttended($attended, $action);
+                        }),
                 ]),
             ]);
     }
