@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -48,8 +49,8 @@ class Message extends Model
         $now = Carbon::now();
 
         return Message::query()
-            ->where('showed_from', '<=', $now)
-            ->where('showed_to', '>=', $now)
+            ->where(fn (Builder $query) => $query->whereNull('showed_from')->orWhere('showed_from', '<=', $now))
+            ->where(fn (Builder $query) => $query->whereNull('showed_to')->orWhere('showed_to', '>=', $now))
             ->get();
     }
 }

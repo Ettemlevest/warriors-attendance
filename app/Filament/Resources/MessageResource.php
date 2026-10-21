@@ -37,6 +37,7 @@ class MessageResource extends Resource
                     ->schema([
                         TextInput::make('title')
                             ->label('Cím')
+                            ->required()
                             ->maxLength(255)
                             ->columnSpanFull(),
 

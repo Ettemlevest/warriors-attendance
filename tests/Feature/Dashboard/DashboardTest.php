@@ -114,3 +114,36 @@ it('shows 6-month attendance chart', function () {
     livewire(SubscriptionOverview::class)
         ->assertSee('Elmúlt 6 hónapban');
 })->skip(fn () => config('database.default') === 'sqlite', 'SubscriptionOverview uses MySQL-specific DATE_FORMAT');
+
+it('shows a message that has no date range', function () {
+    $user = User::factory()->create();
+    Message::factory()->create(['title' => 'Állandó közlemény', 'showed_from' => null, 'showed_to' => null]);
+
+    $this->actingAs($user);
+
+    livewire(ActiveMessages::class)->assertSee('Állandó közlemény');
+});
+
+it('shows a message with only a start date once that date has passed', function () {
+    $user = User::factory()->create();
+    Message::factory()->create(['title' => 'Már látható', 'showed_from' => now()->subDay(), 'showed_to' => null]);
+    Message::factory()->create(['title' => 'Még nem látható', 'showed_from' => now()->addDay(), 'showed_to' => null]);
+
+    $this->actingAs($user);
+
+    livewire(ActiveMessages::class)
+        ->assertSee('Már látható')
+        ->assertDontSee('Még nem látható');
+});
+
+it('hides a message with only an end date once that date has passed', function () {
+    $user = User::factory()->create();
+    Message::factory()->create(['title' => 'Még látható', 'showed_from' => null, 'showed_to' => now()->addDay()]);
+    Message::factory()->create(['title' => 'Már lejárt', 'showed_from' => null, 'showed_to' => now()->subDay()]);
+
+    $this->actingAs($user);
+
+    livewire(ActiveMessages::class)
+        ->assertSee('Még látható')
+        ->assertDontSee('Már lejárt');
+});

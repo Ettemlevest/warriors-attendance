@@ -84,3 +84,14 @@ it('admin can create a message without date constraints', function () {
         'showed_to' => null,
     ]);
 });
+
+it('requires a title', function () {
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin);
+
+    livewire(CreateMessage::class)
+        ->fillForm(['title' => '', 'body' => 'Szöveg'])
+        ->call('create')
+        ->assertHasFormErrors(['title' => 'required']);
+});
