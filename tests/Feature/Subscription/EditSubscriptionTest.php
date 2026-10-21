@@ -93,3 +93,29 @@ it('shows meta data section with created and updated timestamps', function () {
         ->assertSee($subscription->created_at)
         ->assertSee($subscription->updated_at);
 });
+
+it('refuses to delete a subscription with usages from the edit page', function () {
+    $admin = User::factory()->admin()->create();
+    $subscription = Subscription::factory()->for(Plan::factory()->create())->create();
+    TrainingAttendance::factory()->for($subscription->user)->create(['subscription_id' => $subscription->id, 'attended' => true]);
+
+    $this->actingAs($admin);
+
+    livewire(EditSubscription::class, ['record' => $subscription->getRouteKey()])
+        ->callAction('delete')
+        ->assertNotified('A bérlet nem törölhető');
+
+    $this->assertDatabaseHas('subscriptions', ['id' => $subscription->id]);
+});
+
+it('deletes a subscription without usages from the edit page', function () {
+    $admin = User::factory()->admin()->create();
+    $subscription = Subscription::factory()->for(Plan::factory()->create())->create();
+
+    $this->actingAs($admin);
+
+    livewire(EditSubscription::class, ['record' => $subscription->getRouteKey()])
+        ->callAction('delete');
+
+    $this->assertDatabaseMissing('subscriptions', ['id' => $subscription->id]);
+});

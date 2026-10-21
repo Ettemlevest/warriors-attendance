@@ -205,3 +205,36 @@ describe('delete', function () {
         $this->assertDatabaseCount('subscriptions', 0);
     });
 });
+
+describe('deleting used subscriptions', function () {
+    it('refuses to delete a subscription that has usages', function () {
+        $admin = User::factory()->admin()->create();
+        $subscription = Subscription::factory()->for(Plan::factory()->create())->create();
+        TrainingAttendance::factory()->for($subscription->user)->create(['subscription_id' => $subscription->id, 'attended' => true]);
+
+        $this->actingAs($admin);
+
+        livewire(ListSubscriptions::class)
+            ->callTableAction('delete', $subscription)
+            ->assertNotified('A bérlet nem törölhető');
+
+        $this->assertDatabaseHas('subscriptions', ['id' => $subscription->id]);
+    });
+
+    it('refuses bulk delete when any selected subscription has usages', function () {
+        $admin = User::factory()->admin()->create();
+        $plan = Plan::factory()->create();
+        $used = Subscription::factory()->for($plan)->create();
+        $unused = Subscription::factory()->for($plan)->create();
+        TrainingAttendance::factory()->for($used->user)->create(['subscription_id' => $used->id, 'attended' => true]);
+
+        $this->actingAs($admin);
+
+        livewire(ListSubscriptions::class)
+            ->callTableBulkAction('delete', [$used->getKey(), $unused->getKey()])
+            ->assertNotified('A bérlet nem törölhető');
+
+        $this->assertDatabaseHas('subscriptions', ['id' => $used->id]);
+        $this->assertDatabaseHas('subscriptions', ['id' => $unused->id]);
+    });
+});

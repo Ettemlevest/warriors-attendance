@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\SubscriptionResource\Pages;
 use App\Filament\Resources\SubscriptionResource\RelationManagers\UsagesRelationManager;
 use App\Models\Subscription;
+use Filament\Actions\MountableAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Section;
@@ -16,6 +17,7 @@ use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\Section as InfoListSection;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\BulkAction;
@@ -46,6 +48,21 @@ class SubscriptionResource extends Resource
         }
 
         return $query;
+    }
+
+    public static function cancelDeletionWhenUsed(Subscription $subscription, MountableAction $action): void
+    {
+        if ($subscription->usages()->doesntExist()) {
+            return;
+        }
+
+        Notification::make()
+            ->title('A bérlet nem törölhető')
+            ->body('Vannak felhasznált alkalmai. Jelöld inkább lejártnak.')
+            ->danger()
+            ->send();
+
+        $action->cancel();
     }
 
     public static function form(Form $form): Form
@@ -190,7 +207,8 @@ class SubscriptionResource extends Resource
                         ->action(fn (Subscription $subscription) => $subscription->update(['expired_at' => null])),
 
                     Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\DeleteAction::make()
+                        ->before(fn (Subscription $subscription, MountableAction $action) => static::cancelDeletionWhenUsed($subscription, $action)),
                 ]),
             ])
             ->bulkActions([
@@ -222,7 +240,17 @@ class SubscriptionResource extends Resource
                                 ->each(fn (Subscription $subscription) => $subscription->update(['expired_at' => null]));
                         }),
 
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->before(function (Collection $subscriptions, MountableAction $action): void {
+                            /** @var Collection<int, Subscription> $subscriptions */
+                            $used = $subscriptions->first(fn (Subscription $subscription) => $subscription->usages()->exists());
+
+                            if ($used === null) {
+                                return;
+                            }
+
+                            static::cancelDeletionWhenUsed($used, $action);
+                        }),
                 ]),
             ]);
     }
