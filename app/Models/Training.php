@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TrainingType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property bool $can_attend_more
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property string $type
+ * @property TrainingType $type
  * @property string|null $description
  * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $attendees
  * @property-read int|null $attendees_count
@@ -34,6 +35,7 @@ final class Training extends Model
     use HasFactory;
 
     protected $casts = [
+        'type' => TrainingType::class,
         'start_at' => 'datetime',
         'length' => 'integer',
         'max_attendees' => 'integer',

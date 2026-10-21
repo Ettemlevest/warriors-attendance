@@ -3,6 +3,7 @@
 use App\Filament\Resources\TrainingResource;
 use App\Filament\Resources\TrainingResource\Pages\CreateTraining;
 use App\Models\User;
+use Filament\Forms\Components\Select;
 
 use function Pest\Livewire\livewire;
 
@@ -250,4 +251,18 @@ it('defaults overflow to enabled', function () {
 
     livewire(CreateTraining::class)
         ->assertFormSet(['can_attend_more' => true]);
+});
+
+it('offers the four training types with their labels', function () {
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin);
+
+    livewire(CreateTraining::class)
+        ->assertFormFieldExists('type', fn (Select $field): bool => $field->getOptions() === [
+            'easy' => 'Felzárkóztató edzés',
+            'running' => 'Futó edzés',
+            'hard' => 'Haladó edzés',
+            'other' => 'Egyéb',
+        ]);
 });

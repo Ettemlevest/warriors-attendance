@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\TrainingType;
 use App\Filament\Resources\TrainingResource\Pages;
 use App\Filament\Resources\TrainingResource\RelationManagers\AttendeesRelationManager;
 use App\Models\Training;
@@ -47,15 +48,10 @@ class TrainingResource extends Resource
                     ->schema([
                         Select::make('type')
                             ->label('Típus')
-                            ->default('easy')
+                            ->default(TrainingType::Easy->value)
                             ->columnSpanFull()
                             ->required()
-                            ->options([
-                                'easy' => 'Felzárkózatató edzés',
-                                'running' => 'Futó edzés',
-                                'hard' => 'Haladó edzés',
-                                'other' => 'Egyéb',
-                            ]),
+                            ->options(TrainingType::class),
 
                         TextInput::make('name')
                             ->label('Edzés neve')
@@ -126,33 +122,11 @@ class TrainingResource extends Resource
 
     public static function table(Table $table): Table
     {
-        $trainingTypeIconGenerationCallback = fn (Training $training) => match ($training->type) {
-            'easy' => 'heroicon-o-arrow-trending-up',
-            'running' => 'heroicon-o-sparkles',
-            'hard' => 'heroicon-o-bolt',
-            'other' => 'heroicon-o-swatch',
-            default => '',
-        };
-
         return $table
             ->columns([
                 IconColumn::make('type')
                     ->label('Típus')
-                    ->color(fn (string $state) => match ($state) {
-                        'easy' => 'primary',
-                        'running' => 'warning',
-                        'hard' => 'danger',
-                        'other' => 'info',
-                        default => '',
-                    })
-                    ->tooltip(fn (Training $training) => match ($training->type) {
-                        'easy' => 'Felzárkóztató',
-                        'running' => 'Futó',
-                        'hard' => 'Haladó',
-                        'other' => 'Egyéb',
-                        default => 'Ismeretlen',
-                    })
-                    ->icon($trainingTypeIconGenerationCallback),
+                    ->tooltip(fn (TrainingType $state) => $state->getLabel()),
 
                 TextColumn::make('name')
                     ->label('Edzés')
@@ -182,12 +156,7 @@ class TrainingResource extends Resource
             ->filters([
                 SelectFilter::make('type')
                     ->label('Típus')
-                    ->options([
-                        'easy' => 'Felzárkóztató',
-                        'running' => 'Futó',
-                        'hard' => 'Haladó',
-                        'other' => 'Egyéb',
-                    ]),
+                    ->options(TrainingType::class),
 
                 TernaryFilter::make('is_attendee')
                     ->label('Jelentkeztem')
@@ -219,37 +188,13 @@ class TrainingResource extends Resource
 
     public static function infolist(Infolist $infolist): Infolist
     {
-        // TODO: kill this cancer
-        $trainingTypeIconGenerationCallback = fn (Training $training) => match ($training->type) {
-            'easy' => 'heroicon-o-arrow-trending-up',
-            'running' => 'heroicon-o-sparkles',
-            'hard' => 'heroicon-o-bolt',
-            'other' => 'heroicon-o-swatch',
-            default => '',
-        };
-
         return $infolist->schema([
             InfoListSection::make()
                 ->schema([
                     Grid::make(2)->schema([
                         Group::make([
                             TextEntry::make('type')
-                                ->label('Típus')
-                                ->color(fn (string $state) => match ($state) {
-                                    'easy' => 'primary',
-                                    'running' => 'warning',
-                                    'hard' => 'danger',
-                                    'other' => 'info',
-                                    default => '',
-                                })
-                                ->formatStateUsing(fn (Training $training) => match ($training->type) {
-                                    'easy' => 'Felzárkózatató edzés',
-                                    'running' => 'Futó edzés',
-                                    'hard' => 'Haladó edzés',
-                                    'other' => 'Egyéb',
-                                    default => 'Ismeretlen',
-                                })
-                                ->icon($trainingTypeIconGenerationCallback),
+                                ->label('Típus'),
 
                             TextEntry::make('name')
                                 ->label('Edzés'),

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\TrainingType;
 use App\Filament\Resources\TrainingResource;
 use App\Filament\Resources\TrainingResource\Pages\EditTraining;
 use App\Models\Training;
@@ -50,7 +51,7 @@ it('admin can update training type', function () {
         ->call('save')
         ->assertHasNoFormErrors();
 
-    expect($training->fresh()->type)->toBe('hard');
+    expect($training->fresh()->type)->toBe(TrainingType::Hard);
 });
 
 it('admin can update training place', function () {

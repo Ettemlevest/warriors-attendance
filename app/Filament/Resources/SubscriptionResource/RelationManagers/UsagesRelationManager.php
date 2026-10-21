@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SubscriptionResource\RelationManagers;
 
+use App\Enums\TrainingType;
 use App\Models\TrainingAttendance;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -28,36 +29,13 @@ class UsagesRelationManager extends RelationManager
 
     public function table(Table $table): Table
     {
-        // TODO: move to the training model, use enum
-        $trainingTypeIconGenerationCallback = fn (TrainingAttendance $attendance) => match ($attendance->training->type) {
-            'easy' => 'heroicon-o-arrow-trending-up',
-            'running' => 'heroicon-o-sparkles',
-            'hard' => 'heroicon-o-bolt',
-            'other' => 'heroicon-o-swatch',
-            default => '',
-        };
-
         return $table
             ->recordUrl(fn (TrainingAttendance $attendance) => "/trainings/{$attendance->training_id}")
             ->columns([
                 IconColumn::make('training.type')
                     ->label('Típus')
                     ->grow(false)
-                    ->color(fn (string $state) => match ($state) {
-                        'easy' => 'primary',
-                        'running' => 'warning',
-                        'hard' => 'danger',
-                        'other' => 'info',
-                        default => '',
-                    })
-                    ->tooltip(fn (TrainingAttendance $attendance) => match ($attendance->training->type) {
-                        'easy' => 'Felzárkóztató',
-                        'running' => 'Futó',
-                        'hard' => 'Haladó',
-                        'other' => 'Egyéb',
-                        default => 'Ismeretlen',
-                    })
-                    ->icon($trainingTypeIconGenerationCallback),
+                    ->tooltip(fn (TrainingType $state) => $state->getLabel()),
 
                 TextColumn::make('training.name')
                     ->label('Edzés')

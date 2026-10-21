@@ -80,3 +80,14 @@ it('does not show edit button for regular user', function () {
     livewire(ViewTraining::class, ['record' => $training->getRouteKey()])
         ->assertActionHidden('edit');
 });
+
+it('displays the type label from the enum without the old typo', function () {
+    $user = User::factory()->create();
+    $training = Training::factory()->create(['type' => 'easy']);
+
+    $this->actingAs($user);
+
+    livewire(ViewTraining::class, ['record' => $training->getRouteKey()])
+        ->assertSee('Felzárkóztató edzés')
+        ->assertDontSee('Felzárkózatató');
+});
