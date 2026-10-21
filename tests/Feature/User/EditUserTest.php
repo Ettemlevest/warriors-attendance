@@ -123,3 +123,30 @@ it('shows meta data section with created and updated timestamps', function () {
         ->assertSee($user->created_at)
         ->assertSee($user->updated_at);
 });
+
+it('rejects changing the email to one another user already uses', function () {
+    $admin = User::factory()->admin()->create();
+    $user = User::factory()->create();
+    $other = User::factory()->create();
+
+    $this->actingAs($admin);
+
+    livewire(EditUser::class, ['record' => $user->getRouteKey()])
+        ->fillForm(['email' => $other->email])
+        ->call('save')
+        ->assertHasFormErrors(['email' => 'unique']);
+});
+
+it('accepts saving a user with their own unchanged email', function () {
+    $admin = User::factory()->admin()->create();
+    $user = User::factory()->create();
+
+    $this->actingAs($admin);
+
+    livewire(EditUser::class, ['record' => $user->getRouteKey()])
+        ->fillForm(['name' => 'Más Név'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($user->fresh()->name)->toBe('Más Név');
+});

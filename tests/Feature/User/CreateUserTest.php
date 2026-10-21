@@ -135,3 +135,15 @@ it('password is hashed when creating a user', function () {
     $user = User::where('email', 'peter@example.com')->first();
     expect(Hash::check('secret123', $user->password))->toBeTrue();
 });
+
+it('rejects an email that another user already uses', function () {
+    $admin = User::factory()->admin()->create();
+    $existing = User::factory()->create();
+
+    $this->actingAs($admin);
+
+    livewire(CreateUser::class)
+        ->fillForm(['name' => 'Új Warrior', 'email' => $existing->email, 'password' => 'secret123'])
+        ->call('create')
+        ->assertHasFormErrors(['email' => 'unique']);
+});
