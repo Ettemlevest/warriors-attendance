@@ -107,7 +107,7 @@ describe('bulk actions', function () {
             ->callTableBulkAction('bulk_expire_subscription', [$subscription->getKey()]);
 
         expect($subscription->fresh()->expired_at)->not->toBeNull();
-    })->skip('Bulk action closure receives wrong parameter type (Subscription instead of Collection)');
+    });
 
     it('admin can bulk reactivate subscriptions', function () {
         $admin = User::factory()->admin()->create();
@@ -120,7 +120,39 @@ describe('bulk actions', function () {
             ->callTableBulkAction('bulk_reactivate_subscription', [$subscription->getKey()]);
 
         expect($subscription->fresh()->expired_at)->toBeNull();
-    })->skip('Bulk action closure receives wrong parameter type (Subscription instead of Collection)');
+    });
+
+    it('bulk reactivate leaves a used-up subscription expired', function () {
+        $admin = User::factory()->admin()->create();
+        $plan = Plan::factory()->create(['sessions' => 1]);
+        $subscription = Subscription::factory()->for($plan)->expired()->create();
+        TrainingAttendance::factory()->for($subscription->user)->create([
+            'subscription_id' => $subscription->id,
+            'attended' => true,
+        ]);
+
+        $this->actingAs($admin);
+
+        livewire(ListSubscriptions::class)
+            ->callTableBulkAction('bulk_reactivate_subscription', [$subscription->getKey()]);
+
+        expect($subscription->fresh()->expired_at)->not->toBeNull();
+    });
+
+    it('bulk expire handles several subscriptions at once', function () {
+        $admin = User::factory()->admin()->create();
+        $plan = Plan::factory()->create();
+        $first = Subscription::factory()->for($plan)->create();
+        $second = Subscription::factory()->for($plan)->create();
+
+        $this->actingAs($admin);
+
+        livewire(ListSubscriptions::class)
+            ->callTableBulkAction('bulk_expire_subscription', [$first->getKey(), $second->getKey()]);
+
+        expect($first->fresh()->expired_at)->not->toBeNull()
+            ->and($second->fresh()->expired_at)->not->toBeNull();
+    });
 
     it('regular user cannot see bulk subscription actions', function () {
         $user = User::factory()->create();

@@ -22,6 +22,7 @@ use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 
 class SubscriptionResource extends Resource
@@ -202,7 +203,8 @@ class SubscriptionResource extends Resource
                         ->color('warning')
                         ->visible(fn () => $isAdmin)
                         ->disabled(fn () => ! $isAdmin)
-                        ->action(fn (Subscription $subscription) => $subscription->update(['expired_at' => Carbon::now()])),
+                        ->deselectRecordsAfterCompletion()
+                        ->action(fn (Collection $subscriptions) => $subscriptions->each->update(['expired_at' => Carbon::now()])),
 
                     BulkAction::make('bulk_reactivate_subscription')
                         ->label('Visszaállítás')
@@ -212,7 +214,10 @@ class SubscriptionResource extends Resource
                         ->color('info')
                         ->visible(fn () => $isAdmin)
                         ->disabled(fn () => ! $isAdmin)
-                        ->action(fn (Subscription $subscription) => $subscription->update(['expired_at' => null])),
+                        ->deselectRecordsAfterCompletion()
+                        ->action(fn (Collection $subscriptions) => $subscriptions
+                            ->reject(fn (Subscription $subscription) => $subscription->usedUp())
+                            ->each(fn (Subscription $subscription) => $subscription->update(['expired_at' => null]))),
 
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
