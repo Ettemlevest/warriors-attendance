@@ -1,0 +1,148 @@
+<?php
+
+use App\Filament\Resources\SubscriptionResource;
+use App\Filament\Resources\SubscriptionResource\Pages\EditSubscription;
+use App\Models\Plan;
+use App\Models\Subscription;
+use App\Models\TrainingAttendance;
+use App\Models\User;
+use Filament\Forms\Components\Select;
+
+use function Pest\Livewire\livewire;
+
+it('admin can render the edit subscription page', function () {
+    $admin = User::factory()->admin()->create();
+    $plan = Plan::factory()->create();
+    $subscription = Subscription::factory()->for($plan)->create();
+
+    $this->actingAs($admin)
+        ->get(SubscriptionResource::getUrl('edit', ['record' => $subscription]))
+        ->assertSuccessful();
+});
+
+it('regular user cannot render the edit subscription page', function () {
+    $user = User::factory()->create();
+    $plan = Plan::factory()->create();
+    $subscription = Subscription::factory()->for($plan)->for($user)->create();
+
+    $this->actingAs($user)
+        ->get(SubscriptionResource::getUrl('edit', ['record' => $subscription]))
+        ->assertForbidden();
+});
+
+it('admin can update the purchase date', function () {
+    $admin = User::factory()->admin()->create();
+    $plan = Plan::factory()->create();
+    $subscription = Subscription::factory()->for($plan)->create();
+    $newDate = now()->subDays(3)->format('Y-m-d');
+
+    $this->actingAs($admin);
+
+    livewire(EditSubscription::class, ['record' => $subscription->getRouteKey()])
+        ->fillForm(['purchased_at' => $newDate])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($subscription->fresh()->purchased_at->format('Y-m-d'))->toBe($newDate);
+});
+
+it('plan selector is disabled when subscription has usages', function () {
+    $admin = User::factory()->admin()->create();
+    $plan = Plan::factory()->create(['sessions' => 10]);
+    $subscription = Subscription::factory()->for($plan)->create();
+    TrainingAttendance::factory()->create(['subscription_id' => $subscription->id]);
+
+    $this->actingAs($admin);
+
+    livewire(EditSubscription::class, ['record' => $subscription->getRouteKey()])
+        ->assertFormFieldIsDisabled('plan_id');
+});
+
+it('user selector is disabled when subscription has usages', function () {
+    $admin = User::factory()->admin()->create();
+    $plan = Plan::factory()->create(['sessions' => 10]);
+    $subscription = Subscription::factory()->for($plan)->create();
+    TrainingAttendance::factory()->create(['subscription_id' => $subscription->id]);
+
+    $this->actingAs($admin);
+
+    livewire(EditSubscription::class, ['record' => $subscription->getRouteKey()])
+        ->assertFormFieldIsDisabled('user_id');
+});
+
+it('purchase date is disabled when subscription is fully used up', function () {
+    $admin = User::factory()->admin()->create();
+    $plan = Plan::factory()->create(['sessions' => 1]);
+    $subscription = Subscription::factory()->for($plan)->create(['expired_at' => now()]);
+    TrainingAttendance::factory()->create(['subscription_id' => $subscription->id]);
+
+    $this->actingAs($admin);
+
+    livewire(EditSubscription::class, ['record' => $subscription->getRouteKey()])
+        ->assertFormFieldIsDisabled('purchased_at');
+});
+
+it('shows meta data section with created and updated timestamps', function () {
+    $admin = User::factory()->admin()->create();
+    $plan = Plan::factory()->create();
+    $subscription = Subscription::factory()->for($plan)->create();
+
+    $this->actingAs($admin);
+
+    livewire(EditSubscription::class, ['record' => $subscription->getRouteKey()])
+        ->assertSee('Meta adatok')
+        ->assertSee($subscription->created_at)
+        ->assertSee($subscription->updated_at);
+});
+
+it('refuses to delete a subscription with usages from the edit page', function () {
+    $admin = User::factory()->admin()->create();
+    $subscription = Subscription::factory()->for(Plan::factory()->create())->create();
+    TrainingAttendance::factory()->for($subscription->user)->create(['subscription_id' => $subscription->id, 'attended' => true]);
+
+    $this->actingAs($admin);
+
+    livewire(EditSubscription::class, ['record' => $subscription->getRouteKey()])
+        ->callAction('delete')
+        ->assertNotified('A bérlet nem törölhető');
+
+    $this->assertDatabaseHas('subscriptions', ['id' => $subscription->id]);
+});
+
+it('deletes a subscription without usages from the edit page', function () {
+    $admin = User::factory()->admin()->create();
+    $subscription = Subscription::factory()->for(Plan::factory()->create())->create();
+
+    $this->actingAs($admin);
+
+    livewire(EditSubscription::class, ['record' => $subscription->getRouteKey()])
+        ->callAction('delete');
+
+    $this->assertDatabaseMissing('subscriptions', ['id' => $subscription->id]);
+});
+
+it('keeps a soft-deleted plan selectable on the subscription that uses it', function () {
+    $admin = User::factory()->admin()->create();
+    $plan = Plan::factory()->create(['name' => 'Törölt terv']);
+    $otherTrashed = Plan::factory()->create(['name' => 'Másik törölt']);
+    $live = Plan::factory()->create(['name' => 'Aktív terv']);
+    $subscription = Subscription::factory()->for($plan)->create();
+    $plan->delete();
+    $otherTrashed->delete();
+
+    $this->actingAs($admin);
+
+    livewire(EditSubscription::class, ['record' => $subscription->getRouteKey()])
+        ->assertFormSet(['plan_id' => $plan->id])
+        ->assertFormFieldExists('plan_id', function (Select $field) use ($plan, $otherTrashed, $live): bool {
+            $options = $field->getOptions();
+
+            return array_key_exists($plan->id, $options)
+                && array_key_exists($live->id, $options)
+                && ! array_key_exists($otherTrashed->id, $options);
+        })
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($subscription->fresh()->plan_id)->toBe($plan->id);
+});

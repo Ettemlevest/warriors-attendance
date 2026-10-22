@@ -2,14 +2,21 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PlanResource\Pages;
+use App\Filament\Resources\PlanResource\Pages\CreatePlan;
+use App\Filament\Resources\PlanResource\Pages\EditPlan;
+use App\Filament\Resources\PlanResource\Pages\ListPlans;
 use App\Models\Plan;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
@@ -22,18 +29,18 @@ class PlanResource extends Resource
 
     protected static ?int $navigationSort = 20;
 
-    protected static ?string $navigationIcon = 'heroicon-o-ticket';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-ticket';
 
     protected static ?string $modelLabel = 'bérlet típus';
 
     protected static ?string $pluralModelLabel = 'bérlet típusok';
 
-    protected static ?string $navigationGroup = 'Admin';
+    protected static string|\UnitEnum|null $navigationGroup = 'Admin';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make('')
                     ->columns(['lg' => 2])
                     ->schema([
@@ -57,15 +64,15 @@ class PlanResource extends Resource
 
                 Section::make('Meta adatok')
                     ->columns(['lg' => 2])
-                    ->visible(fn (Plan $plan) => $plan->exists)
+                    ->hiddenOn('create')
                     ->schema([
                         Placeholder::make('Létrehozva')
-                            ->content(fn (Plan $plan) => $plan->created_at)
-                            ->helperText(fn (Plan $plan) => $plan->created_at->longRelativeToNowDiffForHumans()),
+                            ->content(fn (?Plan $record) => $record?->created_at)
+                            ->helperText(fn (?Plan $record) => $record?->created_at?->longRelativeToNowDiffForHumans()),
 
                         Placeholder::make('Módosítva')
-                            ->content(fn (Plan $plan) => $plan->updated_at)
-                            ->helperText(fn (Plan $plan) => $plan->updated_at->longRelativeToNowDiffForHumans()),
+                            ->content(fn (?Plan $record) => $record?->updated_at)
+                            ->helperText(fn (?Plan $record) => $record?->updated_at?->longRelativeToNowDiffForHumans()),
                     ]),
 
             ]);
@@ -99,15 +106,15 @@ class PlanResource extends Resource
             ->filters([
                 TrashedFilter::make(),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\RestoreAction::make(),
+            ->recordActions([
+                EditAction::make(),
+                DeleteAction::make(),
+                RestoreAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\RestoreBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                    RestoreBulkAction::make(),
                 ]),
             ]);
     }
@@ -122,9 +129,9 @@ class PlanResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPlans::route('/'),
-            'create' => Pages\CreatePlan::route('/create'),
-            'edit' => Pages\EditPlan::route('/{record}/edit'),
+            'index' => ListPlans::route('/'),
+            'create' => CreatePlan::route('/create'),
+            'edit' => EditPlan::route('/{record}/edit'),
         ];
     }
 

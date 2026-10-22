@@ -2,60 +2,79 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\TrainingResource\Pages;
+use App\Enums\TrainingType;
+use App\Filament\Resources\TrainingResource\Pages\CreateTraining;
+use App\Filament\Resources\TrainingResource\Pages\EditTraining;
+use App\Filament\Resources\TrainingResource\Pages\ListTrainings;
+use App\Filament\Resources\TrainingResource\Pages\ViewTraining;
 use App\Filament\Resources\TrainingResource\RelationManagers\AttendeesRelationManager;
 use App\Models\Training;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
-use Filament\Infolists\Components\Grid;
-use Filament\Infolists\Components\Group;
-use Filament\Infolists\Components\Section as InfoListSection;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Actions\ActionGroup;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class TrainingResource extends Resource
 {
     protected static ?string $model = Training::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
     protected static ?string $modelLabel = 'edzés';
 
     protected static ?string $pluralModelLabel = 'edzések';
 
-    public static function form(Form $form): Form
+    public static function cancelDeletionWhenAttended(Training $training, Action $action): void
     {
-        return $form
-            ->schema([
+        if (! $training->hasConfirmedAttendances()) {
+            return;
+        }
+
+        Notification::make()
+            ->title('Az edzés nem törölhető')
+            ->body('Vannak megerősített résztvevői. Előbb jelöld őket hiányzónak.')
+            ->danger()
+            ->send();
+
+        $action->cancel();
+    }
+
+    public static function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
                 Section::make('')
                     ->columns(['lg' => 2])
                     ->schema([
                         Select::make('type')
                             ->label('Típus')
-                            ->default('easy')
+                            ->default(TrainingType::Easy)
                             ->columnSpanFull()
                             ->required()
-                            ->options([
-                                'easy' => 'Felzárkózatató edzés',
-                                'running' => 'Futó edzés',
-                                'hard' => 'Haladó edzés',
-                                'other' => 'Egyéb',
-                            ]),
+                            ->options(TrainingType::class),
 
                         TextInput::make('name')
                             ->label('Edzés neve')
@@ -94,8 +113,11 @@ class TrainingResource extends Resource
 
                         TextInput::make('max_attendees')
                             ->label('Max. létszám')
+                            ->helperText('0 esetén nincs létszámkorlát')
                             ->default(32)
+                            ->required()
                             ->numeric()
+                            ->minValue(0)
                             ->suffix('fő')
                             ->suffixIcon('heroicon-o-users'),
 
@@ -111,48 +133,26 @@ class TrainingResource extends Resource
 
                 Section::make('Meta adatok')
                     ->columns(['lg' => 2])
-                    ->visible(fn (Training $training) => $training->exists)
+                    ->hiddenOn('create')
                     ->schema([
                         Placeholder::make('Létrehozva')
-                            ->content(fn (Training $training) => $training->created_at)
-                            ->helperText(fn (Training $training) => $training->created_at->longRelativeToNowDiffForHumans()),
+                            ->content(fn (?Training $record) => $record?->created_at)
+                            ->helperText(fn (?Training $record) => $record?->created_at?->longRelativeToNowDiffForHumans()),
 
                         Placeholder::make('Módosítva')
-                            ->content(fn (Training $training) => $training->updated_at)
-                            ->helperText(fn (Training $training) => $training->updated_at->longRelativeToNowDiffForHumans()),
+                            ->content(fn (?Training $record) => $record?->updated_at)
+                            ->helperText(fn (?Training $record) => $record?->updated_at?->longRelativeToNowDiffForHumans()),
                     ]),
             ]);
     }
 
     public static function table(Table $table): Table
     {
-        $trainingTypeIconGenerationCallback = fn (Training $training) => match ($training->type) {
-            'easy' => 'heroicon-o-arrow-trending-up',
-            'running' => 'heroicon-o-sparkles',
-            'hard' => 'heroicon-o-bolt',
-            'other' => 'heroicon-o-swatch',
-            default => '',
-        };
-
         return $table
             ->columns([
                 IconColumn::make('type')
                     ->label('Típus')
-                    ->color(fn (string $state) => match ($state) {
-                        'easy' => 'primary',
-                        'running' => 'warning',
-                        'hard' => 'danger',
-                        'other' => 'info',
-                        default => '',
-                    })
-                    ->tooltip(fn (Training $training) => match ($training->type) {
-                        'easy' => 'Felzárkóztató',
-                        'running' => 'Futó',
-                        'hard' => 'Haladó',
-                        'other' => 'Egyéb',
-                        default => 'Ismeretlen',
-                    })
-                    ->icon($trainingTypeIconGenerationCallback),
+                    ->tooltip(fn (TrainingType $state) => $state->getLabel()),
 
                 TextColumn::make('name')
                     ->label('Edzés')
@@ -173,7 +173,7 @@ class TrainingResource extends Resource
 
                 TextColumn::make('attendees_count')
                     ->label('Létszám')
-                    ->formatStateUsing(fn (string $state, Training $training): string => $state.' / '.($training->max_attendees !== 0 ? $training->max_attendees : '&infin;'))
+                    ->formatStateUsing(fn (string $state, Training $training): string => $state.' / '.($training->hasUnlimitedCapacity() ? '&infin;' : $training->max_attendees))
                     ->html()
                     ->alignRight()
                     ->sortable(),
@@ -182,12 +182,7 @@ class TrainingResource extends Resource
             ->filters([
                 SelectFilter::make('type')
                     ->label('Típus')
-                    ->options([
-                        'easy' => 'Felzárkóztató',
-                        'running' => 'Futó',
-                        'hard' => 'Haladó',
-                        'other' => 'Egyéb',
-                    ]),
+                    ->options(TrainingType::class),
 
                 TernaryFilter::make('is_attendee')
                     ->label('Jelentkeztem')
@@ -195,61 +190,50 @@ class TrainingResource extends Resource
                     ->queries(
                         true: fn (Builder $query) => $query->whereHas(
                             'attendees',
-                            fn (Builder $attendeesSubQuery) => $attendeesSubQuery->where('user_id', '=', 1)
+                            fn (Builder $attendeesSubQuery) => $attendeesSubQuery->where('user_id', '=', auth()->id())
                         ),
                         false: fn (Builder $query) => $query->whereDoesntHave(
                             'attendees',
-                            fn (Builder $attendeesSubQuery) => $attendeesSubQuery->where('user_id', '=', 1)
+                            fn (Builder $attendeesSubQuery) => $attendeesSubQuery->where('user_id', '=', auth()->id())
                         ),
                     ),
             ])
-            ->actions([
+            ->recordActions([
                 ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
+                    ViewAction::make(),
+                    EditAction::make(),
+                    DeleteAction::make()
+                        ->before(fn (Training $training, Action $action) => static::cancelDeletionWhenAttended($training, $action)),
                 ]),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->before(function (Collection $trainings, Action $action): void {
+                            $attended = Training::query()
+                                ->whereKey($trainings->modelKeys())
+                                ->whereHas('attendees', fn (Builder $query) => $query->where('attended', true))
+                                ->first();
+
+                            if ($attended === null) {
+                                return;
+                            }
+
+                            static::cancelDeletionWhenAttended($attended, $action);
+                        }),
                 ]),
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        // TODO: kill this cancer
-        $trainingTypeIconGenerationCallback = fn (Training $training) => match ($training->type) {
-            'easy' => 'heroicon-o-arrow-trending-up',
-            'running' => 'heroicon-o-sparkles',
-            'hard' => 'heroicon-o-bolt',
-            'other' => 'heroicon-o-swatch',
-            default => '',
-        };
-
-        return $infolist->schema([
-            InfoListSection::make()
+        return $schema->components([
+            Section::make()
                 ->schema([
                     Grid::make(2)->schema([
                         Group::make([
                             TextEntry::make('type')
-                                ->label('Típus')
-                                ->color(fn (string $state) => match ($state) {
-                                    'easy' => 'primary',
-                                    'running' => 'warning',
-                                    'hard' => 'danger',
-                                    'other' => 'info',
-                                    default => '',
-                                })
-                                ->formatStateUsing(fn (Training $training) => match ($training->type) {
-                                    'easy' => 'Felzárkózatató edzés',
-                                    'running' => 'Futó edzés',
-                                    'hard' => 'Haladó edzés',
-                                    'other' => 'Egyéb',
-                                    default => 'Ismeretlen',
-                                })
-                                ->icon($trainingTypeIconGenerationCallback),
+                                ->label('Típus'),
 
                             TextEntry::make('name')
                                 ->label('Edzés'),
@@ -271,7 +255,7 @@ class TrainingResource extends Resource
                     ])->inlineLabel(),
                 ]),
 
-            InfoListSection::make('Leírás')
+            Section::make('Leírás')
                 ->collapsible()
                 ->schema([
                     TextEntry::make('description')
@@ -293,10 +277,10 @@ class TrainingResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTrainings::route('/'),
-            'create' => Pages\CreateTraining::route('/create'),
-            'edit' => Pages\EditTraining::route('/{record}/edit'),
-            'view' => Pages\ViewTraining::route('/{record}'),
+            'index' => ListTrainings::route('/'),
+            'create' => CreateTraining::route('/create'),
+            'edit' => EditTraining::route('/{record}/edit'),
+            'view' => ViewTraining::route('/{record}'),
         ];
     }
 }

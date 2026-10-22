@@ -4,7 +4,7 @@ namespace App\Filament\Resources\TrainingResource\Pages;
 
 use App\Filament\Resources\TrainingResource;
 use App\Models\Training;
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -21,7 +21,7 @@ class ListTrainings extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            CreateAction::make(),
         ];
     }
 }

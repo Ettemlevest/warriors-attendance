@@ -2,24 +2,38 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
+use App\Filament\Resources\UserResource\Pages\CreateUser;
+use App\Filament\Resources\UserResource\Pages\EditUser;
+use App\Filament\Resources\UserResource\Pages\ListUsers;
 use App\Models\User;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password;
 
 class UserResource extends Resource
 {
@@ -27,18 +41,33 @@ class UserResource extends Resource
 
     protected static ?int $navigationSort = 100;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
 
     protected static ?string $modelLabel = 'Warrior';
 
     protected static ?string $pluralModelLabel = 'Warriorok';
 
-    protected static ?string $navigationGroup = 'Admin';
+    protected static string|\UnitEnum|null $navigationGroup = 'Admin';
 
-    public static function form(Form $form): Form
+    public static function cancelForceDeletionWhenSubscribed(User $user, Action $action): void
     {
-        return $form
-            ->schema([
+        if ($user->subscriptions()->doesntExist()) {
+            return;
+        }
+
+        Notification::make()
+            ->title('A Warrior nem törölhető véglegesen')
+            ->body('Bérletek tartoznak hozzá. Töröld előbb a bérleteit, vagy hagyd archiválva.')
+            ->danger()
+            ->send();
+
+        $action->cancel();
+    }
+
+    public static function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
                 Section::make('')
                     ->columns(['lg' => 2])
                     ->schema([
@@ -52,13 +81,23 @@ class UserResource extends Resource
                             ->label('E-mail')
                             ->email()
                             ->required()
+                            ->unique(ignoreRecord: true)
                             ->maxLength(255),
 
                         TextInput::make('password')
                             ->label('Jelszó')
                             ->password()
+                            ->revealable()
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->rule(Password::default(), fn (?string $state): bool => filled($state))
                             ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
-                            ->dehydrated(fn (?string $state): bool => filled($state)),
+                            ->dehydrated(fn (?string $state): bool => filled($state))
+                            ->suffixAction(
+                                Action::make('generatePassword')
+                                    ->label('Jelszó generálása')
+                                    ->icon('heroicon-o-key')
+                                    ->action(fn (Set $set) => $set('password', Str::password(16))),
+                            ),
                     ]),
 
                 Section::make('Információk versenyre jelentkezéshez')
@@ -67,7 +106,9 @@ class UserResource extends Resource
                         FileUpload::make('avatar_url')
                             ->label('Fénykép')
                             ->disk('public')
-                            ->directory('users'),
+                            ->directory('users')
+                            ->image()
+                            ->maxSize(2048),
 
                         Select::make('size')
                             ->label('Póló méret')
@@ -107,15 +148,15 @@ class UserResource extends Resource
 
                 Section::make('Meta adatok')
                     ->columns(['lg' => 2])
-                    ->visible(fn (User $user) => $user->exists)
+                    ->hiddenOn('create')
                     ->schema([
                         Placeholder::make('Létrehozva')
-                            ->content(fn (User $user) => $user->created_at)
-                            ->helperText(fn (User $user) => $user->created_at->longRelativeToNowDiffForHumans()),
+                            ->content(fn (?User $record) => $record?->created_at)
+                            ->helperText(fn (?User $record) => $record?->created_at?->longRelativeToNowDiffForHumans()),
 
                         Placeholder::make('Módosítva')
-                            ->content(fn (User $user) => $user->updated_at)
-                            ->helperText(fn (User $user) => $user->updated_at->longRelativeToNowDiffForHumans()),
+                            ->content(fn (?User $record) => $record?->updated_at)
+                            ->helperText(fn (?User $record) => $record?->updated_at?->longRelativeToNowDiffForHumans()),
                     ]),
             ]);
     }
@@ -125,6 +166,7 @@ class UserResource extends Resource
         return $table
             ->columns([
                 ImageColumn::make('avatar_url')
+                    ->disk('public')
                     ->defaultImageUrl('/storage/avatar.png')
                     ->grow(false)
                     ->label('')
@@ -151,16 +193,27 @@ class UserResource extends Resource
             ->filters([
                 TrashedFilter::make(),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ForceDeleteAction::make(),
-                Tables\Actions\RestoreAction::make(),
+            ->recordActions([
+                EditAction::make(),
+                DeleteAction::make(),
+                ForceDeleteAction::make()
+                    ->before(fn (User $record, Action $action) => static::cancelForceDeletionWhenSubscribed($record, $action)),
+                RestoreAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
-                Tables\Actions\ForceDeleteBulkAction::make(),
-                Tables\Actions\RestoreBulkAction::make(),
+            ->toolbarActions([
+                DeleteBulkAction::make(),
+                ForceDeleteBulkAction::make()
+                    ->before(function (Collection $users, Action $action): void {
+                        /** @var Collection<int, User> $users */
+                        $subscribed = $users->first(fn (User $user) => $user->subscriptions()->exists());
+
+                        if ($subscribed === null) {
+                            return;
+                        }
+
+                        static::cancelForceDeletionWhenSubscribed($subscribed, $action);
+                    }),
+                RestoreBulkAction::make(),
             ]);
     }
 
@@ -172,9 +225,9 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => ListUsers::route('/'),
+            'create' => CreateUser::route('/create'),
+            'edit' => EditUser::route('/{record}/edit'),
         ];
     }
 

@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,15 +21,15 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $expired_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read \App\Models\Plan $plan
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TrainingAttendance> $usages
+ * @property-read Plan $plan
+ * @property-read Collection<int, TrainingAttendance> $usages
  * @property-read int|null $usages_count
- * @property-read \App\Models\User $user
+ * @property-read User $user
  * @property-read bool $expired
  *
- * @method static \Illuminate\Database\Eloquent\Builder|Subscription newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Subscription newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Subscription query()
+ * @method static Builder|Subscription newModelQuery()
+ * @method static Builder|Subscription newQuery()
+ * @method static Builder|Subscription query()
  */
 class Subscription extends Model
 {
@@ -58,7 +60,7 @@ class Subscription extends Model
         'usages',
     ];
 
-    public function expired(): Attribute
+    protected function expired(): Attribute
     {
         return Attribute::make(
             get: fn (mixed $value, array $attributes) => $attributes['expired_at'] !== null
@@ -66,15 +68,15 @@ class Subscription extends Model
     }
 
     /**
-     * @return BelongsTo<Plan, Subscription>
+     * @return BelongsTo<Plan, $this>
      */
     public function plan(): BelongsTo
     {
-        return $this->belongsTo(Plan::class);
+        return $this->belongsTo(Plan::class)->withTrashed();
     }
 
     /**
-     * @return BelongsTo<User, Subscription>
+     * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo
     {
@@ -82,7 +84,7 @@ class Subscription extends Model
     }
 
     /**
-     * @return HasMany<TrainingAttendance>
+     * @return HasMany<TrainingAttendance, $this>
      */
     public function usages(): HasMany
     {

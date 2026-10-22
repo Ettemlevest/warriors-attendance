@@ -2,15 +2,14 @@
 
 namespace App\Filament\Widgets;
 
+use App\Enums\TrainingType;
 use App\Models\Training;
-use Carbon\CarbonPeriod;
-use Filament\Tables\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Enums\ActionsPosition;
+use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
-use Illuminate\Support\Carbon;
 
 class UpcomingTraining extends BaseWidget
 {
@@ -22,40 +21,17 @@ class UpcomingTraining extends BaseWidget
 
     public function table(Table $table): Table
     {
-        // TODO: move to the training model, use enum
-        $trainingTypeIconGenerationCallback = fn (Training $training) => match ($training->type) {
-            'easy' => 'heroicon-o-arrow-trending-up',
-            'running' => 'heroicon-o-sparkles',
-            'hard' => 'heroicon-o-bolt',
-            'other' => 'heroicon-o-swatch',
-            default => '',
-        };
-
         return $table
             ->query(
                 Training::query()
                     ->withCount('attendees')
-                    ->whereBetween('start_at', CarbonPeriod::create('now', '+1 month')),
+                    ->whereBetween('start_at', [now()->subHour(), now()->addDays(30)]),
             )
             ->defaultSort('start_at', 'asc')
             ->columns([
                 IconColumn::make('type')
                     ->label('Típus')
-                    ->color(fn (string $state) => match ($state) {
-                        'easy' => 'primary',
-                        'running' => 'warning',
-                        'hard' => 'danger',
-                        'other' => 'info',
-                        default => '',
-                    })
-                    ->tooltip(fn (Training $training) => match ($training->type) {
-                        'easy' => 'Felzárkóztató',
-                        'running' => 'Futó',
-                        'hard' => 'Haladó',
-                        'other' => 'Egyéb',
-                        default => 'Ismeretlen',
-                    })
-                    ->icon($trainingTypeIconGenerationCallback),
+                    ->tooltip(fn (TrainingType $state) => $state->getLabel()),
 
                 TextColumn::make('name')
                     ->label('Edzés')
@@ -76,28 +52,28 @@ class UpcomingTraining extends BaseWidget
 
                 TextColumn::make('attendees_count')
                     ->label('Létszám')
-                    ->formatStateUsing(fn (string $state, Training $training): string => $state.' / '.($training->max_attendees !== 0 ? $training->max_attendees : '&infin;'))
+                    ->formatStateUsing(fn (string $state, Training $training): string => $state.' / '.($training->hasUnlimitedCapacity() ? '&infin;' : $training->max_attendees))
                     ->html()
                     ->alignRight()
                     ->sortable(),
             ])
-            ->actionsPosition(ActionsPosition::BeforeColumns)
+            ->recordActionsPosition(RecordActionsPosition::BeforeColumns)
             ->recordUrl(fn (Training $training) => route('filament.admin.resources.trainings.view', ['record' => $training->id]))
-            ->actions([
+            ->recordActions([
                 Action::make('attend')
                     ->label('Jelentkezem')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->visible(fn (Training $training) => ! $training->hasAttendee(auth()->user()))
-                    ->disabled(fn (Training $training) => $training->start_at->isBefore(Carbon::now()->subHour()) || $training->attendees_count >= $training->max_attendees && ! $training->can_attend_more)
-                    ->action(fn (Training $training) => auth()->user()->trainingAttendances()->create(['training_id' => $training->id])),
+                    ->disabled(fn (Training $training) => ! $training->isOpenForRegistration() || ! $training->canAcceptRegistration())
+                    ->action(fn (Training $training) => $training->registerAttendee(auth()->user())),
 
                 Action::make('withdraw')
                     ->label('Lemondom')
                     ->icon('heroicon-o-minus-circle')
                     ->color('warning')
                     ->visible(fn (Training $training) => $training->hasAttendee(auth()->user()))
-                    ->disabled(fn (Training $training) => $training->start_at->isBefore(Carbon::now()->subHour()))
+                    ->disabled(fn (Training $training) => ! $training->isOpenForRegistration() || $training->attendanceOf(auth()->user())?->attended)
                     ->action(fn (Training $training) => $training->attendees()->where('user_id', '=', auth()->id())->delete()),
             ]);
     }

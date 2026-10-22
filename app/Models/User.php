@@ -6,11 +6,18 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
+use Illuminate\Auth\Authenticatable;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Laravel\Sanctum\HasApiTokens;
@@ -34,19 +41,19 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Carbon|null $deleted_at
  * @property string|null $safety_person
  * @property string|null $safety_phone
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Subscription> $subscriptions
+ * @property-read Collection<int, Subscription> $subscriptions
  * @property-read int|null $subscriptions_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $trainingAttendances
+ * @property-read Collection<int, User> $trainingAttendances
  * @property-read int|null $training_attendances_count
  */
-class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
+class User extends Model implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract, FilamentUser, HasAvatar, HasName
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use Authenticatable, Authorizable, CanResetPassword, HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'name',
@@ -64,7 +71,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
     /**
      * The accessors to append to the model's array form.
      *
-     * @var array<string>
+     * @var list<string>
      */
     protected $appends = [
         'age',
@@ -73,7 +80,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'password',
@@ -88,11 +95,10 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
     protected $casts = [
         'owner' => 'boolean',
         'birth_date' => 'datetime',
-        'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
 
-    public function age(): Attribute
+    protected function age(): Attribute
     {
         return Attribute::make(
             get: fn (mixed $value, array $attributes) => $this->getAttributeValue('birth_date')?->age,
@@ -110,7 +116,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
     }
 
     /**
-     * @return HasMany<TrainingAttendance>
+     * @return HasMany<TrainingAttendance, $this>
      */
     public function trainingAttendances(): HasMany
     {
@@ -118,7 +124,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
     }
 
     /**
-     * @return HasMany<Subscription>
+     * @return HasMany<Subscription, $this>
      */
     public function subscriptions(): HasMany
     {

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Models\TrainingAttendance
@@ -15,11 +16,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property bool $extra
  * @property bool $attended
  * @property string|null $comment
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Training|null $training
- * @property-read \App\Models\User|null $user
- * @property-read \App\Models\Subscription|null $subscription
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Training|null $training
+ * @property-read User|null $user
+ * @property-read Subscription|null $subscription
  */
 class TrainingAttendance extends Model
 {
@@ -49,22 +50,25 @@ class TrainingAttendance extends Model
 
     public function confirmAttendance(): void
     {
-        if ($this->subscription === null) {
-            $liveSubscription = Subscription::findLiveSubscriptionForUser($this->user_id);
+        if ($this->attended && $this->subscription !== null) {
+            return;
+        }
 
-            $this->subscription()->associate($liveSubscription);
+        if ($this->subscription === null) {
+            $this->subscription()->associate(Subscription::findLiveSubscriptionForUser($this->user_id));
         }
 
         $this->update([
             'attended' => true,
         ]);
 
-        $liveSubscription?->refreshExpiry();
+        $this->subscription?->refreshExpiry();
     }
 
     public function rejectAttendance(): void
     {
         $subscription = $this->subscription;
+        $wasUsedUp = $subscription?->refresh()->usedUp() ?? false;
 
         $this->subscription()->dissociate();
 
@@ -72,11 +76,13 @@ class TrainingAttendance extends Model
             'attended' => false,
         ]);
 
-        $subscription?->refreshExpiry();
+        if ($wasUsedUp) {
+            $subscription->refreshExpiry();
+        }
     }
 
     /**
-     * @return BelongsTo<Training, TrainingAttendance>
+     * @return BelongsTo<Training, $this>
      */
     public function training(): BelongsTo
     {
@@ -84,7 +90,7 @@ class TrainingAttendance extends Model
     }
 
     /**
-     * @return BelongsTo<User, TrainingAttendance>
+     * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo
     {
@@ -92,7 +98,7 @@ class TrainingAttendance extends Model
     }
 
     /**
-     * @return BelongsTo<Subscription, TrainingAttendance>
+     * @return BelongsTo<Subscription, $this>
      */
     public function subscription(): BelongsTo
     {

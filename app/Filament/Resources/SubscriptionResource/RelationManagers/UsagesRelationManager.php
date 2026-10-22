@@ -2,10 +2,11 @@
 
 namespace App\Filament\Resources\SubscriptionResource\RelationManagers;
 
+use App\Enums\TrainingType;
 use App\Models\TrainingAttendance;
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Forms\Components\Select;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -16,11 +17,11 @@ class UsagesRelationManager extends RelationManager
 
     protected static ?string $title = 'Felhasznált alkalmak';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('subscription')
+        return $schema
+            ->components([
+                Select::make('subscription')
                     ->relationship('subscription', 'plan.name')
                     ->required(),
             ]);
@@ -28,38 +29,13 @@ class UsagesRelationManager extends RelationManager
 
     public function table(Table $table): Table
     {
-        // TODO: move to the training model, use enum
-        $trainingTypeIconGenerationCallback = fn (TrainingAttendance $attendance) => match ($attendance->training->type) {
-            'easy' => 'heroicon-o-arrow-trending-up',
-            'running' => 'heroicon-o-sparkles',
-            'hard' => 'heroicon-o-bolt',
-            'other' => 'heroicon-o-swatch',
-            default => '',
-        };
-
         return $table
             ->recordUrl(fn (TrainingAttendance $attendance) => "/trainings/{$attendance->training_id}")
             ->columns([
-                TextColumn::make('training.type'),
-
                 IconColumn::make('training.type')
                     ->label('Típus')
                     ->grow(false)
-                    ->color(fn (string $state) => match ($state) {
-                        'easy' => 'primary',
-                        'running' => 'warning',
-                        'hard' => 'danger',
-                        'other' => 'info',
-                        default => '',
-                    })
-                    ->tooltip(fn (TrainingAttendance $attendance) => match ($attendance->training->type) {
-                        'easy' => 'Felzárkóztató',
-                        'running' => 'Futó',
-                        'hard' => 'Haladó',
-                        'other' => 'Egyéb',
-                        default => 'Ismeretlen',
-                    })
-                    ->icon($trainingTypeIconGenerationCallback),
+                    ->tooltip(fn (TrainingType $state) => $state->getLabel()),
 
                 TextColumn::make('training.name')
                     ->label('Edzés')
