@@ -4,7 +4,7 @@ Attendance and subscription management for the Kiskunlacháza Warriors. Members 
 
 ## Requirements
 
-- PHP 8.2 or newer with the usual Laravel extensions and GD
+- PHP 8.5 or newer with the usual Laravel extensions and GD
 - Composer
 - SQLite or MySQL
 
