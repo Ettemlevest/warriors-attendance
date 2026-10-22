@@ -7,7 +7,6 @@ Attendance and subscription management for the Kiskunlacháza Warriors. Members 
 - PHP 8.2 or newer with the usual Laravel extensions and GD
 - Composer
 - SQLite or MySQL
-- pnpm, only if you want to rebuild the Vite bundle (the panel ships its own assets)
 
 ## Installation
 
@@ -58,13 +57,6 @@ php artisan tinker --execute="App\Models\User::first()->forceFill(['owner' => tr
 ```
 
 Admins see every resource; other members see the dashboard, the trainings and their own subscriptions.
-
-### Frontend assets (optional)
-
-```sh
-pnpm install
-pnpm run build     # or `pnpm run dev` for the watcher
-```
 
 ## Development
 
